@@ -1,4 +1,4 @@
-from templatepython import __version__  # type: ignore
+from inboard import __version__  # type: ignore
 
 
 def test_version() -> None:

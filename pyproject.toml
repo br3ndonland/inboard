@@ -1,14 +1,14 @@
 [tool.isort]
 profile = "black"
-src_paths = ["templatepython", "tests"]
+src_paths = ["inboard", "tests"]
 
 [tool.poetry]
-name = "templatepython"
+name = "inboard"
 version = "0.1.0"
-description = "Template repository for Python projects"
+description = "Docker images to power your Python APIs and help you ship faster."
 authors = ["Brendon Smith <br3ndonland@protonmail.com>"]
 license = "MIT"
-homepage = "https://github.com/br3ndonland/template-python"
+homepage = "https://github.com/br3ndonland/inboard"
 readme = "README.md"
 
 [tool.poetry.dependencies]

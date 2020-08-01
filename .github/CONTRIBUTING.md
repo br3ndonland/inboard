@@ -95,7 +95,7 @@
 
     ```sh
     cd path/where/you/want/the/repo
-    git clone git@github.com:br3ndonland/template-python.git
+    git clone git@github.com:br3ndonland/inboard.git
     ```
 
 - A **[fork](https://help.github.com/articles/fork-a-repo/)** duplicates the project into the user's GitHub account, and still maintains connection to the original master. Forks can also be cloned.
@@ -193,7 +193,7 @@ After saving files, changes need to be committed to the Git repository.
   # Virtual environment option
   ❯ poetry install
   ❯ poetry shell
-  template-python-hash-py3.7 ❯ pre-commit install
+  inboard-hash-py3.7 ❯ pre-commit install
   ```
 
 - [pre-commit.yml](.github/workflows/pre-commit.yml) is a [GitHub Actions](https://github.com/features/actions) workflow that runs pre-commit with each pull request or push to the master branch.
@@ -289,7 +289,7 @@ This project doesn't need a separate `setup.py` because it's managed automatical
   ```dockerfile
   # Pull an image: alpine images are tightly controlled and small in size
   FROM python:3.7-alpine
-  LABEL app=template-python
+  LABEL app=inboard
   WORKDIR /app
   # Install dependencies
   COPY poetry.lock pyproject.toml ./
@@ -308,12 +308,12 @@ This project doesn't need a separate `setup.py` because it's managed automatical
   ~
   ❯ cd path/to/repo
   ~/path/to/repo
-  ❯ docker build . -t template-python:latest
+  ❯ docker build . -t inboard:latest
   ~/path/to/repo
-  ❯ docker run -d -p 80:80 template-python:latest
+  ❯ docker run -d -p 80:80 inboard:latest
   ```
 
-  - `-t` web tells Docker to name the image `template-python`. Adding `.` builds from the current directory.
+  - `-t` web tells Docker to name the image `inboard`. Adding `.` builds from the current directory.
   - `-d` runs the container in detached mode. Docker will display the container hash and return the terminal prompt.
   - `-p 80:80` maps the http port 80 from your local machine to port 80 in the container.
   - A tag can be specified with `name:tag`, otherwise, the tag `latest` will be used.
