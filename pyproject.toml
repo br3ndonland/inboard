@@ -13,6 +13,8 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.8"
+gunicorn = "^20"
+uvicorn = "^0.11.8"
 
 [tool.poetry.dev-dependencies]
 black = { version = "*", allow-prereleases = true }
