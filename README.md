@@ -9,6 +9,19 @@ _Docker images to power your Python APIs and help you ship faster. With support 
 
 Brendon Smith ([br3ndonland](https://github.com/br3ndonland/))
 
+## Table of Contents <!-- omit in toc -->
+
+- [Description](#description)
+- [Quickstart](#quickstart)
+  - [Configure Docker for GitHub Packages](#configure-docker-for-github-packages)
+  - [Pull images](#pull-images)
+  - [Use images in a _Dockerfile_](#use-images-in-a-dockerfile)
+  - [Run containers](#run-containers)
+- [Configuration](#configuration)
+- [Development](#development)
+  - [Code style](#code-style)
+  - [Building Docker images locally](#building-docker-images-locally)
+
 ## Description
 
 This is a refactor of [tiangolo/uvicorn-gunicorn-docker](https://github.com/tiangolo/uvicorn-gunicorn-docker) with the following advantages:
