@@ -232,3 +232,28 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2" VARIABLE_NAME="value"
       # Run custom Python script before starting
       python /app/my_custom_prestart_script.py
       ```
+
+## Development
+
+### Code style
+
+- Python code is formatted with [Black](https://black.readthedocs.io/en/stable/). Configuration for Black is stored in _[pyproject.toml](pyproject.toml)_.
+- Python imports are organized automatically with [isort](https://timothycrosley.github.io/isort/).
+  - The isort package organizes imports in three sections:
+    1. Standard library
+    2. Dependencies
+    3. Project
+  - Within each of those groups, `import` statements occur first, then `from` statements, in alphabetical order.
+  - You can run isort from the command line with `poetry run isort .`.
+  - Configuration for isort is stored in _[pyproject.toml](pyproject.toml)_.
+- Other web code (JSON, Markdown, YAML) is formatted with [Prettier](https://prettier.io/).
+
+### Building Docker images locally
+
+To build the Docker images for each stage:
+
+```sh
+docker build . --target base -t localhost/br3ndonland/inboard/base:latest
+docker build . --target fastapi -t localhost/br3ndonland/inboard/fastapi:latest
+docker build . --target starlette -t localhost/br3ndonland/inboard/starlette:latest
+```
