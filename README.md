@@ -90,7 +90,7 @@ docker run -d -p 80:80 br3ndonland/inboard/fastapi
 Run container with mounted volume and Uvicorn reloading for development:
 
 ```sh
-cd /path/to/repo
+cd /path/to/app
 docker run -d -p 80:80 -e "WITH_RELOAD=true" -v $(pwd):/app br3ndonland/inboard/fastapi
 ```
 

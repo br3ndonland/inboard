@@ -1,15 +1,12 @@
 FROM python:3.8 AS base
 LABEL maintainer="Brendon Smith"
-COPY poetry.lock pyproject.toml inboard /app/
-WORKDIR /app/
-ENV APP_MODULE=inboard.base.main:app GUNICORN_CONF=/app/inboard/gunicorn_conf.py POETRY_VIRTUALENVS_CREATE=false
-RUN python -m pip install poetry && poetry install --no-dev --no-interaction -E fastapi
-CMD python /app/inboard/start.py
+COPY poetry.lock pyproject.toml inboard /
+ENV APP_MODULE=base.main:app GUNICORN_CONF=/gunicorn_conf.py POETRY_VIRTUALENVS_CREATE=false PYTHONPATH=/app
+RUN python -m pip install poetry && poetry install --no-dev --no-interaction --no-root -E fastapi
+CMD python /start.py
 
-FROM base as fastapi
-ENV APP_MODULE=inboard.fastapi.main:app
-CMD python /app/inboard/start.py
+FROM base AS fastapi
+ENV APP_MODULE=fastapi.main:app
 
-FROM base as starlette
-ENV APP_MODULE=inboard.starlette.main:app
-CMD python /app/inboard/start.py
+FROM base AS starlette
+ENV APP_MODULE=starlette.main:app

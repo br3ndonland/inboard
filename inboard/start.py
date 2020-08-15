@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 import subprocess
-from pathlib import Path, PurePath
+from pathlib import Path
 from typing import Tuple
 
 import uvicorn
@@ -12,6 +12,8 @@ def set_app_module() -> str:
         default_module_name = "app.main"
     elif Path("/app/main.py").is_file():
         default_module_name = "main"
+    else:
+        default_module_name = "base.main"
     module_name = os.getenv("MODULE_NAME", default_module_name)
     variable_name = os.getenv("VARIABLE_NAME", "app")
     app_module = os.getenv("APP_MODULE", f"{module_name}:{variable_name}")
@@ -22,9 +24,12 @@ def set_app_module() -> str:
 def set_gunicorn_conf() -> Tuple[str, str]:
     if Path("/app/gunicorn_conf.py").is_file():
         default_gunicorn_conf = "/app/gunicorn_conf.py"
-    elif Path("/app/app/gunicorn_conf.py").is_file():
+    elif (
+        not Path("/app/gunicorn_conf.py").is_file()
+        and Path("/app/app/gunicorn_conf.py").is_file()
+    ):
         default_gunicorn_conf = "/app/app/gunicorn_conf.py"
-    elif Path("/gunicorn_conf.py").is_file():
+    else:
         default_gunicorn_conf = "/gunicorn_conf.py"
     gunicorn_conf = os.getenv("GUNICORN_CONF", default_gunicorn_conf)
     os.environ["GUNICORN_CONF"] = gunicorn_conf
@@ -34,7 +39,7 @@ def set_gunicorn_conf() -> Tuple[str, str]:
 
 
 def run_pre_start_script(
-    pre_start_path: str = os.getenv("PRE_START_PATH", "/app/inboard/prestart.py")
+    pre_start_path: str = os.getenv("PRE_START_PATH", "/app/prestart.py")
 ) -> None:
     try:
         print(f"Checking for pre-start script in {pre_start_path}.")
@@ -49,12 +54,10 @@ def run_pre_start_script(
 
 
 def start_server(
-    app_module: str = str(os.getenv("APP_MODULE", "/app/inboard.base.main:app")),
-    gunicorn_conf: str = str(
-        os.getenv("GUNICORN_CONF", "/app/inboard/gunicorn_conf.py")
-    ),
-    worker_class: str = str(os.getenv("WORKER_CLASS", "uvicorn.workers.UvicornWorker")),
+    app_module: str = str(os.getenv("APP_MODULE", "base.main:app")),
+    gunicorn_conf: str = str(os.getenv("GUNICORN_CONF", "/gunicorn_conf.py")),
     with_reload: bool = bool(os.getenv("WITH_RELOAD", False)),
+    worker_class: str = str(os.getenv("WORKER_CLASS", "uvicorn.workers.UvicornWorker")),
 ) -> None:
     if with_reload:
         uvicorn.run(
