@@ -12,7 +12,7 @@ Brendon Smith ([br3ndonland](https://github.com/br3ndonland/))
 ## Table of Contents <!-- omit in toc -->
 
 - [Description](#description)
-- [Quickstart](#quickstart)
+- [Instructions](#instructions)
   - [Configure Docker for GitHub Packages](#configure-docker-for-github-packages)
   - [Pull images](#pull-images)
   - [Use images in a _Dockerfile_](#use-images-in-a-dockerfile)
@@ -34,7 +34,7 @@ This is a refactor of [tiangolo/uvicorn-gunicorn-docker](https://github.com/tian
 - **One programming language.** Pure Python with no shell scripts.
 - **One platform.** You're already on GitHub. Why not [pull Docker images from GitHub Packages](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages)?
 
-## Quickstart
+## Instructions
 
 ### Configure Docker for GitHub Packages
 
