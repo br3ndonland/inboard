@@ -8,10 +8,10 @@ import uvicorn
 
 
 def set_app_module() -> str:
-    if Path("/app/app/main.py").is_file():
-        default_module_name = "app.main"
-    elif Path("/app/main.py").is_file():
+    if Path("/app/main.py").is_file():
         default_module_name = "main"
+    elif Path("/app/app/main.py").is_file():
+        default_module_name = "app.main"
     else:
         default_module_name = "base.main"
     module_name = os.getenv("MODULE_NAME", default_module_name)
@@ -24,10 +24,7 @@ def set_app_module() -> str:
 def set_gunicorn_conf() -> Tuple[str, str]:
     if Path("/app/gunicorn_conf.py").is_file():
         default_gunicorn_conf = "/app/gunicorn_conf.py"
-    elif (
-        not Path("/app/gunicorn_conf.py").is_file()
-        and Path("/app/app/gunicorn_conf.py").is_file()
-    ):
+    elif Path("/app/app/gunicorn_conf.py").is_file():
         default_gunicorn_conf = "/app/app/gunicorn_conf.py"
     else:
         default_gunicorn_conf = "/gunicorn_conf.py"

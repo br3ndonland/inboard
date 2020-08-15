@@ -169,15 +169,15 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2" VARIABLE_NAME="value"
 - `GUNICORN_CONF`: Path to a [Gunicorn configuration file](https://docs.gunicorn.org/en/latest/settings.html#config-file).
   - Default:
     - `/app/gunicorn_conf.py` if exists
-    - `/app/app/gunicorn_conf.py` if exists
-    - `/gunicorn_conf.py`
+    - Else `/app/app/gunicorn_conf.py` if exists
+    - Else `/gunicorn_conf.py` (the default file provided with the Docker image)
   - Custom:
     - `GUNICORN_CONF="/app/custom_gunicorn_conf.py"`
     - Feel free to use the [`gunicorn_conf.py`](./inboard/gunicorn_conf.py) from this repo as a starting point for your own custom configuration.
 - `MODULE_NAME`: Python module (file) to be imported by Uvicorn or Gunicorn.
   - Default:
-    - `app.main` if there's a file `/app/app/main.py`
     - `main` if there's a file `/app/main.py`
+    - Else `app.main` if there's a file `/app/app/main.py`
   - Custom: For a module at `/app/custom/module.py`, `MODULE_NAME="custom.module"`
 - `VARIABLE_NAME`: Variable (object) inside of the Python module that contains the ASGI application instance.
 
