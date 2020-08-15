@@ -18,6 +18,8 @@ Brendon Smith ([br3ndonland](https://github.com/br3ndonland/))
   - [Use images in a _Dockerfile_](#use-images-in-a-dockerfile)
   - [Run containers](#run-containers)
 - [Configuration](#configuration)
+  - [General](#general)
+  - [Gunicorn and Uvicorn](#gunicorn-and-uvicorn)
 - [Development](#development)
   - [Code style](#code-style)
   - [Building Docker images locally](#building-docker-images-locally)
@@ -101,6 +103,30 @@ COPY package /app/
 # RUN command already included in base image
 ```
 
+Organizing the _Dockerfile_ this way helps [leverage the Docker build cache](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#leverage-build-cache). Files and commands that change more frequently are moved farther down in the _Dockerfile_. Next time the image is built, Docker will skip any layers that don't change, speeding up builds.
+
+For a standard `pip` install:
+
+- `repo`
+  - `package`
+    - `main.py`
+    - `prestart.py`
+  - `Dockerfile`
+  - `requirements.txt`
+
+```dockerfile
+FROM docker.pkg.github.com/br3ndonland/inboard/fastapi
+
+# Install Python requirements
+COPY requirements.txt /
+RUN pip install -r requirements.txt
+
+# Install Python app
+COPY package /app/
+
+# RUN command already included in base image
+```
+
 The image could then be built with:
 
 ```sh
@@ -163,18 +189,12 @@ To set environment variables within a _Dockerfile_:
 
 ```dockerfile
 FROM docker.pkg.github.com/br3ndonland/inboard/fastapi
-ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2" VARIABLE_NAME="value"
+ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2"
 ```
 
-- `GUNICORN_CONF`: Path to a [Gunicorn configuration file](https://docs.gunicorn.org/en/latest/settings.html#config-file).
-  - Default:
-    - `/app/gunicorn_conf.py` if exists
-    - Else `/app/app/gunicorn_conf.py` if exists
-    - Else `/gunicorn_conf.py` (the default file provided with the Docker image)
-  - Custom:
-    - `GUNICORN_CONF="/app/custom_gunicorn_conf.py"`
-    - Feel free to use the [`gunicorn_conf.py`](./inboard/gunicorn_conf.py) from this repo as a starting point for your own custom configuration.
-- `MODULE_NAME`: Python module (file) to be imported by Uvicorn or Gunicorn.
+### General
+
+- `MODULE_NAME`: Python module (file) with app instance.
   - Default:
     - `main` if there's a file `/app/main.py`
     - Else `app.main` if there's a file `/app/app/main.py`
@@ -191,34 +211,28 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2" VARIABLE_NAME="value"
 
     @api.get("/")
     def read_root():
-        return {"message": "Hello world!"}
+        return {"message": "Hello World!"}
     ```
 
-- `APP_MODULE`: Combination of `MODULE_NAME` and `VARIABLE_NAME` passed to Gunicorn.
+- `APP_MODULE`: Combination of `MODULE_NAME` and `VARIABLE_NAME` pointing to the app instance.
   - Default:
-    - `MODULE_NAME:VARIABLE_NAME`
-    - `app.main:app` or
-    - `main:app`
+    - `MODULE_NAME:VARIABLE_NAME` (`main:app` or `app.main:app`)
   - Custom: For a module at `/app/custom/module.py` and variable `api`, `APP_MODULE="custom.module:api"`
-- [`WORKERS_PER_CORE`](https://docs.gunicorn.org/en/latest/settings.html#worker-processes): Number of Gunicorn workers per CPU core.
-  - Default: `1`
-  - Custom: `WORKERS_PER_CORE="2"`
-  - Notes:
-    - This image will check how many CPU cores are available in the current server running your container. It will set the number of workers to the number of CPU cores multiplied by this value.
-    - On a server with 2 CPU cores, `WORKERS_PER_CORE="3"` will run 6 worker processes.
-    - Floating point values are permitted. If you have a powerful server (let's say, with 8 CPU cores) running several applications, including an ASGI application that won't need high performance, but you don't want to waste server resources, you could set the environment variable to `WORKERS_PER_CORE="0.5"`. A server with 8 CPU cores would start only 4 worker processes.
-    - By default, if `WORKERS_PER_CORE` is `1` and the server has only 1 CPU core, 2 workers will be started instead of 1, to avoid poor performance and blocking applications. This behavior can be overridden using `WEB_CONCURRENCY`.
-- [`WORKER_CLASS`](https://docs.gunicorn.org/en/latest/settings.html#worker-processes): The class to be used by Gunicorn for the workers.
-  - Default: `uvicorn.workers.UvicornWorker`
-  - Custom: For the alternate Uvicorn worker, `WORKER_CLASS="uvicorn.workers.UvicornH11Worker"`
-- `MAX_WORKERS`: Maximum number of workers to use, independent of number of CPU cores.
-  - Default: unlimited (not set)
-  - Custom: `MAX_WORKERS="24"`
-- [`WEB_CONCURRENCY`](https://docs.gunicorn.org/en/latest/settings.html#worker-processes): Set number of workers independently of number of CPU cores.
+- `PRE_START_PATH`: Path to a pre-start script. Add a file `prestart.py` or `prestart.sh` to the application directory, and copy the directory into the Docker image as described (for a project with the Python application in `repo/package`, `COPY package /app/`). The container will automatically detect and run the prestart script before starting the web server.
+
+  - Default: `/app/prestart.py`
+  - Custom: `PRE_START_PATH="/custom/script.sh"`
+
+### Gunicorn and Uvicorn
+
+- `GUNICORN_CONF`: Path to a [Gunicorn configuration file](https://docs.gunicorn.org/en/latest/settings.html#config-file).
   - Default:
-    - Number of CPU cores multiplied by the environment variable `WORKERS_PER_CORE`.
-    - In a server with 2 cores and default `WORKERS_PER_CORE="1"`, default `2`.
-  - Custom: To have 4 workers, `WEB_CONCURRENCY="4"`
+    - `/app/gunicorn_conf.py` if exists
+    - Else `/app/app/gunicorn_conf.py` if exists
+    - Else `/gunicorn_conf.py` (the default file provided with the Docker image)
+  - Custom:
+    - `GUNICORN_CONF="/app/custom_gunicorn_conf.py"`
+    - Feel free to use the [`gunicorn_conf.py`](./inboard/gunicorn_conf.py) from this repo as a starting point for your own custom configuration.
 - `HOST`: Host IP address (inside of the container) where Gunicorn will listen for requests.
   - Default: `0.0.0.0`
   - Custom: _TODO_
@@ -228,16 +242,35 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2" VARIABLE_NAME="value"
 - [`BIND`](https://docs.gunicorn.org/en/latest/settings.html#server-socket): The actual host and port passed to Gunicorn.
   - Default: `HOST:PORT` (`0.0.0.0:80`)
   - Custom: `BIND="0.0.0.0:8080"`
+- [`WORKER_CLASS`](https://docs.gunicorn.org/en/latest/settings.html#worker-processes): The class to be used by Gunicorn for the workers.
+  - Default: `uvicorn.workers.UvicornWorker`
+  - Custom: For the alternate Uvicorn worker, `WORKER_CLASS="uvicorn.workers.UvicornH11Worker"`
+- [`WORKERS_PER_CORE`](https://docs.gunicorn.org/en/latest/settings.html#worker-processes): Number of Gunicorn workers per CPU core.
+  - Default: `1`
+  - Custom: `WORKERS_PER_CORE="2"`
+  - Notes:
+    - This image will check how many CPU cores are available in the current server running your container. It will set the number of workers to the number of CPU cores multiplied by this value.
+    - On a server with 2 CPU cores, `WORKERS_PER_CORE="3"` will run 6 worker processes.
+    - Floating point values are permitted. If you have a powerful server (let's say, with 8 CPU cores) running several applications, including an ASGI application that won't need high performance, but you don't want to waste server resources, you could set the environment variable to `WORKERS_PER_CORE="0.5"`. A server with 8 CPU cores would start only 4 worker processes.
+    - By default, if `WORKERS_PER_CORE` is `1` and the server has only 1 CPU core, 2 workers will be started instead of 1, to avoid poor performance and blocking applications. This behavior can be overridden using `WEB_CONCURRENCY`.
+- `MAX_WORKERS`: Maximum number of workers to use, independent of number of CPU cores.
+  - Default: unlimited (not set)
+  - Custom: `MAX_WORKERS="24"`
+- [`WEB_CONCURRENCY`](https://docs.gunicorn.org/en/latest/settings.html#worker-processes): Set number of workers independently of number of CPU cores.
+  - Default:
+    - Number of CPU cores multiplied by the environment variable `WORKERS_PER_CORE`.
+    - In a server with 2 cores and default `WORKERS_PER_CORE="1"`, default `2`.
+  - Custom: To have 4 workers, `WEB_CONCURRENCY="4"`
 - [`TIMEOUT`](https://docs.gunicorn.org/en/stable/settings.html#timeout): Workers silent for more than this many seconds are killed and restarted.
   - Default: `120`
   - Custom: `TIMEOUT="20"`
-- [`KEEP_ALIVE`](https://docs.gunicorn.org/en/stable/settings.html#keepalive): Number of seconds to wait for requests on a Keep-Alive connection.
-  - Default: `2`
-  - Custom: `KEEP_ALIVE="20"`
 - [`GRACEFUL_TIMEOUT`](https://docs.gunicorn.org/en/stable/settings.html#graceful-timeout): Number of seconds to allow workers finish serving requests before restart.
   - Default:`120`
   - Custom: `GRACEFUL_TIMEOUT="20"`
-- [`LOG_LEVEL`](https://docs.gunicorn.org/en/latest/settings.html#logging): Gunicorn logging level.
+- [`KEEP_ALIVE`](https://docs.gunicorn.org/en/stable/settings.html#keepalive): Number of seconds to wait for requests on a Keep-Alive connection.
+  - Default: `2`
+  - Custom: `KEEP_ALIVE="20"`
+- `LOG_LEVEL`: Log level for [Gunicorn](https://docs.gunicorn.org/en/latest/settings.html#logging) or [Uvicorn](https://www.uvicorn.org/settings/#logging).
   - Default: `info`
   - Custom (organized from greatest to least amount of logging):
     - `debug`
@@ -260,10 +293,6 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2" VARIABLE_NAME="value"
     ```sh
     docker run -d -p 80:8080 -e GUNICORN_CMD_ARGS="--keyfile=/secrets/key.pem --certfile=/secrets/cert.pem" -e PORT=443 myimage
     ```
-- `PRE_START_PATH`: Path to a pre-start script. Add a file `prestart.py` or `prestart.sh` to the application directory, and copy the directory into the Docker image as described (for a project with the Python application in `repo/package`, `COPY package /app/` `/app`). The container will automatically detect and run the prestart script before starting the web server.
-
-  - Default: `/app/prestart.py`
-  - Custom: `PRE_START_PATH="/custom/script.sh"`
 
 ## Development
 
