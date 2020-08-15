@@ -6,7 +6,7 @@ RUN python -m pip install poetry && poetry install --no-dev --no-interaction --n
 CMD python /start.py
 
 FROM base AS fastapi
-ENV APP_MODULE=fastapi.main:app
+ENV APP_MODULE=fastapibase.main:app
 
 FROM base AS starlette
-ENV APP_MODULE=starlette.main:app
+ENV APP_MODULE=starlettebase.main:app
