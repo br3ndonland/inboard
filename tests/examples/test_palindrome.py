@@ -1,6 +1,6 @@
 import pytest  # type: ignore
 
-from inboard.examples import palindrome  # type: ignore
+from inboard.examples import palindrome
 
 
 @pytest.mark.parametrize(

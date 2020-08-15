@@ -1,4 +1,4 @@
-from inboard import __version__  # type: ignore
+from inboard import __version__
 
 
 def test_version() -> None:

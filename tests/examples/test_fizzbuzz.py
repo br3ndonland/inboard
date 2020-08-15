@@ -2,7 +2,7 @@ from typing import Union
 
 import pytest  # type: ignore
 
-from inboard.examples import fizzbuzz  # type: ignore
+from inboard.examples import fizzbuzz
 
 
 @pytest.mark.parametrize(

@@ -4,7 +4,7 @@ import subprocess
 from pathlib import Path
 from typing import Tuple
 
-import uvicorn
+import uvicorn  # type: ignore
 
 
 def set_app_module() -> str:
