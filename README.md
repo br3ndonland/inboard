@@ -22,7 +22,8 @@ Brendon Smith ([br3ndonland](https://github.com/br3ndonland/))
   - [Gunicorn and Uvicorn](#gunicorn-and-uvicorn)
 - [Development](#development)
   - [Code style](#code-style)
-  - [Building Docker images locally](#building-docker-images-locally)
+  - [Building development images](#building-development-images)
+  - [Running development containers](#running-development-containers)
 
 ## Description
 
@@ -103,7 +104,7 @@ COPY package /app/
 # RUN command already included in base image
 ```
 
-Organizing the _Dockerfile_ this way helps [leverage the Docker build cache](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#leverage-build-cache). Files and commands that change more frequently are moved farther down in the _Dockerfile_. Next time the image is built, Docker will skip any layers that don't change, speeding up builds.
+Organizing the _Dockerfile_ this way helps [leverage the Docker build cache](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#leverage-build-cache). Files and commands that change most frequently are added last to the _Dockerfile_. Next time the image is built, Docker will skip any layers that didn't change, speeding up builds.
 
 For a standard `pip` install:
 
@@ -291,7 +292,9 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2"
 - `GUNICORN_CMD_ARGS`: Additional [command-line arguments for Gunicorn](https://docs.gunicorn.org/en/stable/settings.html). These settings will have precedence over the other environment variables and any Gunicorn config file.
   - Custom: To use a custom TLS certificate, copy or mount the certificate and private key into the Docker image, and set [`--keyfile` and `--certfile`](http://docs.gunicorn.org/en/latest/settings.html#ssl) to the location of the files.
     ```sh
-    docker run -d -p 80:8080 -e GUNICORN_CMD_ARGS="--keyfile=/secrets/key.pem --certfile=/secrets/cert.pem" -e PORT=443 myimage
+    docker run -d -p 443:443 \
+      -e GUNICORN_CMD_ARGS="--keyfile=/secrets/key.pem --certfile=/secrets/cert.pem" \
+      -e PORT=443 myimage
     ```
 
 ## Development
@@ -309,12 +312,34 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2"
   - Configuration for isort is stored in _[pyproject.toml](pyproject.toml)_.
 - Other web code (JSON, Markdown, YAML) is formatted with [Prettier](https://prettier.io/).
 
-### Building Docker images locally
+### Building development images
 
 To build the Docker images for each stage:
 
 ```sh
+git clone git@github.com:br3ndonland/inboard.git
+cd inboard
 docker build . --target base -t localhost/br3ndonland/inboard/base:latest
 docker build . --target fastapi -t localhost/br3ndonland/inboard/fastapi:latest
 docker build . --target starlette -t localhost/br3ndonland/inboard/starlette:latest
 ```
+
+### Running development containers
+
+```sh
+# Uvicorn with reloading
+cd inboard
+docker run -d -p 80:80 -e "LOG_LEVEL=debug" -e "WITH_RELOAD=true" \
+  -v $(pwd)/inboard/app:/app localhost/br3ndonland/inboard/base
+docker run -d -p 80:80 -e "LOG_LEVEL=debug" -e "WITH_RELOAD=true" \
+  -v $(pwd)/inboard/app:/app localhost/br3ndonland/inboard/fastapi
+docker run -d -p 80:80 -e "LOG_LEVEL=debug" -e "WITH_RELOAD=true" \
+  -v $(pwd)/inboard/app:/app localhost/br3ndonland/inboard/starlette
+
+# Gunicorn and Uvicorn
+docker run -d -p 80:80 localhost/br3ndonland/inboard/base
+docker run -d -p 80:80 localhost/br3ndonland/inboard/fastapi
+docker run -d -p 80:80 localhost/br3ndonland/inboard/starlette
+```
+
+Change the port numbers to run multiple containers simultaneously (`-p 81:80`).
