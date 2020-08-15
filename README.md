@@ -16,7 +16,7 @@ This is a refactor of [tiangolo/uvicorn-gunicorn-docker](https://github.com/tian
 - **One repo**. The tiangolo/uvicorn-gunicorn images are in at least three separate repos, [tiangolo/uvicorn-gunicorn-docker](https://github.com/tiangolo/uvicorn-gunicorn-docker), [tiangolo/uvicorn-gunicorn-starlette-docker](https://github.com/tiangolo/uvicorn-gunicorn-starlette-docker), and [tiangolo/uvicorn-gunicorn-starlette-docker](https://github.com/tiangolo/uvicorn-gunicorn-starlette-docker), with large amounts of code duplication, making maintenance difficult for an already-busy maintainer. This repo combines three into one.
 - **One _Dockerfile_.** This repository leverages [multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/) to produce multiple Docker images from one _Dockerfile_.
 - **One Python requirements file.** This project leverages Poetry with Poetry Extras for dependency management with the _pyproject.toml_.
-- **One platform.** Docker Hub is superfluous. You're already on GitHub. Why not [pull Docker images from GitHub Packages](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages)?
+- **One platform.** You're already on GitHub. Why not [pull Docker images from GitHub Packages](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages)?
 
 ## Quickstart
 
@@ -72,4 +72,38 @@ Run container:
 
 ```sh
 docker run -d -p 80:80 br3ndonland/inboard/fastapi
+```
+
+Run container with mounted volume and Uvicorn reloading for development:
+
+```sh
+cd /path/to/repo
+docker run -d -p 80:80 -e "WITH_RELOAD=true" -v $(pwd):/app br3ndonland/inboard/fastapi
+```
+
+- `WITH_RELOAD=true`: `start.py` will run Uvicorn with reloading and without Gunicorn. The Gunicorn configuration won't apply, but these environment variables will still work as [described](#configuration):
+  - `MODULE_NAME`
+  - `VARIABLE_NAME`
+  - `APP_MODULE`
+  - `HOST`
+  - `PORT`
+  - `LOG_LEVEL`
+- `-v $(pwd):/app`: the working directory (`/path/to/repo` in this example) will be [mounted as a volume](https://docs.docker.com/engine/reference/run/#volume-shared-filesystems) inside of the container at `/app`. When files in the working directory change, Docker and Uvicorn will sync the files to the running Docker container.
+- The final argument is the Docker image name (`br3ndonland/inboard/fastapi` in this example). If you build an image with one of these images as a base as described [above](#use-images-in-a-dockerfile), replace with your image name.
+
+Hit an API endpoint:
+
+```sh
+# HTTPie: https://httpie.org/
+http :80
+```
+
+```text
+HTTP/1.1 200 OK
+content-type: text/plain
+date: Sat, 15 Aug 2020 14:43:53 GMT
+server: uvicorn
+transfer-encoding: chunked
+
+Hello World, from Uvicorn, Gunicorn, and Python 3.8!
 ```
