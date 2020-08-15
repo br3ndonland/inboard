@@ -39,9 +39,9 @@ def run_pre_start_script(
     try:
         print(f"Checking for pre-start script in {pre_start_path}.")
         if Path(pre_start_path).is_file():
-            print(f"Running pre-start script script in {pre_start_path}.")
-            process = "python" if PurePath(pre_start_path).suffix == ".py" else "sh"
-            subprocess.run(process, pre_start_path)
+            process = "python" if Path(pre_start_path).suffix == ".py" else "sh"
+            print(f"Running pre-start script {process} {pre_start_path}.")
+            subprocess.run([process, pre_start_path])
         else:
             print("No pre-start script found.")
     except Exception as e:
@@ -65,7 +65,9 @@ def start_server(
             reload=True,
         )
     else:
-        subprocess.run("gunicorn", "-k", worker_class, "-c", gunicorn_conf, app_module)
+        subprocess.run(
+            ["gunicorn", "-k", worker_class, "-c", gunicorn_conf, app_module]
+        )
 
 
 if __name__ == "__main__":
