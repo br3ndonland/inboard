@@ -10,7 +10,7 @@
   - [Commit](#commit)
   - [Push](#push)
   - [Pull](#pull)
-  - [Git pre commit hooks](#git-pre-commit-hooks)
+  - [Git pre-commit hooks](#git-pre-commit-hooks)
 - [Markdown](#markdown)
 - [Python](#python)
   - [VSCode](#vscode)
@@ -45,30 +45,21 @@
 
 - Ensure user name and email are set locally in Git as described in [Configuration](#configuration).
 - [Generate an SSH key and add it to the SSH agent](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/)
-
   ```sh
   $ touch ~/.ssh/config
   $ ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
   $ eval "$(ssh-agent -s)"
   $ ssh-add -K ~/.ssh/id_rsa
   ```
-
-  - The config file may need to be manually created with `touch ~/.ssh/config` first.
-
 - [Add SSH key to GitHub account](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/)
-
   ```sh
   $ pbcopy < ~/.ssh/id_rsa.pub
   ```
-
-  - Go to GitHub and paste the key.
-
+- Go to GitHub and paste the key.
 - [Check SSH connection](https://help.github.com/articles/testing-your-ssh-connection/)
-
   ```sh
   $ ssh -T git@github.com
   ```
-
   - Verify it looks similar to the link above, type `yes`, verify username.
   - The above steps should only need to be done once.
 
@@ -94,8 +85,8 @@
   - If cloning from the command line:
 
     ```sh
-    cd path/where/you/want/the/repo
-    git clone git@github.com:br3ndonland/inboard.git
+    cd path/to/directory
+    git clone git@github.com:br3ndonland/template-python.git
     ```
 
 - A **[fork](https://help.github.com/articles/fork-a-repo/)** duplicates the project into the user's GitHub account, and still maintains connection to the original master. Forks can also be cloned.
@@ -103,7 +94,8 @@
 
 ### Branch
 
-- **We're currently working directly on the `master` branch.**
+- A **[branch](https://www.git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell)** is like a version of a repository.
+- The simplest strategy is to work directly on the `master` branch.
 - More complex projects frequently use two long-running branches, `master` and `dev`.
 
   - Commits to `master` and `dev` are usually merge commits from feature branches.
@@ -163,8 +155,7 @@ After saving files, changes need to be committed to the Git repository.
 ### Pull
 
 - Local repositories and forks can be kept in sync with upstream repositories by pulling with rebase. Run `git pull --rebase upstream master`. This keeps the commit history in line with upstream. See the [thoughtbot keeping a GitHub fork updated](https://robots.thoughtbot.com/keeping-a-github-fork-updated) article for a simple explanation.
-- Pulls can also be made with merge commits. See the [GitHub Syncing a Fork article](https://help.github.com/articles/syncing-a-fork/). This will allow more separation between local and upstream changes, but will add merge commits. The commit history will diverge from upstream.
-- We don't have a specific policy on pulling with rebase vs. merge commits at this time.
+- Pulls can also be made with merge commits. See the [GitHub syncing a fork](https://help.github.com/articles/syncing-a-fork/) article. This will allow more separation between local and upstream changes, but will add merge commits. The commit history will diverge from upstream.
 
 #### Best practices for pull requests
 
@@ -175,13 +166,13 @@ After saving files, changes need to be committed to the Git repository.
   - List changes with bullet points.
   - Reference other pull requests that may be superseded by this request.
 
-### Git pre commit hooks
+### Git pre-commit hooks
 
 - Git pre-commit hooks are managed with [pre-commit](https://pre-commit.com/).
-- Included hooks:
+- Hooks include:
   - [Black](https://black.readthedocs.io/en/stable/version_control_integration.html) (see [Python code style](#python-code-style))
   - [Flake8 Python linting](https://flake8.pycqa.org/en/latest/user/using-hooks.html) (see [Python code style](#python-code-style))
-  - [mypy static type checking](https://github.com/pre-commit/mirrors-mypy)
+  - [Mypy static type checking](https://github.com/pre-commit/mirrors-mypy)
   - [Prettier](https://prettier.io/docs/en/precommit.html) (see [Markdown](#markdown))
   - [Check for added large files](https://github.com/pre-commit/pre-commit-hooks): Useful to avoid committing large files from [Git LFS](https://git-lfs.github.com/) to the Git repo.
 - After cloning the repository, install the pre-commit hooks using either your system installation of pre-commit, or the pre-commit included with the Python virtual environment.
@@ -193,13 +184,10 @@ After saving files, changes need to be committed to the Git repository.
   # Virtual environment option
   ❯ poetry install
   ❯ poetry shell
-  inboard-hash-py3.7 ❯ pre-commit install
+  template-python-hash-py3.7 ❯ pre-commit install
   ```
 
 - [pre-commit.yml](.github/workflows/pre-commit.yml) is a [GitHub Actions](https://github.com/features/actions) workflow that runs pre-commit with each pull request or push to the master branch.
-  - [GitHub Help: actions](https://help.github.com/en/actions)
-  - [GitHub actions marketplace: pre-commit](https://github.com/marketplace/actions/pre-commit)
-  - [GitHub repo: pre-commit/action](https://github.com/pre-commit/action)
 
 ## Markdown
 
@@ -219,9 +207,8 @@ After saving files, changes need to be committed to the Git repository.
 
 - Python 3 (modern Python) was used. Python 2 (legacy Python) is nearing its [end of life](https://pythonclock.org/).
 - Python code was linted with [Flake8](https://flake8.readthedocs.io/en/latest/) and autoformatted with [Black](https://black.readthedocs.io/en/stable/).
-- Black is still considered a pre-release. As described in [Pipenv](#pipenv), the `--dev` and `--pre` flags are needed to install Black within a Pipenv.
 - Git pre-commit hooks have been installed for the [Black autoformatter](https://black.readthedocs.io/en/stable/version_control_integration.html) and [Flake8 linter](https://flake8.pycqa.org/en/latest/user/using-hooks.html).
-- Within Python modules, `import` statements are organized alphabetically, and followed by `from` statements, which are also in alphabetical order.
+- Within Python modules, `import` statements are organized automatically by [isort](https://timothycrosley.github.io/isort/).
 - In general, a [Pythonic](https://docs.python-guide.org/writing/style/) code style following the [Zen of Python](https://www.python.org/dev/peps/pep-0020/) was used. [Foolish consistency](https://pep8.org) was avoided.
 
 ### Python virtual environment tools
@@ -262,17 +249,7 @@ Python 3 is bundled with the [`venv` module](https://docs.python.org/3/tutorial/
 
 #### Poetry
 
-- This project now uses [Poetry](https://python-poetry.org/) for dependency management.
-
-#### Where's the `setup.py`?
-
-The `setup.py` [setup configuration file](https://docs.python.org/3/distutils/configfile.html) helps Python understand your project structure. It's mostly used by [`setuptools` ](https://setuptools.readthedocs.io/en/latest/setuptools.html) to distribute Python packages on [PyPI](https://pypi.org/).
-
-For example, if your tests are in a sub-directory like _test/_, adding `setup.py` helps pytest locate Python modules to load when running tests.
-
-To use the `setup.py` file during local development, simply run `pip install -e .` as described in the [`pip install -e` docs](https://pip.pypa.io/en/stable/reference/pip_install/#editable-installs) and the [pytest docs on good integration practices](https://docs.pytest.org/en/latest/goodpractices.html).
-
-This project doesn't need a separate `setup.py` because it's managed automatically by Poetry. Attempting to use a separate `setup.py` file with Poetry may result in errors, as described in [GitHub issue 1279](https://github.com/python-poetry/poetry/issues/1279).
+This project now uses [Poetry](https://python-poetry.org/) for dependency management.
 
 ## Docker
 
@@ -289,7 +266,7 @@ This project doesn't need a separate `setup.py` because it's managed automatical
   ```dockerfile
   # Pull an image: alpine images are tightly controlled and small in size
   FROM python:3.7-alpine
-  LABEL app=inboard
+  LABEL app=template-python
   WORKDIR /app
   # Install dependencies
   COPY poetry.lock pyproject.toml ./
@@ -308,12 +285,12 @@ This project doesn't need a separate `setup.py` because it's managed automatical
   ~
   ❯ cd path/to/repo
   ~/path/to/repo
-  ❯ docker build . -t inboard:latest
+  ❯ docker build . -t template-python:latest
   ~/path/to/repo
-  ❯ docker run -d -p 80:80 inboard:latest
+  ❯ docker run -d -p 80:80 template-python:latest
   ```
 
-  - `-t` web tells Docker to name the image `inboard`. Adding `.` builds from the current directory.
+  - `-t` web tells Docker to name the image `template-python`. Adding `.` builds from the current directory.
   - `-d` runs the container in detached mode. Docker will display the container hash and return the terminal prompt.
   - `-p 80:80` maps the http port 80 from your local machine to port 80 in the container.
   - A tag can be specified with `name:tag`, otherwise, the tag `latest` will be used.
@@ -324,13 +301,19 @@ This project doesn't need a separate `setup.py` because it's managed automatical
   # Log in with Docker Hub credentials to pull images
   docker login
   # List images
-  docker image ls
-  # List containers
-  docker container ls
+  docker images
+  # List running containers: can also use `docker container ls`
+  docker ps
+  # View logs for the most recently started container
+  docker logs -f $(docker ps -q -n 1)
+  # View logs for all running containers
+  docker logs -f $(docker ps -aq)
   # Inspect a container (web in this example) and return the IP Address
   docker inspect web | grep IPAddress
   # Stop a container
-  docker container stop # container hash
+  docker stop # container hash
+  # Stop all running containers
+  docker stop $(docker ps -aq)
   # Remove a downloaded image
   docker image rm # image hash or name
   # Remove a container
@@ -339,11 +322,12 @@ This project doesn't need a separate `setup.py` because it's managed automatical
   docker image prune
   # Prune stopped containers (completely wipes them and resets their state)
   docker container prune
-  # Connect to running container (sort of like SSH)
-  docker ps # get ID/hash of container you want to connect to
-  docker exec -it [ID] /bin/bash
+  # Prune everything
+  docker system prune
+  # Open a shell in the most recently started container (like SSH)
+  docker exec -it $(docker ps -q -n 1) /bin/bash
   # Or, connect as root:
-  docker exec -u 0 -it [ID] /bin/bash
+  docker exec -u 0 -it $(docker ps -q -n 1) /bin/bash
   # Copy file to/from container:
   docker cp [container_name]:/path/to/file destination.file
   ```
