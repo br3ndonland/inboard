@@ -260,21 +260,10 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2" VARIABLE_NAME="value"
     ```sh
     docker run -d -p 80:8080 -e GUNICORN_CMD_ARGS="--keyfile=/secrets/key.pem --certfile=/secrets/cert.pem" -e PORT=443 myimage
     ```
-- `PRE_START_PATH`: Path to a pre-start script.
+- `PRE_START_PATH`: Path to a pre-start script. Add a file `prestart.py` or `prestart.sh` to the application directory, and copy the directory into the Docker image as described (for a project with the Python application in `repo/package`, `COPY package /app/` `/app`). The container will automatically detect and run the prestart script before starting the web server.
 
-  - Default: `/app/prestart.sh`
+  - Default: `/app/prestart.py`
   - Custom: `PRE_START_PATH="/custom/script.sh"`
-  - Notes:
-
-    - If you need to run anything before starting the app, you can add a file `prestart.sh` to the directory `/app`. The image will automatically detect and run it before starting everything.
-    - If you need to run a Python script before starting the app, you could make the `/app/prestart.sh` file run your Python script, with something like:
-
-      ```sh
-      #! /usr/bin/env sh
-
-      # Run custom Python script before starting
-      python /app/my_custom_prestart_script.py
-      ```
 
 ## Development
 
