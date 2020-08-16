@@ -2,7 +2,6 @@
 import os
 import subprocess
 from pathlib import Path
-from typing import Tuple
 
 import uvicorn  # type: ignore
 
@@ -21,18 +20,18 @@ def set_app_module() -> str:
     return app_module
 
 
-def set_gunicorn_conf() -> Tuple[str, str]:
-    if Path("/app/gunicorn_conf.py").is_file():
-        default_gunicorn_conf = "/app/gunicorn_conf.py"
-    elif Path("/app/app/gunicorn_conf.py").is_file():
-        default_gunicorn_conf = "/app/app/gunicorn_conf.py"
+def set_conf_path(module: str) -> Path:
+    conf_var = str(os.getenv(f"{module.upper()}_CONF"))
+    if Path(conf_var).is_file():
+        conf_path = conf_var
+    elif Path(f"/app/{module}_conf.py").is_file():
+        conf_path = f"/app/{module}_conf.py"
+    elif Path(f"/app/app/{module}_conf.py").is_file():
+        conf_path = f"/app/app/{module}_conf.py"
     else:
-        default_gunicorn_conf = "/gunicorn_conf.py"
-    gunicorn_conf = os.getenv("GUNICORN_CONF", default_gunicorn_conf)
-    os.environ["GUNICORN_CONF"] = gunicorn_conf
-    worker_class = os.getenv("WORKER_CLASS", "uvicorn.workers.UvicornWorker")
-    os.environ["WORKER_CLASS"] = worker_class
-    return gunicorn_conf, worker_class
+        conf_path = f"/{module}_conf.py"
+    os.environ[f"{module.upper()}_CONF"] = conf_path
+    return Path(conf_path)
 
 
 def run_pre_start_script(
@@ -52,7 +51,7 @@ def run_pre_start_script(
 
 def start_server(
     app_module: str = str(os.getenv("APP_MODULE", "base.main:app")),
-    gunicorn_conf: str = str(os.getenv("GUNICORN_CONF", "/gunicorn_conf.py")),
+    gunicorn_conf: Path = Path("/gunicorn_conf.py"),
     with_reload: bool = bool(os.getenv("WITH_RELOAD", False)),
     worker_class: str = str(os.getenv("WORKER_CLASS", "uvicorn.workers.UvicornWorker")),
 ) -> None:
@@ -66,12 +65,15 @@ def start_server(
         )
     else:
         subprocess.run(
-            ["gunicorn", "-k", worker_class, "-c", gunicorn_conf, app_module]
+            ["gunicorn", "-k", worker_class, "-c", gunicorn_conf.name, app_module]
         )
 
 
 if __name__ == "__main__":
-    set_app_module()
-    set_gunicorn_conf()
+    app_module = set_app_module()
+    gunicorn_conf_path = set_conf_path("gunicorn")
+    logging_conf_path = set_conf_path("logging")
     run_pre_start_script()
-    start_server()
+    start_server(
+        app_module=app_module, gunicorn_conf=gunicorn_conf_path,
+    )
