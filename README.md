@@ -20,6 +20,7 @@ Brendon Smith ([br3ndonland](https://github.com/br3ndonland/))
 - [Configuration](#configuration)
   - [General](#general)
   - [Gunicorn and Uvicorn](#gunicorn-and-uvicorn)
+  - [Logging](#logging)
 - [Development](#development)
   - [Code style](#code-style)
   - [Building development images](#building-development-images)
@@ -271,6 +272,16 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2"
 - [`KEEP_ALIVE`](https://docs.gunicorn.org/en/stable/settings.html#keepalive): Number of seconds to wait for requests on a Keep-Alive connection.
   - Default: `2`
   - Custom: `KEEP_ALIVE="20"`
+- `GUNICORN_CMD_ARGS`: Additional [command-line arguments for Gunicorn](https://docs.gunicorn.org/en/stable/settings.html). These settings will have precedence over the other environment variables and any Gunicorn config file.
+  - Custom: To use a custom TLS certificate, copy or mount the certificate and private key into the Docker image, and set [`--keyfile` and `--certfile`](http://docs.gunicorn.org/en/latest/settings.html#ssl) to the location of the files.
+    ```sh
+    docker run -d -p 443:443 \
+      -e GUNICORN_CMD_ARGS="--keyfile=/secrets/key.pem --certfile=/secrets/cert.pem" \
+      -e PORT=443 myimage
+    ```
+
+### Logging
+
 - `LOG_LEVEL`: Log level for [Gunicorn](https://docs.gunicorn.org/en/latest/settings.html#logging) or [Uvicorn](https://www.uvicorn.org/settings/#logging).
   - Default: `info`
   - Custom (organized from greatest to least amount of logging):
@@ -289,13 +300,8 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2"
   - Custom:
     - `ERROR_LOG="./path/to/errorlogfile.txt"`
     - `ERROR_LOG=` (set to an empty value) to disable
-- `GUNICORN_CMD_ARGS`: Additional [command-line arguments for Gunicorn](https://docs.gunicorn.org/en/stable/settings.html). These settings will have precedence over the other environment variables and any Gunicorn config file.
-  - Custom: To use a custom TLS certificate, copy or mount the certificate and private key into the Docker image, and set [`--keyfile` and `--certfile`](http://docs.gunicorn.org/en/latest/settings.html#ssl) to the location of the files.
-    ```sh
-    docker run -d -p 443:443 \
-      -e GUNICORN_CMD_ARGS="--keyfile=/secrets/key.pem --certfile=/secrets/cert.pem" \
-      -e PORT=443 myimage
-    ```
+
+For more information on Python logging configuration, see the [Python `logging` how-to](https://docs.python.org/3/howto/logging.html), [Python `logging` cookbook](https://docs.python.org/3/howto/logging-cookbook.html), [Python `logging` module docs](https://docs.python.org/3/library/logging.html), and [Python `logging.config` module docs](https://docs.python.org/3/library/logging.config.html). Also consider [Loguru](https://loguru.readthedocs.io/en/stable/index.html), an alternative logging module with many improvements over the standard library `logging` module.
 
 ## Development
 
