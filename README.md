@@ -340,10 +340,12 @@ To build the Docker images for each stage:
 
 ```sh
 git clone git@github.com:br3ndonland/inboard.git
+
 cd inboard
-docker build . --target base -t localhost/br3ndonland/inboard/base:latest
-docker build . --target fastapi -t localhost/br3ndonland/inboard/fastapi:latest
-docker build . --target starlette -t localhost/br3ndonland/inboard/starlette:latest
+
+docker build . --rm --target base -t localhost/br3ndonland/inboard/base:latest && \
+docker build . --rm --target fastapi -t localhost/br3ndonland/inboard/fastapi:latest && \
+docker build . --rm --target starlette -t localhost/br3ndonland/inboard/starlette:latest
 ```
 
 ### Running development containers
