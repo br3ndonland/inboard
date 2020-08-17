@@ -7,6 +7,7 @@ import uvicorn  # type: ignore
 
 
 def set_app_module() -> str:
+    """Set the name of the Python module with the app instance to run."""
     if Path("/app/main.py").is_file():
         default_module_name = "main"
     elif Path("/app/app/main.py").is_file():
@@ -21,6 +22,7 @@ def set_app_module() -> str:
 
 
 def set_conf_path(module: str) -> Path:
+    """Set the path to a configuration file."""
     conf_var = str(os.getenv(f"{module.upper()}_CONF"))
     if Path(conf_var).is_file():
         conf_path = conf_var
@@ -37,6 +39,7 @@ def set_conf_path(module: str) -> Path:
 def run_pre_start_script(
     pre_start_path: str = os.getenv("PRE_START_PATH", "/app/prestart.py")
 ) -> None:
+    """Run a pre-start script at the provided path."""
     try:
         print(f"Checking for pre-start script in {pre_start_path}.")
         if Path(pre_start_path).is_file():
@@ -55,6 +58,7 @@ def start_server(
     with_reload: bool = bool(os.getenv("WITH_RELOAD", False)),
     worker_class: str = str(os.getenv("WORKER_CLASS", "uvicorn.workers.UvicornWorker")),
 ) -> None:
+    """Start the Uvicorn or Gunicorn server."""
     if with_reload:
         uvicorn.run(
             app_module,
