@@ -273,7 +273,7 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2"
 - [`KEEP_ALIVE`](https://docs.gunicorn.org/en/stable/settings.html#keepalive): Number of seconds to wait for requests on a Keep-Alive connection.
   - Default: `2`
   - Custom: `KEEP_ALIVE="20"`
-- `GUNICORN_CMD_ARGS`: Additional [command-line arguments for Gunicorn](https://docs.gunicorn.org/en/stable/settings.html). These settings will have precedence over the other environment variables and any Gunicorn config file.
+- `GUNICORN_CMD_ARGS`: Additional [command-line arguments for Gunicorn](https://docs.gunicorn.org/en/stable/settings.html). Gunicorn looks for the `GUNICORN_CMD_ARGS` environment variable automatically, and gives these settings precedence over other environment variables and Gunicorn config files.
   - Custom: To use a custom TLS certificate, copy or mount the certificate and private key into the Docker image, and set [`--keyfile` and `--certfile`](http://docs.gunicorn.org/en/latest/settings.html#ssl) to the location of the files.
     ```sh
     docker run -d -p 443:443 \
@@ -283,7 +283,12 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2"
 
 ### Logging
 
-- `LOGGING_CONF`: Path to a [Python logging configuration file](https://docs.python.org/3/library/logging.config.html). You may use either an old-style `.conf` or `.ini` file that will be passed to [`logging.config.fileConfig()`](https://docs.python.org/3/library/logging.config.html), or a new-style `.py`, `.yml`, or `.yaml` file containing a configuration dictionary object named `LOGGING_CONFIG` that will be passed to [`logging.config.dictConfig()`](https://docs.python.org/3/library/logging.config.html). Feel free to use the [`logging_conf.py`](./inboard/logging_conf.py) from this repo as a starting point for your own custom configuration.
+- `LOGGING_CONF`: Path to a [Python logging configuration file](https://docs.python.org/3/library/logging.config.html).
+  - File format options:
+    - A new-style `.py` file containing a configuration dictionary object named `LOGGING_CONFIG` that will be passed to [`logging.config.dictConfig()`](https://docs.python.org/3/library/logging.config.html) (preferred)
+    - A new-style `.yml` or `.yaml` file that will be parsed by [PyYAML](https://pypi.org/project/PyYAML/) and then passed to [`logging.config.dictConfig()`](https://docs.python.org/3/library/logging.config.html)
+    - An old-style `.conf` or `.ini` file that will be passed to [`logging.config.fileConfig()`](https://docs.python.org/3/library/logging.config.html)
+    - Feel free to use the [`logging_conf.py`](./inboard/logging_conf.py) from this repo as a starting point for your own custom configuration.
   - Default:
     - `/app/logging_conf.py` if exists
     - Else `/app/app/logging_conf.py` if exists
