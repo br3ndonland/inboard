@@ -1,6 +1,7 @@
 import json
 import multiprocessing
 import os
+from pathlib import Path
 
 workers_per_core_str = os.getenv("WORKERS_PER_CORE", "1")
 max_workers_str = os.getenv("MAX_WORKERS")
@@ -43,8 +44,13 @@ graceful_timeout = int(graceful_timeout_str)
 timeout = int(timeout_str)
 keepalive = int(keepalive_str)
 
-# For debugging and testing
 log_data = {
+    # General
+    "host": host,
+    "port": port,
+    "use_max_workers": use_max_workers,
+    "workers_per_core": workers_per_core,
+    # Gunicorn
     "loglevel": loglevel,
     "workers": workers,
     "bind": bind,
@@ -53,10 +59,6 @@ log_data = {
     "keepalive": keepalive,
     "errorlog": errorlog,
     "accesslog": accesslog,
-    # Additional, non-gunicorn variables
-    "workers_per_core": workers_per_core,
-    "use_max_workers": use_max_workers,
-    "host": host,
-    "port": port,
 }
-print(json.dumps(log_data))
+
+print(f"[{Path(__file__).stem}] Gunicorn configuration:", json.dumps(log_data))
