@@ -359,7 +359,7 @@ pytest = ">=2.7"
 dev = ["pre-commit", "tox", "pytest-asyncio"]
 
 [[package]]
-category = "dev"
+category = "main"
 description = "YAML parser and emitter for Python"
 name = "pyyaml"
 optional = false
@@ -483,7 +483,7 @@ fastapi = ["fastapi"]
 starlette = ["starlette"]
 
 [metadata]
-content-hash = "50c0a53686e43d3c8b0be6a478d8e55910fc7ef6d97fd5bdb38f6622fe974913"
+content-hash = "42984799c7fb0e25b47eda4ee214c9032f38a8f3448b3ee86fbea098c21c1e25"
 lock-version = "1.0"
 python-versions = "^3.8"
 
