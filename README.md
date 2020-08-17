@@ -282,6 +282,13 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2"
 
 ### Logging
 
+- `LOGGING_CONF`: Path to a [Python logging configuration file](https://docs.python.org/3/library/logging.config.html). You may use either an old-style `.conf` or `.ini` file that will be passed to [`logging.config.fileConfig()`](https://docs.python.org/3/library/logging.config.html), or a new-style `.py`, `.yml`, or `.yaml` file containing a configuration dictionary object named `LOGGING_CONFIG` that will be passed to [`logging.config.dictConfig()`](https://docs.python.org/3/library/logging.config.html). Feel free to use the [`logging_conf.py`](./inboard/logging_conf.py) from this repo as a starting point for your own custom configuration.
+  - Default:
+    - `/app/logging_conf.py` if exists
+    - Else `/app/app/logging_conf.py` if exists
+    - Else `/logging_conf.py` (the default file provided with the Docker image)
+  - Custom:
+    - `LOGGING_CONF="/app/custom_logging.conf"`
 - `LOG_LEVEL`: Log level for [Gunicorn](https://docs.gunicorn.org/en/latest/settings.html#logging) or [Uvicorn](https://www.uvicorn.org/settings/#logging).
   - Default: `info`
   - Custom (organized from greatest to least amount of logging):
@@ -300,6 +307,9 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2"
   - Custom:
     - `ERROR_LOG="./path/to/errorlogfile.txt"`
     - `ERROR_LOG=` (set to an empty value) to disable
+- `PROPAGATE_ACCESS_LOGS`: Gunicorn and Uvicorn have two primary log streams, `access` and `error`. The `error` logs are always propagated (output by the logger). The [Gunicorn logging config](https://github.com/benoitc/gunicorn/blob/master/gunicorn/glogging.py) and [Uvicorn logging config](https://github.com/encode/uvicorn/blob/master/uvicorn/config.py) both also propagate `access` logs by default, but some users may wish to disable `access` logs to reduce logging verbosity. This environment variable will set the behavior for both Gunicorn and Uvicorn.
+  - Default: `true` (access logs propagated by both Gunicorn and Uvicorn)
+  - Custom: `PROPAGATE_ACCESS_LOGS=false`
 
 For more information on Python logging configuration, see the [Python `logging` how-to](https://docs.python.org/3/howto/logging.html), [Python `logging` cookbook](https://docs.python.org/3/howto/logging-cookbook.html), [Python `logging` module docs](https://docs.python.org/3/library/logging.html), and [Python `logging.config` module docs](https://docs.python.org/3/library/logging.config.html). Also consider [Loguru](https://loguru.readthedocs.io/en/stable/index.html), an alternative logging module with many improvements over the standard library `logging` module.
 
