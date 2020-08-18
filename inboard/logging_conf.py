@@ -2,7 +2,6 @@ import os
 from typing import Dict, Union
 
 LOG_LEVEL = str(os.getenv("LOG_LEVEL", "info")).upper()
-PROPAGATE_ACCESS_LOGS = bool(os.getenv("PROPAGATE_ACCESS_LOGS", "true"))
 LOGGING_CONFIG: Dict[str, Union[Dict, bool, int, str]] = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -25,10 +24,10 @@ LOGGING_CONFIG: Dict[str, Union[Dict, bool, int, str]] = {
     "loggers": {
         "fastapi": {"propagate": True},
         "gunicorn": {"propagate": True},
-        "gunicorn.access": {"propagate": PROPAGATE_ACCESS_LOGS},
+        "gunicorn.access": {"propagate": True},
         "gunicorn.error": {"propagate": True},
         "uvicorn": {"propagate": True},
-        "uvicorn.access": {"propagate": PROPAGATE_ACCESS_LOGS},
+        "uvicorn.access": {"propagate": True},
         "uvicorn.asgi": {"propagate": True},
         "uvicorn.error": {"propagate": True},
     },

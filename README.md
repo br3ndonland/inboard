@@ -313,9 +313,6 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2"
   - Custom:
     - `ERROR_LOG="./path/to/errorlogfile.txt"`
     - `ERROR_LOG=` (set to an empty value) to disable
-- `PROPAGATE_ACCESS_LOGS`: Gunicorn and Uvicorn have two primary log streams, `access` and `error`. The `error` logs are always propagated (output by the logger). The [Gunicorn logging config](https://github.com/benoitc/gunicorn/blob/master/gunicorn/glogging.py) and [Uvicorn logging config](https://github.com/encode/uvicorn/blob/master/uvicorn/config.py) both also propagate `access` logs by default, but some users may wish to disable `access` logs to reduce logging verbosity. This environment variable will set the behavior for both Gunicorn and Uvicorn.
-  - Default: `true` (access logs propagated by both Gunicorn and Uvicorn)
-  - Custom: `PROPAGATE_ACCESS_LOGS=false`
 
 For more information on Python logging configuration, see the [Python `logging` how-to](https://docs.python.org/3/howto/logging.html), [Python `logging` cookbook](https://docs.python.org/3/howto/logging-cookbook.html), [Python `logging` module docs](https://docs.python.org/3/library/logging.html), and [Python `logging.config` module docs](https://docs.python.org/3/library/logging.config.html). Also consider [Loguru](https://loguru.readthedocs.io/en/stable/index.html), an alternative logging module with many improvements over the standard library `logging` module.
 
