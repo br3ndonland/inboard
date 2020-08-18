@@ -7,7 +7,7 @@ LOGGING_CONFIG: Dict[str, Union[Dict, bool, int, str]] = {
     "disable_existing_loggers": False,
     "formatters": {
         "inboard": {
-            "format": "%(asctime)s [%(process)d] [%(name)s] [%(levelname)s] %(message)s",  # noqa: E501
+            "format": "%(asctime)s [%(process)d] [%(name)s] [%(levelname)s] [%(module)s] %(message)s",  # noqa: E501
             "datefmt": "[%Y-%m-%d %H:%M:%S %z]",
             "class": "logging.Formatter",
         }

@@ -43,7 +43,7 @@ def configure_logging(
             if isinstance(logging_conf_dict, dict):
                 logging.config.dictConfig(logging_conf_dict)
                 message = f"Logging dict config loaded from {logging_conf}."
-                logger.debug(f"[{Path(__file__).stem}] {message}")
+                logger.debug(message)
                 return logging_conf_dict
             else:
                 raise TypeError("LOGGING_CONFIG is not a dictionary instance.")
@@ -53,18 +53,18 @@ def configure_logging(
                 logging_conf_dict = yaml.load(logging_conf_file, Loader=yaml.SafeLoader)
                 logging.config.dictConfig(logging_conf_dict)
                 message = f"Logging dict config loaded from YAML in {logging_conf}."
-                logger.debug(f"[{Path(__file__).stem}] {message}")
+                logger.debug(message)
                 return logging_conf_dict
         elif logging_conf.suffix in [".conf", ".ini"]:
             logging.config.fileConfig(logging_conf, disable_existing_loggers=False)
             message = f"Logging file config loaded from {logging_conf}."
-            logger.debug(f"[{Path(__file__).stem}] {message}")
+            logger.debug(message)
             return logging_conf
         else:
             raise ImportError(f"Unable to configure logging with {logging_conf.name}.")
     except Exception as e:
         message = f"Error when configuring logging: {e}"
-        logger.debug(f"[{Path(__file__).stem}] {message}")
+        logger.debug(message)
     return message
 
 
@@ -80,14 +80,14 @@ def set_app_module(logger: Logger = logging.getLogger()) -> str:
     variable_name = os.getenv("VARIABLE_NAME", "app")
     app_module = os.getenv("APP_MODULE", f"{module_name}:{variable_name}")
     os.environ["APP_MODULE"] = app_module
-    logger.debug(f"[{Path(__file__).stem}] App module set to {app_module}.")
+    logger.debug(f"App module set to {app_module}.")
     return app_module
 
 
 def run_pre_start_script(logger: Logger = logging.getLogger()) -> str:
     """Run a pre-start script at the provided path."""
     try:
-        logger.debug(f"[{Path(__file__).stem}] Checking for pre-start script.")
+        logger.debug("Checking for pre-start script.")
         pre_start_path_var = str(os.getenv("PRE_START_PATH", "/app/prestart.py"))
         if Path(pre_start_path_var).is_file():
             pre_start_path = pre_start_path_var
@@ -96,7 +96,7 @@ def run_pre_start_script(logger: Logger = logging.getLogger()) -> str:
         if pre_start_path:
             process = "python" if Path(pre_start_path).suffix == ".py" else "sh"
             run_message = f"Running pre-start script with {process} {pre_start_path}."
-            logger.debug(f"[{Path(__file__).stem}] {run_message}")
+            logger.debug(run_message)
             subprocess.run([process, pre_start_path])
             message = f"Ran pre-start script with {process} {pre_start_path}."
         else:
@@ -104,7 +104,7 @@ def run_pre_start_script(logger: Logger = logging.getLogger()) -> str:
             raise FileNotFoundError(message)
     except Exception as e:
         message = f"Error from pre-start script: {e}"
-    logger.debug(f"[{Path(__file__).stem}] {message}")
+    logger.debug(message)
     return message
 
 
