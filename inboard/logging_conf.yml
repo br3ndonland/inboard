@@ -16,10 +16,9 @@ root:
 loggers:
   fastapi:
     propagate: true
-  gunicorn:
-    propagate: true
   gunicorn.access:
     propagate: true
+    handlers: inboard
   gunicorn.error:
     propagate: true
   uvicorn:

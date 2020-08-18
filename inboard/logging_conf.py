@@ -23,8 +23,7 @@ LOGGING_CONFIG: Dict[str, Union[Dict, bool, int, str]] = {
     "root": {"handlers": ["inboard"], "level": LOG_LEVEL},
     "loggers": {
         "fastapi": {"propagate": True},
-        "gunicorn": {"propagate": True},
-        "gunicorn.access": {"propagate": True},
+        "gunicorn.access": {"handlers": ["inboard"], "propagate": True},
         "gunicorn.error": {"propagate": True},
         "uvicorn": {"propagate": True},
         "uvicorn.access": {"propagate": True},
