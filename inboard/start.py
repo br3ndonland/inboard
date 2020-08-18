@@ -6,6 +6,7 @@ import os
 import subprocess
 from logging import Logger
 from pathlib import Path
+from typing import Any, Dict, Union
 
 import uvicorn  # type: ignore
 import yaml
@@ -28,7 +29,7 @@ def set_conf_path(module: str) -> Path:
 
 def configure_logging(
     logger: Logger = logging.getLogger(), logging_conf: Path = Path("/logging_conf.py")
-) -> str:
+) -> Union[Dict[str, Any], Path, str]:
     """Configure Python logging based on a path to a logging configuration file."""
     try:
         if logging_conf.suffix == ".py":
@@ -42,22 +43,28 @@ def configure_logging(
             if isinstance(logging_conf_dict, dict):
                 logging.config.dictConfig(logging_conf_dict)
                 message = f"Logging dict config loaded from {logging_conf}."
+                logger.debug(f"[{Path(__file__).stem}] {message}")
+                return logging_conf_dict
             else:
                 raise TypeError("LOGGING_CONFIG is not a dictionary instance.")
         elif logging_conf.suffix in [".yml", ".yaml"]:
             with open(logging_conf, "r") as file:
                 logging_conf_file = file.read()
-                yaml_contents = yaml.load(logging_conf_file, Loader=yaml.SafeLoader)
-                logging.config.dictConfig(yaml_contents)
+                logging_conf_dict = yaml.load(logging_conf_file, Loader=yaml.SafeLoader)
+                logging.config.dictConfig(logging_conf_dict)
                 message = f"Logging dict config loaded from YAML in {logging_conf}."
+                logger.debug(f"[{Path(__file__).stem}] {message}")
+                return logging_conf_dict
         elif logging_conf.suffix in [".conf", ".ini"]:
             logging.config.fileConfig(logging_conf, disable_existing_loggers=False)
             message = f"Logging file config loaded from {logging_conf}."
+            logger.debug(f"[{Path(__file__).stem}] {message}")
+            return logging_conf
         else:
             raise ImportError(f"Unable to configure logging with {logging_conf.name}.")
     except Exception as e:
         message = f"Error when configuring logging: {e}"
-    logger.debug(f"[{Path(__file__).stem}] {message}")
+        logger.debug(f"[{Path(__file__).stem}] {message}")
     return message
 
 
@@ -104,7 +111,6 @@ def run_pre_start_script(logger: Logger = logging.getLogger()) -> str:
 def start_server(
     app_module: str = str(os.getenv("APP_MODULE", "base.main:app")),
     gunicorn_conf: Path = Path("/gunicorn_conf.py"),
-    logger: Logger = logging.getLogger(),
     with_reload: bool = bool(os.getenv("WITH_RELOAD", False)),
     worker_class: str = str(os.getenv("WORKER_CLASS", "uvicorn.workers.UvicornWorker")),
 ) -> None:
@@ -130,4 +136,4 @@ if __name__ == "__main__":
     gunicorn_conf_path = set_conf_path("gunicorn")
     app_module = set_app_module(logger=logger)
     run_pre_start_script(logger=logger)
-    start_server(app_module=app_module, gunicorn_conf=gunicorn_conf_path, logger=logger)
+    start_server(app_module=app_module, gunicorn_conf=gunicorn_conf_path)
