@@ -283,18 +283,13 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2"
 
 ### Logging
 
-- `LOGGING_CONF`: Path to a [Python logging configuration file](https://docs.python.org/3/library/logging.config.html).
-  - File format options:
-    - A new-style `.py` file containing a configuration dictionary object named `LOGGING_CONFIG` that will be passed to [`logging.config.dictConfig()`](https://docs.python.org/3/library/logging.config.html) (preferred)
-    - A new-style `.yml` or `.yaml` file that will be parsed by [PyYAML](https://pypi.org/project/PyYAML/) and then passed to [`logging.config.dictConfig()`](https://docs.python.org/3/library/logging.config.html)
-    - An old-style `.conf` or `.ini` file that will be passed to [`logging.config.fileConfig()`](https://docs.python.org/3/library/logging.config.html)
-    - Feel free to use the [`logging_conf.py`](./inboard/logging_conf.py) from this repo as a starting point for your own custom configuration.
+- `LOGGING_CONF`: Path to a [Python logging configuration file](https://docs.python.org/3/library/logging.config.html). The configuration must be a new-style `.py` file, containing a configuration dictionary object named `LOGGING_CONFIG`. The `LOGGING_CONFIG` dictionary will be passed to [`logging.config.dictConfig()`](https://docs.python.org/3/library/logging.config.html)
   - Default:
     - `/app/logging_conf.py` if exists
     - Else `/app/app/logging_conf.py` if exists
     - Else `/logging_conf.py` (the default file provided with the Docker image)
   - Custom:
-    - `LOGGING_CONF="/app/custom_logging.conf"`
+    - `LOGGING_CONF="/app/custom_logging.py"`
 - `LOG_LEVEL`: Log level for [Gunicorn](https://docs.gunicorn.org/en/latest/settings.html#logging) or [Uvicorn](https://www.uvicorn.org/settings/#logging).
   - Default: `info`
   - Custom (organized from greatest to least amount of logging):
