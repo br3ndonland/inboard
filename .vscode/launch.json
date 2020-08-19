@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Uvicorn",
+      "type": "python",
+      "request": "launch",
+      "stopOnEntry": false,
+      "pythonPath": "${command:python.interpreterPath}",
+      "module": "start",
+      "env": {
+        "APP_MODULE": "app.base.main:app",
+        "LOG_FORMAT": "uvicorn",
+        "LOG_LEVEL": "debug",
+        "LOGGING_CONF": "logging_conf.py",
+        "WITH_RELOAD": "true"
+      },
+      "console": "integratedTerminal",
+      "cwd": "${workspaceRoot}/inboard",
+      "justMyCode": true
+    }
+  ]
+}
