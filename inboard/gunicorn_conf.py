@@ -3,6 +3,8 @@ import multiprocessing
 import os
 from pathlib import Path
 
+from start import configure_logging  # type: ignore
+
 workers_per_core_str = os.getenv("WORKERS_PER_CORE", "1")
 max_workers_str = os.getenv("MAX_WORKERS")
 use_max_workers = None
@@ -32,8 +34,15 @@ use_errorlog = errorlog_var or None
 graceful_timeout_str = os.getenv("GRACEFUL_TIMEOUT", "120")
 timeout_str = os.getenv("TIMEOUT", "120")
 keepalive_str = os.getenv("KEEP_ALIVE", "5")
+try:
+    logging_conf_dict = configure_logging(
+        logging_conf=Path(os.getenv("LOGGING_CONF", "/logging_conf.py"))
+    )
+except Exception:
+    logging_conf_dict = None
 
 # Gunicorn config variables
+logconfig_dict = logging_conf_dict
 loglevel = use_loglevel
 workers = web_concurrency
 bind = use_bind
@@ -61,4 +70,4 @@ log_data = {
     "accesslog": accesslog,
 }
 
-print(f"[{Path(__file__).stem}] Gunicorn configuration:", json.dumps(log_data))
+print(f"[{Path(__file__).stem}] Additional configuration:", json.dumps(log_data))
