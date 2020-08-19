@@ -6,7 +6,7 @@ import os
 import subprocess
 from logging import Logger
 from pathlib import Path
-from typing import Any, Dict, Union
+from typing import Any, Dict
 
 import uvicorn  # type: ignore
 
@@ -28,29 +28,30 @@ def set_conf_path(module: str) -> Path:
 
 def configure_logging(
     logger: Logger = logging.getLogger(), logging_conf: Path = Path("/logging_conf.py")
-) -> Union[Dict[str, Any], str]:
+) -> Dict[str, Any]:
     """Configure Python logging based on a path to a logging configuration file."""
     try:
-        if logging_conf.suffix != ".py":
-            raise ImportError(f"{logging_conf.name} must have a .py extension.")
-        spec = importlib.util.spec_from_file_location("confspec", logging_conf)
-        logging_conf_module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(logging_conf_module)  # type: ignore
-        if getattr(logging_conf_module, "LOGGING_CONFIG"):
-            logging_conf_dict = getattr(logging_conf_module, "LOGGING_CONFIG")
+        if isinstance(logging_conf, Path) and logging_conf.suffix == ".py":
+            spec = importlib.util.spec_from_file_location("confspec", logging_conf)
+            logging_conf_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(logging_conf_module)  # type: ignore
+            if getattr(logging_conf_module, "LOGGING_CONFIG"):
+                logging_conf_dict = getattr(logging_conf_module, "LOGGING_CONFIG")
+            else:
+                raise AttributeError(f"No LOGGING_CONFIG in {logging_conf_module}.")
+            if isinstance(logging_conf_dict, dict):
+                logging.config.dictConfig(logging_conf_dict)
+                message = f"Logging dict config loaded from {logging_conf}."
+                logger.debug(message)
+                return logging_conf_dict
+            else:
+                raise TypeError("LOGGING_CONFIG is not a dictionary instance.")
         else:
-            raise AttributeError(f"No LOGGING_CONFIG in {logging_conf_module}.")
-        if isinstance(logging_conf_dict, dict):
-            logging.config.dictConfig(logging_conf_dict)
-            message = f"Logging dict config loaded from {logging_conf}."
-            logger.debug(message)
-            return logging_conf_dict
-        else:
-            raise TypeError("LOGGING_CONFIG is not a dictionary instance.")
+            raise ImportError("Valid path to .py logging config file required.")
     except Exception as e:
         message = f"Error when configuring logging: {e}"
         logger.debug(message)
-        return message
+        raise
 
 
 def set_app_module(logger: Logger = logging.getLogger()) -> str:
@@ -73,24 +74,25 @@ def run_pre_start_script(logger: Logger = logging.getLogger()) -> str:
     """Run a pre-start script at the provided path."""
     try:
         logger.debug("Checking for pre-start script.")
-        pre_start_path_var = str(os.getenv("PRE_START_PATH", "/app/prestart.py"))
+        pre_start_path = None
+        pre_start_path_var = os.getenv("PRE_START_PATH", "/app/prestart.py")
         if Path(pre_start_path_var).is_file():
             pre_start_path = pre_start_path_var
         elif Path("/app/app/prestart.py").is_file():
             pre_start_path = "/app/app/prestart.py"
+        else:
+            message = "No pre-start script found."
         if pre_start_path:
             process = "python" if Path(pre_start_path).suffix == ".py" else "sh"
             run_message = f"Running pre-start script with {process} {pre_start_path}."
             logger.debug(run_message)
             subprocess.run([process, pre_start_path])
             message = f"Ran pre-start script with {process} {pre_start_path}."
-        else:
-            message = "No pre-start script found."
-            raise FileNotFoundError(message)
     except Exception as e:
         message = f"Error from pre-start script: {e}"
-    logger.debug(message)
-    return message
+    finally:
+        logger.debug(message)
+        return message
 
 
 def start_server(
