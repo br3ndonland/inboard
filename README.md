@@ -1,4 +1,4 @@
-# inboard
+# :ship: inboard :whale:
 
 _Docker images to power your Python APIs and help you ship faster. With support for Uvicorn, Gunicorn, Starlette, and FastAPI._
 
