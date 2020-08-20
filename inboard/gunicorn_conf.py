@@ -69,5 +69,5 @@ log_data = {
     "errorlog": errorlog,
     "accesslog": accesslog,
 }
-
-print(f"[{Path(__file__).stem}] Additional configuration:", json.dumps(log_data))
+if loglevel == "debug":
+    print(f"[{Path(__file__).stem}] Custom configuration:", json.dumps(log_data))
