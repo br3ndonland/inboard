@@ -98,29 +98,42 @@ def run_pre_start_script(logger: Logger = logging.getLogger()) -> str:
 def start_server(
     app_module: str = str(os.getenv("APP_MODULE", "base.main:app")),
     gunicorn_conf: Path = Path("/gunicorn_conf.py"),
+    logger: Logger = logging.getLogger(),
+    logging_conf_dict: Dict[str, Any] = None,
     with_reload: bool = bool(os.getenv("WITH_RELOAD", False)),
     worker_class: str = str(os.getenv("WORKER_CLASS", "uvicorn.workers.UvicornWorker")),
 ) -> None:
     """Start the Uvicorn or Gunicorn server."""
-    if with_reload:
-        uvicorn.run(
-            app_module,
-            host=os.getenv("HOST", "0.0.0.0"),
-            port=int(os.getenv("PORT", "80")),
-            log_level=os.getenv("LOG_LEVEL", "info"),
-            reload=True,
-        )
-    else:
-        subprocess.run(
-            ["gunicorn", "-k", worker_class, "-c", gunicorn_conf.name, app_module]
-        )
+    try:
+        if with_reload:
+            logger.debug("Running Uvicorn without Gunicorn and with reloading")
+            uvicorn.run(
+                app_module,
+                host=os.getenv("HOST", "0.0.0.0"),
+                port=int(os.getenv("PORT", "80")),
+                log_config=logging_conf_dict,
+                log_level=os.getenv("LOG_LEVEL", "info"),
+                reload=True,
+            )
+        else:
+            logger.debug("Running Uvicorn with Gunicorn.")
+            subprocess.run(
+                ["gunicorn", "-k", worker_class, "-c", gunicorn_conf.name, app_module]
+            )
+    except Exception as e:
+        logger.debug(f"Error when starting server with start script: {e}")
 
 
 if __name__ == "__main__":
     logger = logging.getLogger()
     logging_conf_path = set_conf_path("logging")
-    configure_logging(logger=logger, logging_conf=logging_conf_path)
+    logging_conf_dict = configure_logging(logger=logger, logging_conf=logging_conf_path)
     gunicorn_conf_path = set_conf_path("gunicorn")
     app_module = set_app_module(logger=logger)
     run_pre_start_script(logger=logger)
-    start_server(app_module=app_module, gunicorn_conf=gunicorn_conf_path)
+    start_server(
+        app_module=app_module,
+        gunicorn_conf=gunicorn_conf_path,
+        logger=logger,
+        logging_conf_dict=logging_conf_dict,
+    )
