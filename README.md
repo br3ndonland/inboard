@@ -289,7 +289,7 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2"
 
 ### Logging
 
-- `LOGGING_CONF`: Path to a [Python logging configuration file](https://docs.python.org/3/library/logging.config.html). The configuration must be a new-style `.py` file, containing a configuration dictionary object named `LOGGING_CONFIG`. The `LOGGING_CONFIG` dictionary will be passed to [`logging.config.dictConfig()`](https://docs.python.org/3/library/logging.config.html)
+- `LOGGING_CONF`: Path to a [Python logging configuration file](https://docs.python.org/3/library/logging.config.html). The configuration must be a new-style `.py` file, containing a configuration dictionary object named `LOGGING_CONFIG`. The `LOGGING_CONFIG` dictionary will be passed to [`logging.config.dictConfig()`](https://docs.python.org/3/library/logging.config.html). See [br3ndonland/inboard#3](https://github.com/br3ndonland/inboard/pull/3) for more details on this design choice.
   - Default:
     - `"/app/logging_conf.py"` if exists
     - Else `"/app/app/logging_conf.py"` if exists
