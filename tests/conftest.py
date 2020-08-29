@@ -1,5 +1,6 @@
 import logging
 import os
+import shutil
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, List
@@ -45,6 +46,13 @@ def gunicorn_conf_path(mocker: MockerFixture, monkeypatch: MonkeyPatch) -> Path:
 
 
 @pytest.fixture
+def gunicorn_conf_path_tmp(tmp_path: Path) -> Path:
+    """Copy gunicorn configuration file to custom temporary file."""
+    tmp_file = shutil.copy(Path(gunicorn_conf_module.__file__), tmp_path)
+    return Path(tmp_file)
+
+
+@pytest.fixture
 def logging_conf_dict() -> Dict[str, Any]:
     """Load logging configuration dictionary from logging configuration module."""
     return deepcopy(logging_conf_module.LOGGING_CONFIG)
@@ -57,6 +65,13 @@ def logging_conf_path(mocker: MockerFixture, monkeypatch: MonkeyPatch) -> Path:
     monkeypatch.setenv("LOGGING_CONF", str(path))
     assert os.getenv("LOGGING_CONF") == str(path)
     return path
+
+
+@pytest.fixture
+def logging_conf_path_tmp(tmp_path: Path) -> Path:
+    """Copy logging configuration file to custom temporary file."""
+    tmp_file = shutil.copy(Path(logging_conf_module.__file__), tmp_path)
+    return Path(tmp_file)
 
 
 @pytest.fixture
