@@ -37,7 +37,7 @@ def clients() -> List[TestClient]:
 
 
 @pytest.fixture
-def gunicorn_conf_path(mocker: MockerFixture, monkeypatch: MonkeyPatch) -> Path:
+def gunicorn_conf_path(monkeypatch: MonkeyPatch) -> Path:
     """Set path to default Gunicorn configuration file."""
     path = Path(gunicorn_conf_module.__file__)
     monkeypatch.setenv("GUNICORN_CONF", str(path))
@@ -59,7 +59,7 @@ def logging_conf_dict() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def logging_conf_path(mocker: MockerFixture, monkeypatch: MonkeyPatch) -> Path:
+def logging_conf_path(monkeypatch: MonkeyPatch) -> Path:
     """Set path to default logging configuration file."""
     path = Path(logging_conf_module.__file__)
     monkeypatch.setenv("LOGGING_CONF", str(path))
@@ -71,6 +71,28 @@ def logging_conf_path(mocker: MockerFixture, monkeypatch: MonkeyPatch) -> Path:
 def logging_conf_path_tmp(tmp_path: Path) -> Path:
     """Copy logging configuration file to custom temporary file."""
     tmp_file = shutil.copy(Path(logging_conf_module.__file__), tmp_path)
+    return Path(tmp_file)
+
+
+@pytest.fixture
+def logging_conf_path_tmp_txt(tmp_path: Path) -> Path:
+    tmp_file = tmp_path / "tmp_logging_conf.txt"
+    return Path(tmp_file)
+
+
+@pytest.fixture
+def logging_conf_path_tmp_no_dict(tmp_path: Path) -> Path:
+    tmp_file = tmp_path / "tmp_logging_conf.py"
+    with open(Path(tmp_file), "x") as f:
+        f.write("print('Hello, World!')\n")
+    return Path(tmp_file)
+
+
+@pytest.fixture
+def logging_conf_path_tmp_incorrect_type(tmp_path: Path) -> Path:
+    tmp_file = tmp_path / "tmp_logging_conf_incorrect_type.py"
+    with open(Path(tmp_file), "x") as f:
+        f.write("LOGGING_CONFIG: list = ['Hello', 'World']\n")
     return Path(tmp_file)
 
 

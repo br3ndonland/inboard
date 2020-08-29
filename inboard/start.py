@@ -35,7 +35,7 @@ def configure_logging(
             spec = importlib.util.spec_from_file_location("confspec", logging_conf)
             logging_conf_module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(logging_conf_module)  # type: ignore
-            if getattr(logging_conf_module, "LOGGING_CONFIG"):
+            if hasattr(logging_conf_module, "LOGGING_CONFIG"):
                 logging_conf_dict = getattr(logging_conf_module, "LOGGING_CONFIG")
             else:
                 raise AttributeError(f"No LOGGING_CONFIG in {logging_conf_module}.")
