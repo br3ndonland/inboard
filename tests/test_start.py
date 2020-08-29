@@ -122,26 +122,65 @@ class TestSetAppModule:
     def test_set_app_module_asgi(
         self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
     ) -> None:
-        monkeypatch.setenv("APP_MODULE", "base.main")
+        monkeypatch.setenv("APP_MODULE", "base.main:app")
         start.set_app_module(logger=mock_logger)
-        mock_logger.debug.assert_called_once_with("App module set to base.main.")  # type: ignore  # noqa: E501
+        mock_logger.debug.assert_called_once_with("App module set to base.main:app.")  # type: ignore  # noqa: E501
 
     def test_set_app_module_fastapi(
         self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
     ) -> None:
-        monkeypatch.setenv("APP_MODULE", "fastapibase.main")
+        monkeypatch.setenv("APP_MODULE", "fastapibase.main:app")
         start.set_app_module(logger=mock_logger)
         mock_logger.debug.assert_called_once_with(  # type: ignore
-            "App module set to fastapibase.main."
+            "App module set to fastapibase.main:app."
         )
 
     def test_set_app_module_starlette(
         self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
     ) -> None:
-        monkeypatch.setenv("APP_MODULE", "starlettebase.main")
+        monkeypatch.setenv("APP_MODULE", "starlettebase.main:app")
         start.set_app_module(logger=mock_logger)
         mock_logger.debug.assert_called_once_with(  # type: ignore
-            "App module set to starlettebase.main."
+            "App module set to starlettebase.main:app."
+        )
+
+    def test_set_app_variables_asgi_custom(
+        self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv("MODULE_NAME", "custom_base.main")
+        monkeypatch.setenv("VARIABLE_NAME", "api")
+        start.set_app_module(logger=mock_logger)
+        assert os.getenv("APP_MODULE") == "custom_base.main:api"
+        mock_logger.debug.assert_called_once_with(  # type: ignore
+            "App module set to custom_base.main:api."
+        )
+
+    def test_set_app_variables_fastapi_custom(
+        self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv("MODULE_NAME", "custom_fastapibase.main")
+        monkeypatch.setenv("VARIABLE_NAME", "api")
+        monkeypatch.setenv("APP_MODULE", "custom_fastapibase.main:api")
+        start.set_app_module(logger=mock_logger)
+        assert os.getenv("MODULE_NAME") == "custom_fastapibase.main"
+        assert os.getenv("VARIABLE_NAME") == "api"
+        assert os.getenv("APP_MODULE") == "custom_fastapibase.main:api"
+        mock_logger.debug.assert_called_once_with(  # type: ignore
+            "App module set to custom_fastapibase.main:api."
+        )
+
+    def test_set_app_variables_starlette_custom(
+        self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv("MODULE_NAME", "custom_starlettebase.main")
+        monkeypatch.setenv("VARIABLE_NAME", "api")
+        monkeypatch.setenv("APP_MODULE", "custom_starlettebase.main:api")
+        start.set_app_module(logger=mock_logger)
+        assert os.getenv("MODULE_NAME") == "custom_starlettebase.main"
+        assert os.getenv("VARIABLE_NAME") == "api"
+        assert os.getenv("APP_MODULE") == "custom_starlettebase.main:api"
+        mock_logger.debug.assert_called_once_with(  # type: ignore
+            "App module set to custom_starlettebase.main:api."
         )
 
 
