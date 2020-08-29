@@ -111,3 +111,34 @@ class TestConfigureLogging:
             mock_logger.debug.assert_called_once_with(  # type: ignore
                 f"{logger_error_msg} {type_error_msg}"
             )
+
+
+class TestSetAppModule:
+    """Set app module string using the method in `start.py`.
+    ---
+    """
+
+    def test_set_app_module_asgi(
+        self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv("APP_MODULE", "base.main")
+        start.set_app_module(logger=mock_logger)
+        mock_logger.debug.assert_called_once_with("App module set to base.main.")  # type: ignore  # noqa: E501
+
+    def test_set_app_module_fastapi(
+        self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv("APP_MODULE", "fastapibase.main")
+        start.set_app_module(logger=mock_logger)
+        mock_logger.debug.assert_called_once_with(  # type: ignore
+            "App module set to fastapibase.main."
+        )
+
+    def test_set_app_module_starlette(
+        self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv("APP_MODULE", "starlettebase.main")
+        start.set_app_module(logger=mock_logger)
+        mock_logger.debug.assert_called_once_with(  # type: ignore
+            "App module set to starlettebase.main."
+        )
