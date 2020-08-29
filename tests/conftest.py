@@ -12,6 +12,7 @@ from pytest_mock import MockerFixture
 
 from inboard import gunicorn_conf as gunicorn_conf_module
 from inboard import logging_conf as logging_conf_module
+from inboard.app import prestart as pre_start_module
 from inboard.app.fastapibase.main import app as fastapi_app
 from inboard.app.starlettebase.main import app as starlette_app
 
@@ -107,3 +108,19 @@ def mock_logger(mocker: MockerFixture) -> logging.Logger:
     mocker.patch.object(logger, "error")
     mocker.patch.object(logger, "info")
     return logger
+
+
+@pytest.fixture
+def pre_start_script_tmp_py(tmp_path: Path) -> Path:
+    """Copy pre-start script to custom temporary file."""
+    tmp_file = shutil.copy(Path(pre_start_module.__file__), tmp_path)
+    return Path(tmp_file)
+
+
+@pytest.fixture
+def pre_start_script_tmp_sh(tmp_path: Path) -> Path:
+    """Create custom temporary pre-start shell script."""
+    tmp_file = tmp_path / "prestart.sh"
+    with open(Path(tmp_file), "x") as f:
+        f.write('echo "Hello World, from a temporary pre-start shell script"\n')
+    return Path(tmp_file)
