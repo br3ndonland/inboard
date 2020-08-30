@@ -251,6 +251,9 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2"
 - [`BIND`](https://docs.gunicorn.org/en/latest/settings.html#server-socket): The actual host and port passed to Gunicorn.
   - Default: `HOST:PORT` (`"0.0.0.0:80"`)
   - Custom: `BIND="0.0.0.0:8080"`
+- `PROCESS_MANAGER`: Manager for Uvicorn worker processes. As described in the [Uvicorn docs](https://www.uvicorn.org), "Uvicorn includes a Gunicorn worker class allowing you to run ASGI applications, with all of Uvicorn's performance benefits, while also giving you Gunicorn's fully-featured process management."
+  - Default: `"gunicorn"` (run Uvicorn with Gunicorn as the process manager)
+  - Custom: `"uvicorn"` (run Uvicorn alone for local development)
 - [`WORKER_CLASS`](https://docs.gunicorn.org/en/latest/settings.html#worker-processes): The class to be used by Gunicorn for the workers.
   - Default: `uvicorn.workers.UvicornWorker`
   - Custom: For the alternate Uvicorn worker, `WORKER_CLASS="uvicorn.workers.UvicornH11Worker"`

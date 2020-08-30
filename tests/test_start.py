@@ -2,6 +2,7 @@ import importlib.util
 import logging
 import os
 from pathlib import Path
+from typing import Any, Dict
 
 import pytest  # type: ignore
 from _pytest.monkeypatch import MonkeyPatch  # type: ignore
@@ -245,3 +246,128 @@ class TestRunPreStartScript:
                 mocker.call("No pre-start script found."),
             ]
         )
+
+
+class TestStartServer:
+    """Start Uvicorn and Gunicorn servers using the method in `start.py`.
+    ---
+    """
+
+    @pytest.mark.parametrize(
+        "app_module",
+        [
+            "inboard.base.main:app",
+            "inboard.fastapibase.main:app",
+            "inboard.starlettebase.main:app",
+        ],
+    )
+    def test_start_server_uvicorn(
+        self,
+        app_module: str,
+        gunicorn_conf_path: Path,
+        logging_conf_dict: Dict[str, Any],
+        mock_logger: logging.Logger,
+        mocker: MockerFixture,
+        monkeypatch: MonkeyPatch,
+    ) -> None:
+        monkeypatch.setenv("LOG_FORMAT", "uvicorn")
+        monkeypatch.setenv("LOG_LEVEL", "debug")
+        monkeypatch.setenv("PROCESS_MANAGER", "uvicorn")
+        start.start_server(
+            app_module=app_module,
+            gunicorn_conf=gunicorn_conf_path,
+            logger=mock_logger,
+            logging_conf_dict=logging_conf_dict,
+            with_reload=False,
+        )
+        mock_logger.debug.assert_called_once_with("Running Uvicorn with Gunicorn.")  # type: ignore  # noqa: E501
+
+    @pytest.mark.parametrize(
+        "app_module",
+        [
+            "inboard.base.main:app",
+            "inboard.fastapibase.main:app",
+            "inboard.starlettebase.main:app",
+        ],
+    )
+    def test_start_server_uvicorn_gunicorn(
+        self,
+        app_module: str,
+        gunicorn_conf_path: Path,
+        logging_conf_dict: Dict[str, Any],
+        mock_logger: logging.Logger,
+        mocker: MockerFixture,
+        monkeypatch: MonkeyPatch,
+    ) -> None:
+        monkeypatch.setenv("LOG_FORMAT", "gunicorn")
+        monkeypatch.setenv("LOG_LEVEL", "debug")
+        monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
+        start.start_server(
+            app_module=app_module,
+            gunicorn_conf=gunicorn_conf_path,
+            logger=mock_logger,
+            logging_conf_dict=logging_conf_dict,
+        )
+        mock_logger.debug.assert_called_once_with("Running Uvicorn with Gunicorn.")  # type: ignore  # noqa: E501
+
+    def test_start_server_uvicorn_incorrect_module(
+        self,
+        gunicorn_conf_path: Path,
+        logging_conf_dict: Dict[str, Any],
+        mock_logger: logging.Logger,
+        mocker: MockerFixture,
+        monkeypatch: MonkeyPatch,
+    ) -> None:
+        with pytest.raises(ModuleNotFoundError):
+            monkeypatch.setenv("LOG_LEVEL", "debug")
+            monkeypatch.setenv("WITH_RELOAD", "false")
+            start.start_server(
+                app_module="incorrect.base.main:app",
+                gunicorn_conf=gunicorn_conf_path,
+                logger=mock_logger,
+                logging_conf_dict=logging_conf_dict,
+                process_manager="uvicorn",
+            )
+            logger_error_msg = "Error when starting server with start script:"
+            module_error_msg = "No module named incorrect.base.main:app"
+            mock_logger.debug.assert_has_calls(  # type: ignore
+                calls=[
+                    mocker.call("Running Uvicorn without Gunicorn."),
+                    mocker.call(f"{logger_error_msg} {module_error_msg}"),
+                ]
+            )
+
+    @pytest.mark.parametrize(
+        "app_module",
+        [
+            "inboard.base.main:app",
+            "inboard.fastapibase.main:app",
+            "inboard.starlettebase.main:app",
+        ],
+    )
+    def test_start_server_uvicorn_incorrect_process_manager(
+        self,
+        app_module: str,
+        gunicorn_conf_path: Path,
+        logging_conf_dict: Dict[str, Any],
+        mock_logger: logging.Logger,
+        mocker: MockerFixture,
+        monkeypatch: MonkeyPatch,
+    ) -> None:
+        with pytest.raises(NameError):
+            monkeypatch.setenv("LOG_LEVEL", "debug")
+            monkeypatch.setenv("WITH_RELOAD", "false")
+            start.start_server(
+                app_module=app_module,
+                gunicorn_conf=gunicorn_conf_path,
+                logger=mock_logger,
+                logging_conf_dict=logging_conf_dict,
+                process_manager="incorrect",
+            )
+            logger_error_msg = "Error when starting server with start script:"
+            process_error_msg = (
+                "Process manager needs to be either uvicorn or gunicorn."
+            )
+            mock_logger.debug.assert_called_once_with(  # type: ignore
+                f"{logger_error_msg} {process_error_msg}"
+            )

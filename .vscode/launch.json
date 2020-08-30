@@ -13,6 +13,7 @@
         "LOG_FORMAT": "uvicorn",
         "LOG_LEVEL": "debug",
         "LOGGING_CONF": "logging_conf.py",
+        "PROCESS_MANAGER": "uvicorn",
         "WITH_RELOAD": "true"
       },
       "console": "integratedTerminal",

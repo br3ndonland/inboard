@@ -100,28 +100,41 @@ def start_server(
     gunicorn_conf: Path = Path("/gunicorn_conf.py"),
     logger: Logger = logging.getLogger(),
     logging_conf_dict: Dict[str, Any] = None,
+    process_manager: str = str(os.getenv("PROCESS_MANAGER", "gunicorn")),
     with_reload: bool = bool(os.getenv("WITH_RELOAD", False)),
     worker_class: str = str(os.getenv("WORKER_CLASS", "uvicorn.workers.UvicornWorker")),
 ) -> None:
     """Start the Uvicorn or Gunicorn server."""
     try:
-        if with_reload:
-            logger.debug("Running Uvicorn without Gunicorn and with reloading")
+        if process_manager == "gunicorn":
+            logger.debug("Running Uvicorn with Gunicorn.")
+            subprocess.run(
+                [
+                    "gunicorn",
+                    "-k",
+                    worker_class,
+                    "-c",
+                    gunicorn_conf.name,
+                    app_module,
+                    "--reload",
+                    str(with_reload),
+                ]
+            )
+        elif process_manager == "uvicorn":
+            logger.debug("Running Uvicorn without Gunicorn.")
             uvicorn.run(
                 app_module,
                 host=os.getenv("HOST", "0.0.0.0"),
                 port=int(os.getenv("PORT", "80")),
                 log_config=logging_conf_dict,
                 log_level=os.getenv("LOG_LEVEL", "info"),
-                reload=True,
+                reload=with_reload,
             )
         else:
-            logger.debug("Running Uvicorn with Gunicorn.")
-            subprocess.run(
-                ["gunicorn", "-k", worker_class, "-c", gunicorn_conf.name, app_module]
-            )
+            raise NameError("Process manager needs to be either uvicorn or gunicorn.")
     except Exception as e:
         logger.debug(f"Error when starting server with start script: {e}")
+        raise
 
 
 if __name__ == "__main__":
