@@ -57,6 +57,7 @@ class TestConfigureLogging:
     def test_configure_logging_conf_path(
         self, logging_conf_path: Path, mock_logger: logging.Logger
     ) -> None:
+        """Test `start.configure_logging` with correct logging config path."""
         start.configure_logging(logger=mock_logger, logging_conf=logging_conf_path)
         mock_logger.debug.assert_called_once_with(  # type: ignore
             f"Logging dict config loaded from {logging_conf_path}."
@@ -65,6 +66,7 @@ class TestConfigureLogging:
     def test_configure_logging_conf_path_tmp(
         self, logging_conf_path_tmp: Path, mock_logger: logging.Logger
     ) -> None:
+        """Test `start.configure_logging` with temporary logging config file."""
         start.configure_logging(logger=mock_logger, logging_conf=logging_conf_path_tmp)
         mock_logger.debug.assert_called_once_with(  # type: ignore
             f"Logging dict config loaded from {logging_conf_path_tmp}."
@@ -73,6 +75,7 @@ class TestConfigureLogging:
     def test_configure_logging_incorrect_extension(
         self, logging_conf_path_tmp_txt: Path, mock_logger: logging.Logger
     ) -> None:
+        """Test `start.configure_logging` with incorrect temporary file type."""
         with pytest.raises(ImportError):
             start.configure_logging(
                 logger=mock_logger, logging_conf=logging_conf_path_tmp_txt
@@ -86,6 +89,10 @@ class TestConfigureLogging:
     def test_configure_logging_no_dict(
         self, logging_conf_path_tmp_no_dict: Path, mock_logger: logging.Logger
     ) -> None:
+        """Test `start.configure_logging` with temporary logging config file.
+        - Correct extension
+        - No `LOGGING_CONFIG` object
+        """
         with pytest.raises(AttributeError):
             start.configure_logging(
                 logger=mock_logger, logging_conf=logging_conf_path_tmp_no_dict
@@ -104,6 +111,10 @@ class TestConfigureLogging:
     def test_configure_logging_incorrect_type(
         self, logging_conf_path_tmp_incorrect_type: Path, mock_logger: logging.Logger
     ) -> None:
+        """Test `start.configure_logging` with temporary logging config file.
+        - Correct extension
+        - Incorrect data type for `LOGGING_CONFIG` object
+        """
         with pytest.raises(TypeError):
             start.configure_logging(
                 logger=mock_logger, logging_conf=logging_conf_path_tmp_incorrect_type
@@ -123,6 +134,7 @@ class TestSetAppModule:
     def test_set_app_module_asgi(
         self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
     ) -> None:
+        """Test `start.set_app_module` using module path to base ASGI app."""
         monkeypatch.setenv("APP_MODULE", "base.main:app")
         start.set_app_module(logger=mock_logger)
         mock_logger.debug.assert_called_once_with("App module set to base.main:app.")  # type: ignore  # noqa: E501
@@ -130,6 +142,7 @@ class TestSetAppModule:
     def test_set_app_module_fastapi(
         self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
     ) -> None:
+        """Test `start.set_app_module` using module path to FastAPI app."""
         monkeypatch.setenv("APP_MODULE", "fastapibase.main:app")
         start.set_app_module(logger=mock_logger)
         mock_logger.debug.assert_called_once_with(  # type: ignore
@@ -139,6 +152,7 @@ class TestSetAppModule:
     def test_set_app_module_starlette(
         self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
     ) -> None:
+        """Test `start.set_app_module` using module path to Starlette app."""
         monkeypatch.setenv("APP_MODULE", "starlettebase.main:app")
         start.set_app_module(logger=mock_logger)
         mock_logger.debug.assert_called_once_with(  # type: ignore
@@ -148,6 +162,7 @@ class TestSetAppModule:
     def test_set_app_variables_asgi_custom(
         self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
     ) -> None:
+        """Test `start.set_app_module` using custom module path to base ASGI app."""
         monkeypatch.setenv("MODULE_NAME", "custom_base.main")
         monkeypatch.setenv("VARIABLE_NAME", "api")
         start.set_app_module(logger=mock_logger)
@@ -159,6 +174,7 @@ class TestSetAppModule:
     def test_set_app_variables_fastapi_custom(
         self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
     ) -> None:
+        """Test `start.set_app_module` using custom module path to FastAPI app."""
         monkeypatch.setenv("MODULE_NAME", "custom_fastapibase.main")
         monkeypatch.setenv("VARIABLE_NAME", "api")
         monkeypatch.setenv("APP_MODULE", "custom_fastapibase.main:api")
@@ -173,6 +189,7 @@ class TestSetAppModule:
     def test_set_app_variables_starlette_custom(
         self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
     ) -> None:
+        """Test `start.set_app_module` using custom module path to Starlette app."""
         monkeypatch.setenv("MODULE_NAME", "custom_starlettebase.main")
         monkeypatch.setenv("VARIABLE_NAME", "api")
         monkeypatch.setenv("APP_MODULE", "custom_starlettebase.main:api")
@@ -197,6 +214,7 @@ class TestRunPreStartScript:
         monkeypatch: MonkeyPatch,
         pre_start_script_tmp_py: Path,
     ) -> None:
+        """Test `start.run_pre_start_script` using temporary Python pre-start script."""
         monkeypatch.setenv("PRE_START_PATH", str(pre_start_script_tmp_py))
         start.run_pre_start_script(logger=mock_logger)
         mock_logger.debug.assert_has_calls(  # type: ignore
@@ -218,6 +236,7 @@ class TestRunPreStartScript:
         monkeypatch: MonkeyPatch,
         pre_start_script_tmp_sh: Path,
     ) -> None:
+        """Test `start.run_pre_start_script` using temporary pre-start shell script."""
         monkeypatch.setenv("PRE_START_PATH", str(pre_start_script_tmp_sh))
         start.run_pre_start_script(logger=mock_logger)
         mock_logger.debug.assert_has_calls(  # type: ignore
@@ -238,6 +257,7 @@ class TestRunPreStartScript:
         mocker: MockerFixture,
         monkeypatch: MonkeyPatch,
     ) -> None:
+        """Test `start.run_pre_start_script` with an incorrect file path."""
         monkeypatch.setenv("PRE_START_PATH", "/no/file/here")
         start.run_pre_start_script(logger=mock_logger)
         mock_logger.debug.assert_has_calls(  # type: ignore
@@ -270,6 +290,7 @@ class TestStartServer:
         mocker: MockerFixture,
         monkeypatch: MonkeyPatch,
     ) -> None:
+        """Test `start.start_server` with Uvicorn."""
         monkeypatch.setenv("LOG_FORMAT", "uvicorn")
         monkeypatch.setenv("LOG_LEVEL", "debug")
         monkeypatch.setenv("PROCESS_MANAGER", "uvicorn")
@@ -299,6 +320,7 @@ class TestStartServer:
         mocker: MockerFixture,
         monkeypatch: MonkeyPatch,
     ) -> None:
+        """Test `start.start_server` with Uvicorn managed by Gunicorn."""
         monkeypatch.setenv("LOG_FORMAT", "gunicorn")
         monkeypatch.setenv("LOG_LEVEL", "debug")
         monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
@@ -318,6 +340,7 @@ class TestStartServer:
         mocker: MockerFixture,
         monkeypatch: MonkeyPatch,
     ) -> None:
+        """Test `start.start_server` with Uvicorn and an incorrect module path."""
         with pytest.raises(ModuleNotFoundError):
             monkeypatch.setenv("LOG_LEVEL", "debug")
             monkeypatch.setenv("WITH_RELOAD", "false")
@@ -354,6 +377,7 @@ class TestStartServer:
         mocker: MockerFixture,
         monkeypatch: MonkeyPatch,
     ) -> None:
+        """Test `start.start_server` with Uvicorn and an incorrect process manager."""
         with pytest.raises(NameError):
             monkeypatch.setenv("LOG_LEVEL", "debug")
             monkeypatch.setenv("WITH_RELOAD", "false")

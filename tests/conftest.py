@@ -76,12 +76,17 @@ def logging_conf_path_tmp(tmp_path: Path) -> Path:
 
 @pytest.fixture
 def logging_conf_path_tmp_txt(tmp_path: Path) -> Path:
+    """Create custom temporary logging config file with incorrect extension."""
     tmp_file = tmp_path / "tmp_logging_conf.txt"
     return Path(tmp_file)
 
 
 @pytest.fixture
 def logging_conf_path_tmp_no_dict(tmp_path: Path) -> Path:
+    """Create custom temporary logging config file.
+    - Correct extension
+    - No `LOGGING_CONFIG` object
+    """
     tmp_file = tmp_path / "tmp_logging_conf.py"
     with open(Path(tmp_file), "x") as f:
         f.write("print('Hello, World!')\n")
@@ -90,6 +95,10 @@ def logging_conf_path_tmp_no_dict(tmp_path: Path) -> Path:
 
 @pytest.fixture
 def logging_conf_path_tmp_incorrect_type(tmp_path: Path) -> Path:
+    """Create custom temporary logging config file.
+    - Correct extension
+    - Incorrect data type for `LOGGING_CONFIG` object
+    """
     tmp_file = tmp_path / "tmp_logging_conf_incorrect_type.py"
     with open(Path(tmp_file), "x") as f:
         f.write("LOGGING_CONFIG: list = ['Hello', 'World']\n")
