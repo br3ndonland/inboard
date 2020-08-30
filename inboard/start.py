@@ -109,16 +109,7 @@ def start_server(
         if process_manager == "gunicorn":
             logger.debug("Running Uvicorn with Gunicorn.")
             subprocess.run(
-                [
-                    "gunicorn",
-                    "-k",
-                    worker_class,
-                    "-c",
-                    gunicorn_conf.name,
-                    app_module,
-                    "--reload",
-                    str(with_reload),
-                ]
+                ["gunicorn", "-k", worker_class, "-c", gunicorn_conf.name, app_module]
             )
         elif process_manager == "uvicorn":
             logger.debug("Running Uvicorn without Gunicorn.")
