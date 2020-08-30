@@ -9,11 +9,14 @@
       "pythonPath": "${command:python.interpreterPath}",
       "module": "start",
       "env": {
-        "APP_MODULE": "app.base.main:app",
+        "APP_MODULE": "app.fastapibase.main:app",
+        "BASIC_AUTH_USERNAME": "test_username",
+        "BASIC_AUTH_PASSWORD": "plunge-germane-tribal-pillar",
         "LOG_FORMAT": "uvicorn",
         "LOG_LEVEL": "debug",
         "LOGGING_CONF": "logging_conf.py",
         "PROCESS_MANAGER": "uvicorn",
+        "PYTHONPATH": "./app",
         "WITH_RELOAD": "true"
       },
       "console": "integratedTerminal",

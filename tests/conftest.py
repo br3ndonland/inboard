@@ -20,7 +20,7 @@ from inboard.app.starlettebase.main import app as starlette_app
 def basic_auth(
     monkeypatch: MonkeyPatch,
     username: str = "test_username",
-    password: str = "test_password",
+    password: str = "plunge-germane-tribal-pillar",
 ) -> tuple:
     """Set username and password for HTTP Basic Auth."""
     monkeypatch.setenv("BASIC_AUTH_USERNAME", username)

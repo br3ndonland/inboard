@@ -26,19 +26,28 @@ class BasicAuth(AuthenticationBackend):
         try:
             scheme, credentials = auth.split()
             decoded = base64.b64decode(credentials).decode("ascii")
+            username, _, password = decoded.partition(":")
         except (ValueError, UnicodeDecodeError, binascii.Error):
+            raise AuthenticationError("Unable to parse basic auth credentials")
+        correct_username = compare_digest(
+            username, str(os.getenv("BASIC_AUTH_USERNAME", "test_username"))
+        )
+        correct_password = compare_digest(
+            password,
+            str(os.getenv("BASIC_AUTH_PASSWORD", "plunge-germane-tribal-pillar")),
+        )
+        if not (correct_username and correct_password):
             raise AuthenticationError("Invalid basic auth credentials")
-
-        username, _, password = decoded.partition(":")
         return AuthCredentials(["authenticated"]), SimpleUser(username)
 
 
 def basic_auth(credentials: HTTPBasicCredentials = Depends(HTTPBasic())) -> str:
     correct_username = compare_digest(
-        credentials.username, str(os.getenv("BASIC_AUTH_USERNAME"))
+        credentials.username, str(os.getenv("BASIC_AUTH_USERNAME", "test_username"))
     )
     correct_password = compare_digest(
-        credentials.password, str(os.getenv("BASIC_AUTH_PASSWORD"))
+        credentials.password,
+        str(os.getenv("BASIC_AUTH_PASSWORD", "plunge-germane-tribal-pillar")),
     )
     if not (correct_username and correct_password):
         raise HTTPException(

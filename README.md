@@ -405,6 +405,9 @@ docker run -d -p 80:80 \
 docker run -d -p 80:80 localhost/br3ndonland/inboard/base
 docker run -d -p 80:80 localhost/br3ndonland/inboard/fastapi
 docker run -d -p 80:80 localhost/br3ndonland/inboard/starlette
+
+# Test HTTP Basic Auth when running the FastAPI or Starlette images:
+http :80/status --auth-type=basic --auth=test_username:plunge-germane-tribal-pillar
 ```
 
 Change the port numbers to run multiple containers simultaneously (`-p 81:80`).

@@ -13,8 +13,17 @@ from inboard.app.utilities import BasicAuth
 server = "Uvicorn" if bool(os.getenv("WITH_RELOAD")) else "Uvicorn, Gunicorn"
 version = f"{sys.version_info.major}.{sys.version_info.minor}"
 
+
+def on_auth_error(request: Request, e: Exception) -> JSONResponse:
+    return JSONResponse(
+        {"detail": "Incorrect username or password", "error": str(e)}, status_code=401
+    )
+
+
 app = Starlette()
-app.add_middleware(AuthenticationMiddleware, backend=BasicAuth())
+app.add_middleware(
+    AuthenticationMiddleware, backend=BasicAuth(), on_error=on_auth_error,
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins="https://br3ndon.land",
