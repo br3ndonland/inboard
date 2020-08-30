@@ -149,10 +149,12 @@ Run container with mounted volume and Uvicorn reloading for development:
 
 ```sh
 cd /path/to/repo
-docker run -d -p 80:80 -e "LOG_LEVEL=debug" -e "WITH_RELOAD=true" -v $(pwd)/package:/app imagename
+docker run -d -p 80:80 \
+  -e "LOG_LEVEL=debug" -e "PROCESS_MANAGER=uvicorn" -e "WITH_RELOAD=true" \
+  -v $(pwd)/package:/app imagename
 ```
 
-- `WITH_RELOAD=true`: `start.py` will run Uvicorn with reloading and without Gunicorn. The Gunicorn configuration won't apply, but these environment variables will still work as [described](#configuration):
+- `PROCESS_MANAGER=uvicorn WITH_RELOAD=true`: `start.py` will run Uvicorn with reloading and without Gunicorn. The Gunicorn configuration won't apply, but these environment variables will still work as [described](#configuration):
   - `MODULE_NAME`
   - `VARIABLE_NAME`
   - `APP_MODULE`
@@ -378,19 +380,22 @@ docker build . --rm --target starlette -t localhost/br3ndonland/inboard/starlett
 # Uvicorn with reloading
 cd inboard
 
-docker run -d -p 80:80 -e "LOG_LEVEL=debug" -e "WITH_RELOAD=true" \
+docker run -d -p 80:80 \
+  -e "LOG_LEVEL=debug" -e "PROCESS_MANAGER=uvicorn" -e "WITH_RELOAD=true" \
   -v $(pwd)/inboard/gunicorn_conf.py:/gunicorn_conf.py \
   -v $(pwd)/inboard/logging_conf.py:/logging_conf.py \
   -v $(pwd)/inboard/start.py:/start.py \
   -v $(pwd)/inboard/app:/app localhost/br3ndonland/inboard/base
 
-docker run -d -p 80:80 -e "LOG_LEVEL=debug" -e "WITH_RELOAD=true" \
+docker run -d -p 80:80 \
+  -e "LOG_LEVEL=debug" -e "PROCESS_MANAGER=uvicorn" -e "WITH_RELOAD=true" \
   -v $(pwd)/inboard/gunicorn_conf.py:/gunicorn_conf.py \
   -v $(pwd)/inboard/logging_conf.py:/logging_conf.py \
   -v $(pwd)/inboard/start.py:/start.py \
   -v $(pwd)/inboard/app:/app localhost/br3ndonland/inboard/fastapi
 
-docker run -d -p 80:80 -e "LOG_LEVEL=debug" -e "WITH_RELOAD=true" \
+docker run -d -p 80:80 \
+  -e "LOG_LEVEL=debug" -e "PROCESS_MANAGER=uvicorn" -e "WITH_RELOAD=true" \
   -v $(pwd)/inboard/gunicorn_conf.py:/gunicorn_conf.py \
   -v $(pwd)/inboard/logging_conf.py:/logging_conf.py \
   -v $(pwd)/inboard/start.py:/start.py \
