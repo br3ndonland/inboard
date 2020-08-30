@@ -1,7 +1,6 @@
 import logging
 import os
 import shutil
-from copy import deepcopy
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -54,9 +53,9 @@ def gunicorn_conf_path_tmp(tmp_path: Path) -> Path:
 
 
 @pytest.fixture
-def logging_conf_dict() -> Dict[str, Any]:
+def logging_conf_dict(mocker: MockerFixture) -> Dict[str, Any]:
     """Load logging configuration dictionary from logging configuration module."""
-    return deepcopy(logging_conf_module.LOGGING_CONFIG)
+    return mocker.patch.dict(logging_conf_module.LOGGING_CONFIG)
 
 
 @pytest.fixture
