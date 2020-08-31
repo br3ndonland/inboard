@@ -6,6 +6,7 @@ from typing import Any, Dict, List
 
 import pytest  # type: ignore
 from _pytest.monkeypatch import MonkeyPatch  # type: ignore
+from _pytest.tmpdir import TempPathFactory  # type: ignore
 from fastapi.testclient import TestClient
 from pytest_mock import MockerFixture
 
@@ -14,6 +15,14 @@ from inboard import logging_conf as logging_conf_module
 from inboard.app import prestart as pre_start_module
 from inboard.app.fastapibase.main import app as fastapi_app
 from inboard.app.starlettebase.main import app as starlette_app
+
+
+@pytest.fixture(scope="session")
+def app_module_tmp_dir(tmp_path_factory: TempPathFactory) -> Path:
+    """Copy app modules to temporary directory to test custom app module paths."""
+    tmp_dir = tmp_path_factory.mktemp("app")
+    shutil.copytree(f"{Path(pre_start_module.__file__).parent}", f"{tmp_dir}/tmp_app")
+    return tmp_dir
 
 
 @pytest.fixture

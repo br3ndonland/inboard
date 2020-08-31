@@ -156,9 +156,7 @@ docker run -d -p 80:80 \
   -v $(pwd)/package:/app/package imagename
 ```
 
-- `PROCESS_MANAGER=uvicorn WITH_RELOAD=true`: `start.py` will run Uvicorn with reloading and without Gunicorn. The Gunicorn configuration won't apply, but these environment variables will still work as [described](#configuration):
-  - `MODULE_NAME`
-  - `VARIABLE_NAME`
+- `start.py` will run Uvicorn with reloading and without Gunicorn. The Gunicorn configuration won't apply, but these environment variables will still work as [described](#configuration):
   - `APP_MODULE`
   - `HOST`
   - `PORT`
@@ -203,15 +201,13 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 ### General
 
-- `MODULE_NAME`: Python module (file) with app instance. Note that the base image sets the environment variable `PYTHONPATH=/app`, so the module name will be relative to `/app` unless you supply a custom `PYTHONPATH`.
-  - Default: The appropriate app module from inboard.
-  - Custom: For a module at `/app/package/custom/module.py`, `MODULE_NAME="package.custom.module"`
-- `VARIABLE_NAME`: Variable (object) inside of the Python module that contains the ASGI application instance.
+- `APP_MODULE`: Python module with app instance. Note that the base image sets the environment variable `PYTHONPATH=/app`, so the module name will be relative to `/app` unless you supply a custom `PYTHONPATH`.
 
-  - Default: `"app"`
-  - Custom: For an application instance named `api`, `VARIABLE_NAME="api"`
+  - Default: The appropriate app module from inboard.
+  - Custom: For a module at `/app/package/custom/module.py` and app instance object `api`, `APP_MODULE="package.custom.module:api"`
 
     ```py
+    # /app/package/custom/module.py
     from fastapi import FastAPI
 
     api = FastAPI()
@@ -221,10 +217,6 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
         return {"message": "Hello World!"}
     ```
 
-- `APP_MODULE`: Combination of `MODULE_NAME` and `VARIABLE_NAME` pointing to the app instance.
-  - Default:
-    - `MODULE_NAME:VARIABLE_NAME` (`"main:app"` or `"app.main:app"`)
-  - Custom: For a module at `/app/package/custom/module.py` and variable `api`, `APP_MODULE="package.custom.module:api"`
 - `PRE_START_PATH`: Path to a pre-start script. Add a file `prestart.py` or `prestart.sh` to the application directory, and copy the directory into the Docker image as described (for a project with the Python application in `repo/package`, `COPY package /app/package`). The container will automatically detect and run the prestart script before starting the web server.
 
   - Default: `"/app/inboard/prestart.py"` (the default file provided with the Docker image)

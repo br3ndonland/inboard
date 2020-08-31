@@ -57,12 +57,9 @@ def configure_logging(
 def set_app_module(logger: Logger = logging.getLogger()) -> str:
     """Set the name of the Python module with the app instance to run."""
     try:
-        module_name = os.getenv("MODULE_NAME")
-        variable_name = os.getenv("VARIABLE_NAME", "app")
-        app_module = os.getenv("APP_MODULE", f"{module_name}:{variable_name}")
-        os.environ["APP_MODULE"] = app_module
-        logger.debug(f"App module set to {app_module}.")
+        app_module = str(os.getenv("APP_MODULE"))
         importlib.util.find_spec(app_module)
+        logger.debug(f"App module set to {app_module}.")
         return app_module
     except Exception as e:
         message = f"Error when setting app module: {e}."

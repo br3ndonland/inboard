@@ -164,47 +164,64 @@ class TestSetAppModule:
             "App module set to inboard.app.starlettebase.main:app."
         )
 
-    def test_set_app_variables_asgi_custom(
-        self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
+    def test_set_app_module_custom_asgi(
+        self,
+        app_module_tmp_dir: Path,
+        mock_logger: logging.Logger,
+        monkeypatch: MonkeyPatch,
     ) -> None:
-        """Test `start.set_app_module` using custom module path to base ASGI app."""
-        monkeypatch.setenv("MODULE_NAME", "custom_base.main")
-        monkeypatch.setenv("VARIABLE_NAME", "api")
+        """Test `start.set_app_module` with custom module path to base ASGI app."""
+        monkeypatch.syspath_prepend(app_module_tmp_dir)
+        monkeypatch.setenv("APP_MODULE", "tmp_app.base.main:app")
         start.set_app_module(logger=mock_logger)
-        assert os.getenv("APP_MODULE") == "custom_base.main:api"
         mock_logger.debug.assert_called_once_with(  # type: ignore
-            "App module set to custom_base.main:api."
+            "App module set to tmp_app.base.main:app."
         )
 
-    def test_set_app_variables_fastapi_custom(
-        self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
+    def test_set_app_module_custom_fastapi(
+        self,
+        app_module_tmp_dir: Path,
+        mock_logger: logging.Logger,
+        monkeypatch: MonkeyPatch,
     ) -> None:
-        """Test `start.set_app_module` using custom module path to FastAPI app."""
-        monkeypatch.setenv("MODULE_NAME", "custom_fastapibase.main")
-        monkeypatch.setenv("VARIABLE_NAME", "api")
-        monkeypatch.setenv("APP_MODULE", "custom_fastapibase.main:api")
+        """Test `start.set_app_module` with custom module path to FastAPI app."""
+        monkeypatch.syspath_prepend(app_module_tmp_dir)
+        monkeypatch.setenv("APP_MODULE", "tmp_app.fastapibase.main:app")
         start.set_app_module(logger=mock_logger)
-        assert os.getenv("MODULE_NAME") == "custom_fastapibase.main"
-        assert os.getenv("VARIABLE_NAME") == "api"
-        assert os.getenv("APP_MODULE") == "custom_fastapibase.main:api"
         mock_logger.debug.assert_called_once_with(  # type: ignore
-            "App module set to custom_fastapibase.main:api."
+            "App module set to tmp_app.fastapibase.main:app."
         )
 
-    def test_set_app_variables_starlette_custom(
-        self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
+    def test_set_app_module_custom_starlette(
+        self,
+        app_module_tmp_dir: Path,
+        mock_logger: logging.Logger,
+        monkeypatch: MonkeyPatch,
     ) -> None:
-        """Test `start.set_app_module` using custom module path to Starlette app."""
-        monkeypatch.setenv("MODULE_NAME", "custom_starlettebase.main")
-        monkeypatch.setenv("VARIABLE_NAME", "api")
-        monkeypatch.setenv("APP_MODULE", "custom_starlettebase.main:api")
+        """Test `start.set_app_module` with custom module path to Starlette app."""
+        monkeypatch.syspath_prepend(app_module_tmp_dir)
+        monkeypatch.setenv("APP_MODULE", "tmp_app.starlettebase.main:app")
         start.set_app_module(logger=mock_logger)
-        assert os.getenv("MODULE_NAME") == "custom_starlettebase.main"
-        assert os.getenv("VARIABLE_NAME") == "api"
-        assert os.getenv("APP_MODULE") == "custom_starlettebase.main:api"
         mock_logger.debug.assert_called_once_with(  # type: ignore
-            "App module set to custom_starlettebase.main:api."
+            "App module set to tmp_app.starlettebase.main:app."
         )
+
+    def test_set_app_module_incorrect(
+        self,
+        mocker: MockerFixture,
+        mock_logger: logging.Logger,
+        monkeypatch: MonkeyPatch,
+    ) -> None:
+        """Test `start.set_app_module` with incorrect module path."""
+        with pytest.raises(ModuleNotFoundError):
+            incorrect_module = "inboard.app.incorrect.main:app"
+            monkeypatch.setenv("APP_MODULE", incorrect_module)
+            logger_error_msg = "Error when setting app module:"
+            incorrect_module_msg = f"No module named {incorrect_module}"
+            start.set_app_module(logger=mock_logger)
+            mock_logger.debug.assert_called_once_with(  # type: ignore
+                f"{logger_error_msg} {incorrect_module_msg}."
+            )
 
 
 class TestRunPreStartScript:
