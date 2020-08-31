@@ -22,7 +22,9 @@ def on_auth_error(request: Request, e: Exception) -> JSONResponse:
 
 app = Starlette()
 app.add_middleware(
-    AuthenticationMiddleware, backend=BasicAuth(), on_error=on_auth_error,
+    AuthenticationMiddleware,
+    backend=BasicAuth(),
+    on_error=on_auth_error,
 )
 app.add_middleware(
     CORSMiddleware,

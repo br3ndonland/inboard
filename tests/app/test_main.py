@@ -98,7 +98,10 @@ class TestEndpoints:
             assert response.json()["status"] == "active"
 
     def test_get_status_message(
-        self, basic_auth: tuple, clients: List[TestClient], endpoint: str = "/status",
+        self,
+        basic_auth: tuple,
+        clients: List[TestClient],
+        endpoint: str = "/status",
     ) -> None:
         """Test the message returned by a `GET` request to a status endpoint."""
         for client in clients:
@@ -117,7 +120,10 @@ class TestEndpoints:
                 assert "Starlette" in response.json()["message"]
 
     def test_get_user(
-        self, basic_auth: tuple, clients: List[TestClient], endpoint: str = "/users/me",
+        self,
+        basic_auth: tuple,
+        clients: List[TestClient],
+        endpoint: str = "/users/me",
     ) -> None:
         """Test a `GET` request to an endpoint providing user information."""
         for client in clients:
