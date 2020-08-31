@@ -39,7 +39,7 @@ def basic_auth(
     return username, password
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def clients() -> List[TestClient]:
     """Instantiate test client classes."""
     return [TestClient(fastapi_app), TestClient(starlette_app)]
