@@ -97,11 +97,12 @@ The _Dockerfile_ could look like this:
 FROM docker.pkg.github.com/br3ndonland/inboard/fastapi
 
 # Install Python requirements
-COPY poetry.lock pyproject.toml /
+COPY poetry.lock pyproject.toml /app/
+WORKDIR /app/
 RUN poetry install --no-dev --no-interaction --no-root
 
 # Install Python app
-COPY package /app/
+COPY package /app/package
 
 # RUN command already included in base image
 ```
@@ -121,11 +122,12 @@ For a standard `pip` install:
 FROM docker.pkg.github.com/br3ndonland/inboard/fastapi
 
 # Install Python requirements
-COPY requirements.txt /
+COPY requirements.txt /app/
+WORKDIR /app/
 RUN python -m pip install -r requirements.txt
 
 # Install Python app
-COPY package /app/
+COPY package /app/package
 
 # RUN command already included in base image
 ```
@@ -151,7 +153,7 @@ Run container with mounted volume and Uvicorn reloading for development:
 cd /path/to/repo
 docker run -d -p 80:80 \
   -e "LOG_LEVEL=debug" -e "PROCESS_MANAGER=uvicorn" -e "WITH_RELOAD=true" \
-  -v $(pwd)/package:/app imagename
+  -v $(pwd)/package:/app/package imagename
 ```
 
 - `PROCESS_MANAGER=uvicorn WITH_RELOAD=true`: `start.py` will run Uvicorn with reloading and without Gunicorn. The Gunicorn configuration won't apply, but these environment variables will still work as [described](#configuration):
@@ -163,7 +165,7 @@ docker run -d -p 80:80 \
   - `LOG_COLORS`
   - `LOG_FORMAT`
   - `LOG_LEVEL`
-- `-v $(pwd)/package:/app`: the specified directory (`/path/to/repo/package` in this example) will be [mounted as a volume](https://docs.docker.com/engine/reference/run/#volume-shared-filesystems) inside of the container at `/app`. When files in the working directory change, Docker and Uvicorn will sync the files to the running Docker container.
+- `-v $(pwd)/package:/app/package`: the specified directory (`/path/to/repo/package` in this example) will be [mounted as a volume](https://docs.docker.com/engine/reference/run/#volume-shared-filesystems) inside of the container at `/app/package`. When files in the working directory change, Docker and Uvicorn will sync the files to the running Docker container.
 - The final argument is the Docker image name (`imagename` in this example). Replace with your image name.
 
 Hit an API endpoint:
@@ -189,23 +191,21 @@ Hello World, from Uvicorn, Gunicorn, and Python 3.8!
 To set environment variables when starting the Docker image:
 
 ```sh
-docker run -d -p 80:80 -e APP_MODULE="custom.module:api" -e WORKERS_PER_CORE="2" myimage
+docker run -d -p 80:80 -e APP_MODULE="package.custom.module:api" -e WORKERS_PER_CORE="2" myimage
 ```
 
 To set environment variables within a _Dockerfile_:
 
 ```dockerfile
 FROM docker.pkg.github.com/br3ndonland/inboard/fastapi
-ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2"
+ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 ```
 
 ### General
 
 - `MODULE_NAME`: Python module (file) with app instance. Note that the base image sets the environment variable `PYTHONPATH=/app`, so the module name will be relative to `/app` unless you supply a custom `PYTHONPATH`.
-  - Default:
-    - `"main"` if there's a file `/app/main.py`
-    - Else `"app.main"` if there's a file `/app/app/main.py`
-  - Custom: For a module at `/app/custom/module.py`, `MODULE_NAME="custom.module"`
+  - Default: The appropriate app module from inboard.
+  - Custom: For a module at `/app/package/custom/module.py`, `MODULE_NAME="package.custom.module"`
 - `VARIABLE_NAME`: Variable (object) inside of the Python module that contains the ASGI application instance.
 
   - Default: `"app"`
@@ -224,11 +224,11 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2"
 - `APP_MODULE`: Combination of `MODULE_NAME` and `VARIABLE_NAME` pointing to the app instance.
   - Default:
     - `MODULE_NAME:VARIABLE_NAME` (`"main:app"` or `"app.main:app"`)
-  - Custom: For a module at `/app/custom/module.py` and variable `api`, `APP_MODULE="custom.module:api"`
-- `PRE_START_PATH`: Path to a pre-start script. Add a file `prestart.py` or `prestart.sh` to the application directory, and copy the directory into the Docker image as described (for a project with the Python application in `repo/package`, `COPY package /app/`). The container will automatically detect and run the prestart script before starting the web server.
+  - Custom: For a module at `/app/package/custom/module.py` and variable `api`, `APP_MODULE="package.custom.module:api"`
+- `PRE_START_PATH`: Path to a pre-start script. Add a file `prestart.py` or `prestart.sh` to the application directory, and copy the directory into the Docker image as described (for a project with the Python application in `repo/package`, `COPY package /app/package`). The container will automatically detect and run the prestart script before starting the web server.
 
-  - Default: `"/app/prestart.py"`
-  - Custom: `PRE_START_PATH="/custom/script.sh"`
+  - Default: `"/app/inboard/prestart.py"` (the default file provided with the Docker image)
+  - Custom: `PRE_START_PATH="/app/package/custom_script.sh"`
 
 - [`PYTHONPATH`](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH): Python's search path for module files.
   - Default: `PYTHONPATH="/app"`
@@ -238,11 +238,9 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2"
 
 - `GUNICORN_CONF`: Path to a [Gunicorn configuration file](https://docs.gunicorn.org/en/latest/settings.html#config-file).
   - Default:
-    - `"/app/gunicorn_conf.py"` if exists
-    - Else `"/app/app/gunicorn_conf.py"` if exists
-    - Else `"/gunicorn_conf.py"` (the default file provided with the Docker image)
+    - `"/app/inboard/gunicorn_conf.py"` (the default file provided with the Docker image)
   - Custom:
-    - `GUNICORN_CONF="/app/custom_gunicorn_conf.py"`
+    - `GUNICORN_CONF="/app/package/custom_gunicorn_conf.py"`
     - Feel free to use the [`gunicorn_conf.py`](./inboard/gunicorn_conf.py) from this repo as a starting point for your own custom configuration.
 - `HOST`: Host IP address (inside of the container) where Gunicorn will listen for requests.
   - Default: `"0.0.0.0"`
@@ -296,11 +294,9 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2"
 
 - `LOGGING_CONF`: Path to a [Python logging configuration file](https://docs.python.org/3/library/logging.config.html). The configuration must be a new-style `.py` file, containing a configuration dictionary object named `LOGGING_CONFIG`. The `LOGGING_CONFIG` dictionary will be passed to [`logging.config.dictConfig()`](https://docs.python.org/3/library/logging.config.html). See [br3ndonland/inboard#3](https://github.com/br3ndonland/inboard/pull/3) for more details on this design choice.
   - Default:
-    - `"/app/logging_conf.py"` if exists
-    - Else `"/app/app/logging_conf.py"` if exists
-    - Else `"/logging_conf.py"` (the default file provided with the Docker image)
+    - `"/app/inboard/logging_conf.py"` (the default file provided with the Docker image)
   - Custom:
-    - `LOGGING_CONF="/app/custom_logging.py"`
+    - `LOGGING_CONF="/app/package/custom_logging.py"`
 - `LOG_COLORS`: Whether or not to color log messages. Currently only supported for `LOG_FORMAT="uvicorn"`.
   - Default:
     - Auto-detected based on [`sys.stdout.isatty()`](https://docs.python.org/3/library/sys.html#sys.stdout).
@@ -318,7 +314,7 @@ ENV APP_MODULE="custom.module:api" WORKERS_PER_CORE="2"
   # simple
   INFO       Started server process [19012]
   # verbose
-  2020-08-19 20:50:05 -0400      19012      uvicorn.error   main            INFO       Started server process [19012]
+  2020-08-19 21:07:31 -0400      19012      uvicorn.error   main            INFO       Started server process [19012]
   # gunicorn
   [2020-08-19 21:07:31 -0400] [19012] [INFO] Started server process [19012]
   # uvicorn (can also be colored)
@@ -377,31 +373,22 @@ docker build . --rm --target starlette -t localhost/br3ndonland/inboard/starlett
 ### Running development containers
 
 ```sh
-# Uvicorn with reloading
+# Run Docker container with Uvicorn and reloading
 cd inboard
 
 docker run -d -p 80:80 \
   -e "LOG_LEVEL=debug" -e "PROCESS_MANAGER=uvicorn" -e "WITH_RELOAD=true" \
-  -v $(pwd)/inboard/gunicorn_conf.py:/gunicorn_conf.py \
-  -v $(pwd)/inboard/logging_conf.py:/logging_conf.py \
-  -v $(pwd)/inboard/start.py:/start.py \
-  -v $(pwd)/inboard/app:/app localhost/br3ndonland/inboard/base
+  -v $(pwd)/inboard:/app/inboard localhost/br3ndonland/inboard/base
 
 docker run -d -p 80:80 \
   -e "LOG_LEVEL=debug" -e "PROCESS_MANAGER=uvicorn" -e "WITH_RELOAD=true" \
-  -v $(pwd)/inboard/gunicorn_conf.py:/gunicorn_conf.py \
-  -v $(pwd)/inboard/logging_conf.py:/logging_conf.py \
-  -v $(pwd)/inboard/start.py:/start.py \
-  -v $(pwd)/inboard/app:/app localhost/br3ndonland/inboard/fastapi
+  -v $(pwd)/inboard:/app/inboard localhost/br3ndonland/inboard/fastapi
 
 docker run -d -p 80:80 \
   -e "LOG_LEVEL=debug" -e "PROCESS_MANAGER=uvicorn" -e "WITH_RELOAD=true" \
-  -v $(pwd)/inboard/gunicorn_conf.py:/gunicorn_conf.py \
-  -v $(pwd)/inboard/logging_conf.py:/logging_conf.py \
-  -v $(pwd)/inboard/start.py:/start.py \
-  -v $(pwd)/inboard/app:/app localhost/br3ndonland/inboard/starlette
+  -v $(pwd)/inboard:/app/inboard localhost/br3ndonland/inboard/starlette
 
-# Gunicorn and Uvicorn
+# Run Docker container with Gunicorn and Uvicorn
 docker run -d -p 80:80 localhost/br3ndonland/inboard/base
 docker run -d -p 80:80 localhost/br3ndonland/inboard/fastapi
 docker run -d -p 80:80 localhost/br3ndonland/inboard/starlette

@@ -11,28 +11,28 @@ from typing import Any, Dict
 import uvicorn  # type: ignore
 
 
-def set_conf_path(module: str) -> Path:
+def set_conf_path(module: str) -> str:
     """Set the path to a configuration file."""
     conf_var = str(os.getenv(f"{module.upper()}_CONF"))
     if Path(conf_var).is_file():
         conf_path = conf_var
-    elif Path(f"/app/{module}_conf.py").is_file():
-        conf_path = f"/app/{module}_conf.py"
-    elif Path(f"/app/app/{module}_conf.py").is_file():
-        conf_path = f"/app/app/{module}_conf.py"
+    elif Path(f"/app/inboard/{module}_conf.py").is_file():
+        conf_path = f"/app/inboard/{module}_conf.py"
     else:
         conf_path = f"/{module}_conf.py"
     os.environ[f"{module.upper()}_CONF"] = conf_path
-    return Path(conf_path)
+    return conf_path
 
 
 def configure_logging(
-    logger: Logger = logging.getLogger(), logging_conf: Path = Path("/logging_conf.py")
+    logger: Logger = logging.getLogger(),
+    logging_conf: str = str(os.getenv("LOGGING_CONF", "/app/inboard/logging_conf.py")),
 ) -> Dict[str, Any]:
     """Configure Python logging based on a path to a logging configuration file."""
     try:
-        if isinstance(logging_conf, Path) and logging_conf.suffix == ".py":
-            spec = importlib.util.spec_from_file_location("confspec", logging_conf)
+        logging_conf_path = Path(logging_conf)
+        if logging_conf_path.is_file() and logging_conf_path.suffix == ".py":
+            spec = importlib.util.spec_from_file_location("confspec", logging_conf_path)
             logging_conf_module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(logging_conf_module)  # type: ignore
             if hasattr(logging_conf_module, "LOGGING_CONFIG"):
@@ -49,55 +49,52 @@ def configure_logging(
         else:
             raise ImportError("Valid path to .py logging config file required.")
     except Exception as e:
-        message = f"Error when configuring logging: {e}"
+        message = f"Error when configuring logging: {e}."
         logger.debug(message)
         raise
 
 
 def set_app_module(logger: Logger = logging.getLogger()) -> str:
     """Set the name of the Python module with the app instance to run."""
-    if Path("/app/main.py").is_file():
-        default_module_name = "main"
-    elif Path("/app/app/main.py").is_file():
-        default_module_name = "app.main"
-    else:
-        default_module_name = "base.main"
-    module_name = os.getenv("MODULE_NAME", default_module_name)
-    variable_name = os.getenv("VARIABLE_NAME", "app")
-    app_module = os.getenv("APP_MODULE", f"{module_name}:{variable_name}")
-    os.environ["APP_MODULE"] = app_module
-    logger.debug(f"App module set to {app_module}.")
-    return app_module
+    try:
+        module_name = os.getenv("MODULE_NAME")
+        variable_name = os.getenv("VARIABLE_NAME", "app")
+        app_module = os.getenv("APP_MODULE", f"{module_name}:{variable_name}")
+        os.environ["APP_MODULE"] = app_module
+        logger.debug(f"App module set to {app_module}.")
+        importlib.util.find_spec(app_module)
+        return app_module
+    except Exception as e:
+        message = f"Error when setting app module: {e}."
+        logger.debug(message)
+        raise
 
 
 def run_pre_start_script(logger: Logger = logging.getLogger()) -> str:
     """Run a pre-start script at the provided path."""
     try:
         logger.debug("Checking for pre-start script.")
-        pre_start_path = None
-        pre_start_path_var = os.getenv("PRE_START_PATH", "/app/prestart.py")
-        if Path(pre_start_path_var).is_file():
-            pre_start_path = pre_start_path_var
-        elif Path("/app/app/prestart.py").is_file():
-            pre_start_path = "/app/app/prestart.py"
-        else:
-            message = "No pre-start script found."
-        if pre_start_path:
+        pre_start_path = os.getenv("PRE_START_PATH", "/app/inboard/app/prestart.py")
+        if Path(pre_start_path).is_file():
             process = "python" if Path(pre_start_path).suffix == ".py" else "sh"
             run_message = f"Running pre-start script with {process} {pre_start_path}."
             logger.debug(run_message)
             subprocess.run([process, pre_start_path])
             message = f"Ran pre-start script with {process} {pre_start_path}."
+        else:
+            message = "No pre-start script found."
     except Exception as e:
-        message = f"Error from pre-start script: {e}"
+        message = f"Error from pre-start script: {e}."
     finally:
         logger.debug(message)
         return message
 
 
 def start_server(
-    app_module: str = str(os.getenv("APP_MODULE", "base.main:app")),
-    gunicorn_conf: Path = Path("/gunicorn_conf.py"),
+    app_module: str = str(os.getenv("APP_MODULE", "inboard.app.base.main:app")),
+    gunicorn_conf: str = str(
+        os.getenv("GUNICORN_CONF", "/app/inboard/gunicorn_conf.py")
+    ),
     logger: Logger = logging.getLogger(),
     logging_conf_dict: Dict[str, Any] = None,
     process_manager: str = str(os.getenv("PROCESS_MANAGER", "gunicorn")),
@@ -108,8 +105,9 @@ def start_server(
     try:
         if process_manager == "gunicorn":
             logger.debug("Running Uvicorn with Gunicorn.")
+            gunicorn_conf_path = Path(gunicorn_conf)
             subprocess.run(
-                ["gunicorn", "-k", worker_class, "-c", gunicorn_conf.name, app_module]
+                ["gunicorn", "-k", worker_class, "-c", gunicorn_conf_path, app_module]
             )
         elif process_manager == "uvicorn":
             logger.debug("Running Uvicorn without Gunicorn.")

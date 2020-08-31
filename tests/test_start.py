@@ -20,13 +20,13 @@ class TestConfPaths:
         """Test default Gunicorn configuration file path (different without Docker)."""
         assert "inboard/gunicorn_conf.py" in str(gunicorn_conf_path)
         assert "logging" not in str(gunicorn_conf_path)
-        assert start.set_conf_path("gunicorn") == gunicorn_conf_path
+        assert start.set_conf_path("gunicorn") == str(gunicorn_conf_path)
 
     def test_set_default_conf_path_logging(self, logging_conf_path: Path) -> None:
         """Test default logging configuration file path (different without Docker)."""
         assert "inboard/logging_conf.py" in str(logging_conf_path)
         assert "gunicorn" not in str(logging_conf_path)
-        assert start.set_conf_path("logging") == logging_conf_path
+        assert start.set_conf_path("logging") == str(logging_conf_path)
 
     def test_set_custom_conf_path_gunicorn(
         self, gunicorn_conf_path_tmp: Path, monkeypatch: MonkeyPatch, tmp_path: Path
@@ -36,7 +36,7 @@ class TestConfPaths:
         assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_path_tmp)
         assert f"{tmp_path}/gunicorn_conf.py" in str(gunicorn_conf_path_tmp)
         assert "logging" not in str(gunicorn_conf_path_tmp)
-        assert start.set_conf_path("gunicorn") == gunicorn_conf_path_tmp
+        assert start.set_conf_path("gunicorn") == str(gunicorn_conf_path_tmp)
 
     def test_set_custom_conf_path_logging(
         self, logging_conf_path_tmp: Path, monkeypatch: MonkeyPatch, tmp_path: Path
@@ -46,7 +46,7 @@ class TestConfPaths:
         assert os.getenv("LOGGING_CONF") == str(logging_conf_path_tmp)
         assert f"{tmp_path}/logging_conf.py" in str(logging_conf_path_tmp)
         assert "gunicorn" not in str(logging_conf_path_tmp)
-        assert start.set_conf_path("logging") == logging_conf_path_tmp
+        assert start.set_conf_path("logging") == str(logging_conf_path_tmp)
 
 
 class TestConfigureLogging:
@@ -58,7 +58,7 @@ class TestConfigureLogging:
         self, logging_conf_path: Path, mock_logger: logging.Logger
     ) -> None:
         """Test `start.configure_logging` with correct logging config path."""
-        start.configure_logging(logger=mock_logger, logging_conf=logging_conf_path)
+        start.configure_logging(logger=mock_logger, logging_conf=str(logging_conf_path))
         mock_logger.debug.assert_called_once_with(  # type: ignore
             f"Logging dict config loaded from {logging_conf_path}."
         )
@@ -67,7 +67,9 @@ class TestConfigureLogging:
         self, logging_conf_path_tmp: Path, mock_logger: logging.Logger
     ) -> None:
         """Test `start.configure_logging` with temporary logging config file."""
-        start.configure_logging(logger=mock_logger, logging_conf=logging_conf_path_tmp)
+        start.configure_logging(
+            logger=mock_logger, logging_conf=str(logging_conf_path_tmp)
+        )
         mock_logger.debug.assert_called_once_with(  # type: ignore
             f"Logging dict config loaded from {logging_conf_path_tmp}."
         )
@@ -78,12 +80,12 @@ class TestConfigureLogging:
         """Test `start.configure_logging` with incorrect temporary file type."""
         with pytest.raises(ImportError):
             start.configure_logging(
-                logger=mock_logger, logging_conf=logging_conf_path_tmp_txt
+                logger=mock_logger, logging_conf=str(logging_conf_path_tmp_txt)
             )
             import_error_msg = "Valid path to .py logging config file required."
             logger_error_msg = "Error when configuring logging:"
             mock_logger.debug.assert_called_once_with(  # type: ignore
-                f"{logger_error_msg} {import_error_msg}"
+                f"{logger_error_msg} {import_error_msg}."
             )
 
     def test_configure_logging_no_dict(
@@ -95,7 +97,7 @@ class TestConfigureLogging:
         """
         with pytest.raises(AttributeError):
             start.configure_logging(
-                logger=mock_logger, logging_conf=logging_conf_path_tmp_no_dict
+                logger=mock_logger, logging_conf=str(logging_conf_path_tmp_no_dict)
             )
             spec = importlib.util.spec_from_file_location(
                 "confspec", logging_conf_path_tmp_no_dict
@@ -105,7 +107,7 @@ class TestConfigureLogging:
             attribute_error_msg = f"No LOGGING_CONFIG in {logging_conf_module}."
             logger_error_msg = "Error when configuring logging:"
             mock_logger.debug.assert_called_once_with(  # type: ignore
-                f"{logger_error_msg} {attribute_error_msg}"
+                f"{logger_error_msg} {attribute_error_msg}."
             )
 
     def test_configure_logging_incorrect_type(
@@ -117,12 +119,13 @@ class TestConfigureLogging:
         """
         with pytest.raises(TypeError):
             start.configure_logging(
-                logger=mock_logger, logging_conf=logging_conf_path_tmp_incorrect_type
+                logger=mock_logger,
+                logging_conf=str(logging_conf_path_tmp_incorrect_type),
             )
-            type_error_msg = "LOGGING_CONFIG is not a dictionary instance."
             logger_error_msg = "Error when configuring logging:"
+            type_error_msg = "LOGGING_CONFIG is not a dictionary instance."
             mock_logger.debug.assert_called_once_with(  # type: ignore
-                f"{logger_error_msg} {type_error_msg}"
+                f"{logger_error_msg} {type_error_msg}."
             )
 
 
@@ -135,28 +138,30 @@ class TestSetAppModule:
         self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
     ) -> None:
         """Test `start.set_app_module` using module path to base ASGI app."""
-        monkeypatch.setenv("APP_MODULE", "base.main:app")
+        monkeypatch.setenv("APP_MODULE", "inboard.app.base.main:app")
         start.set_app_module(logger=mock_logger)
-        mock_logger.debug.assert_called_once_with("App module set to base.main:app.")  # type: ignore  # noqa: E501
+        mock_logger.debug.assert_called_once_with(  # type: ignore
+            "App module set to inboard.app.base.main:app."
+        )
 
     def test_set_app_module_fastapi(
         self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
     ) -> None:
         """Test `start.set_app_module` using module path to FastAPI app."""
-        monkeypatch.setenv("APP_MODULE", "fastapibase.main:app")
+        monkeypatch.setenv("APP_MODULE", "inboard.app.fastapibase.main:app")
         start.set_app_module(logger=mock_logger)
         mock_logger.debug.assert_called_once_with(  # type: ignore
-            "App module set to fastapibase.main:app."
+            "App module set to inboard.app.fastapibase.main:app."
         )
 
     def test_set_app_module_starlette(
         self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
     ) -> None:
         """Test `start.set_app_module` using module path to Starlette app."""
-        monkeypatch.setenv("APP_MODULE", "starlettebase.main:app")
+        monkeypatch.setenv("APP_MODULE", "inboard.app.starlettebase.main:app")
         start.set_app_module(logger=mock_logger)
         mock_logger.debug.assert_called_once_with(  # type: ignore
-            "App module set to starlettebase.main:app."
+            "App module set to inboard.app.starlettebase.main:app."
         )
 
     def test_set_app_variables_asgi_custom(
@@ -276,9 +281,9 @@ class TestStartServer:
     @pytest.mark.parametrize(
         "app_module",
         [
-            "inboard.base.main:app",
-            "inboard.fastapibase.main:app",
-            "inboard.starlettebase.main:app",
+            "inboard.app.base.main:app",
+            "inboard.app.fastapibase.main:app",
+            "inboard.app.starlettebase.main:app",
         ],
     )
     def test_start_server_uvicorn(
@@ -296,7 +301,7 @@ class TestStartServer:
         monkeypatch.setenv("PROCESS_MANAGER", "uvicorn")
         start.start_server(
             app_module=app_module,
-            gunicorn_conf=gunicorn_conf_path,
+            gunicorn_conf=str(gunicorn_conf_path),
             logger=mock_logger,
             logging_conf_dict=logging_conf_dict,
             with_reload=False,
@@ -306,9 +311,9 @@ class TestStartServer:
     @pytest.mark.parametrize(
         "app_module",
         [
-            "inboard.base.main:app",
-            "inboard.fastapibase.main:app",
-            "inboard.starlettebase.main:app",
+            "inboard.app.base.main:app",
+            "inboard.app.fastapibase.main:app",
+            "inboard.app.starlettebase.main:app",
         ],
     )
     def test_start_server_uvicorn_gunicorn(
@@ -326,7 +331,7 @@ class TestStartServer:
         monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
         start.start_server(
             app_module=app_module,
-            gunicorn_conf=gunicorn_conf_path,
+            gunicorn_conf=str(gunicorn_conf_path),
             logger=mock_logger,
             logging_conf_dict=logging_conf_dict,
         )
@@ -346,7 +351,7 @@ class TestStartServer:
             monkeypatch.setenv("WITH_RELOAD", "false")
             start.start_server(
                 app_module="incorrect.base.main:app",
-                gunicorn_conf=gunicorn_conf_path,
+                gunicorn_conf=str(gunicorn_conf_path),
                 logger=mock_logger,
                 logging_conf_dict=logging_conf_dict,
                 process_manager="uvicorn",
@@ -363,9 +368,9 @@ class TestStartServer:
     @pytest.mark.parametrize(
         "app_module",
         [
-            "inboard.base.main:app",
-            "inboard.fastapibase.main:app",
-            "inboard.starlettebase.main:app",
+            "inboard.app.base.main:app",
+            "inboard.app.fastapibase.main:app",
+            "inboard.app.starlettebase.main:app",
         ],
     )
     def test_start_server_uvicorn_incorrect_process_manager(
@@ -383,7 +388,7 @@ class TestStartServer:
             monkeypatch.setenv("WITH_RELOAD", "false")
             start.start_server(
                 app_module=app_module,
-                gunicorn_conf=gunicorn_conf_path,
+                gunicorn_conf=str(gunicorn_conf_path),
                 logger=mock_logger,
                 logging_conf_dict=logging_conf_dict,
                 process_manager="incorrect",
