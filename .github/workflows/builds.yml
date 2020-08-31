@@ -55,9 +55,9 @@ jobs:
         run: docker login https://docker.pkg.github.com -u ${{ github.actor }} -p ${{ github.token }}
       - name: Build Docker images
         run: |
-          docker build . --rm --target base -t br3ndonland/inboard/base:latest --cache-from python:3.8
-          docker build . --rm --target fastapi -t br3ndonland/inboard/fastapi:latest
-          docker build . --rm --target starlette -t br3ndonland/inboard/starlette:latest
+          docker build . --rm --target base -t docker.pkg.github.com/br3ndonland/inboard/base:latest --cache-from python:3.8
+          docker build . --rm --target fastapi -t docker.pkg.github.com/br3ndonland/inboard/fastapi:latest
+          docker build . --rm --target starlette -t docker.pkg.github.com/br3ndonland/inboard/starlette:latest
       - name: Push Docker images to registry
         run: |
           docker push docker.pkg.github.com/br3ndonland/inboard/base:latest
@@ -67,9 +67,9 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           GIT_TAG=$(echo ${{ github.ref }} | cut -d / -f 3)
-          docker tag br3ndonland/inboard/base br3ndonland/inboard/base:"$GIT_TAG"
-          docker tag br3ndonland/inboard/fastapi br3ndonland/inboard/fastapi:"$GIT_TAG"
-          docker tag br3ndonland/inboard/starlette br3ndonland/inboard/starlette:"$GIT_TAG"
+          docker tag docker.pkg.github.com/br3ndonland/inboard/base br3ndonland/inboard/base:"$GIT_TAG"
+          docker tag docker.pkg.github.com/br3ndonland/inboard/fastapi br3ndonland/inboard/fastapi:"$GIT_TAG"
+          docker tag docker.pkg.github.com/br3ndonland/inboard/starlette br3ndonland/inboard/starlette:"$GIT_TAG"
           docker push docker.pkg.github.com/br3ndonland/inboard/base:"$GIT_TAG"
           docker push docker.pkg.github.com/br3ndonland/inboard/fastapi:"$GIT_TAG"
           docker push docker.pkg.github.com/br3ndonland/inboard/starlette:"$GIT_TAG"
