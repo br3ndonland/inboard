@@ -87,7 +87,7 @@ class TestEndpoints:
     def test_gets_with_basic_auth(
         self, basic_auth: tuple, clients: List[TestClient], endpoint: str
     ) -> None:
-        """Test a `GET` request to endpoints that require HTTP Basic Auth."""
+        """Test `GET` requests to endpoints that require HTTP Basic Auth."""
         for client in clients:
             assert client.get(endpoint).status_code in [401, 403]
             response = client.get(endpoint, auth=basic_auth)
@@ -96,6 +96,24 @@ class TestEndpoints:
             assert "status" in response.json().keys()
             assert response.json()["application"] == "inboard"
             assert response.json()["status"] == "active"
+
+    @pytest.mark.parametrize("endpoint", ["/health", "/status"])
+    def test_gets_with_basic_auth_incorrect(
+        self, basic_auth: tuple, clients: List[TestClient], endpoint: str
+    ) -> None:
+        """Test `GET` requests to Basic Auth endpoints with incorrect credentials."""
+        basic_auth_username, basic_auth_password = basic_auth
+        for client in clients:
+            assert client.get(endpoint).status_code in [401, 403]
+            auth_combos = [
+                ("incorrect_username", "incorrect_password"),
+                ("incorrect_username", basic_auth_password),
+                (basic_auth_username, "incorrect_password"),
+            ]
+            responses = [client.get(endpoint, auth=combo) for combo in auth_combos]
+            assert [response.status_code in [401, 403] for response in responses]
+            response = client.get(endpoint, auth=basic_auth)
+            assert response.status_code == 200
 
     def test_get_status_message(
         self,
