@@ -73,13 +73,21 @@ keybase decrypt -i pat-ghcr.asc | docker login ghcr.io -u YOUR_GITHUB_USERNAME -
 
 ### Pull images
 
-After logging in, you can then pull images from `ghcr.io`. Docker uses the `latest` tag by default.
+After logging in, you can then pull images from `ghcr.io`.
 
 ```sh
-docker pull ghcr.io/br3ndonland/inboard/base
-docker pull ghcr.io/br3ndonland/inboard/fastapi
-docker pull ghcr.io/br3ndonland/inboard/starlette
+# Pull most recent version of each image
+docker pull ghcr.io/br3ndonland/inboard:base
+docker pull ghcr.io/br3ndonland/inboard:fastapi
+docker pull ghcr.io/br3ndonland/inboard:starlette
+
+# Pull image from specific release
+docker pull ghcr.io/br3ndonland/inboard:base-0.2.0
+docker pull ghcr.io/br3ndonland/inboard:fastapi-0.2.0
+docker pull ghcr.io/br3ndonland/inboard:starlette-0.2.0
 ```
+
+The FastAPI image is also tagged with `latest`. Docker uses the `latest` tag by default, so simply running `docker pull ghcr.io/br3ndonland/inboard` will pull the FastAPI image.
 
 ### Use images in a _Dockerfile_
 
@@ -96,7 +104,7 @@ For a [Poetry](https://github.com/python-poetry/poetry) project with the followi
 The _Dockerfile_ could look like this:
 
 ```dockerfile
-FROM ghcr.io/br3ndonland/inboard/fastapi
+FROM ghcr.io/br3ndonland/inboard:fastapi
 
 # Install Python requirements
 COPY poetry.lock pyproject.toml /app/
@@ -121,7 +129,7 @@ For a standard `pip` install:
   - `requirements.txt`
 
 ```dockerfile
-FROM ghcr.io/br3ndonland/inboard/fastapi
+FROM ghcr.io/br3ndonland/inboard:fastapi
 
 # Install Python requirements
 COPY requirements.txt /app/
@@ -174,8 +182,8 @@ Details on the `docker run` command:
 Hit an API endpoint:
 
 ```sh
-docker pull ghcr.io/br3ndonland/inboard/fastapi
-docker run -d -p 80:80 ghcr.io/br3ndonland/inboard/fastapi
+docker pull ghcr.io/br3ndonland/inboard:fastapi
+docker run -d -p 80:80 ghcr.io/br3ndonland/inboard:fastapi
 http :80  # HTTPie: https://httpie.org/
 ```
 
@@ -202,7 +210,7 @@ docker run -d -p 80:80 -e APP_MODULE="package.custom.module:api" -e WORKERS_PER_
 To set environment variables within a _Dockerfile_:
 
 ```dockerfile
-FROM ghcr.io/br3ndonland/inboard/fastapi
+FROM ghcr.io/br3ndonland/inboard:fastapi
 ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 ```
 
@@ -364,9 +372,9 @@ git clone git@github.com:br3ndonland/inboard.git
 
 cd inboard
 
-docker build . --rm --target base -t localhost/br3ndonland/inboard/base:latest && \
-docker build . --rm --target fastapi -t localhost/br3ndonland/inboard/fastapi:latest && \
-docker build . --rm --target starlette -t localhost/br3ndonland/inboard/starlette:latest
+docker build . --rm --target base -t localhost/br3ndonland/inboard:base && \
+docker build . --rm --target fastapi -t localhost/br3ndonland/inboard:fastapi && \
+docker build . --rm --target starlette -t localhost/br3ndonland/inboard:starlette
 ```
 
 ### Running development containers
@@ -377,20 +385,20 @@ cd inboard
 
 docker run -d -p 80:80 \
   -e "LOG_LEVEL=debug" -e "PROCESS_MANAGER=uvicorn" -e "WITH_RELOAD=true" \
-  -v $(pwd)/inboard:/app/inboard localhost/br3ndonland/inboard/base
+  -v $(pwd)/inboard:/app/inboard localhost/br3ndonland/inboard:base
 
 docker run -d -p 80:80 \
   -e "LOG_LEVEL=debug" -e "PROCESS_MANAGER=uvicorn" -e "WITH_RELOAD=true" \
-  -v $(pwd)/inboard:/app/inboard localhost/br3ndonland/inboard/fastapi
+  -v $(pwd)/inboard:/app/inboard localhost/br3ndonland/inboard:fastapi
 
 docker run -d -p 80:80 \
   -e "LOG_LEVEL=debug" -e "PROCESS_MANAGER=uvicorn" -e "WITH_RELOAD=true" \
-  -v $(pwd)/inboard:/app/inboard localhost/br3ndonland/inboard/starlette
+  -v $(pwd)/inboard:/app/inboard localhost/br3ndonland/inboard:starlette
 
 # Run Docker container with Gunicorn and Uvicorn
-docker run -d -p 80:80 localhost/br3ndonland/inboard/base
-docker run -d -p 80:80 localhost/br3ndonland/inboard/fastapi
-docker run -d -p 80:80 localhost/br3ndonland/inboard/starlette
+docker run -d -p 80:80 localhost/br3ndonland/inboard:base
+docker run -d -p 80:80 localhost/br3ndonland/inboard:fastapi
+docker run -d -p 80:80 localhost/br3ndonland/inboard:starlette
 
 # Test HTTP Basic Auth when running the FastAPI or Starlette images:
 http :80/status --auth-type=basic --auth=test_username:plunge-germane-tribal-pillar
