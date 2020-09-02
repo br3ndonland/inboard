@@ -55,13 +55,12 @@ jobs:
         run: |
           docker build . --rm --target base -t ghcr.io/br3ndonland/inboard:base --cache-from python:3.8
           docker build . --rm --target starlette -t ghcr.io/br3ndonland/inboard:starlette
-          docker build . --rm --target fastapi -t ghcr.io/br3ndonland/inboard:fastapi -t ghcr.io/br3ndonland/inboard:latest
+          docker build . --rm --target fastapi -t ghcr.io/br3ndonland/inboard:fastapi
       - name: Push Docker images to registry
         run: |
           docker push ghcr.io/br3ndonland/inboard:base
           docker push ghcr.io/br3ndonland/inboard:starlette
           docker push ghcr.io/br3ndonland/inboard:fastapi
-          docker push ghcr.io/br3ndonland/inboard:latest
       - name: Add Git tag to Docker images if workflow was triggered by pushing a tag
         if: startsWith(github.ref, 'refs/tags/')
         run: |
@@ -72,3 +71,7 @@ jobs:
           docker push ghcr.io/br3ndonland/inboard:base-"$GIT_TAG"
           docker push ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG"
           docker push ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG"
+      - name: Tag and push latest image
+        run: |
+          docker tag ghcr.io/br3ndonland/inboard:fastapi ghcr.io/br3ndonland/inboard:latest
+          docker push ghcr.io/br3ndonland/inboard:latest
