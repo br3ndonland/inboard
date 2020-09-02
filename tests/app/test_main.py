@@ -1,7 +1,7 @@
 import re
 from typing import Dict, List
 
-import pytest  # type: ignore
+import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from starlette.applications import Starlette

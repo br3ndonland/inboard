@@ -4,9 +4,9 @@ import shutil
 from pathlib import Path
 from typing import Any, Dict, List
 
-import pytest  # type: ignore
-from _pytest.monkeypatch import MonkeyPatch  # type: ignore
-from _pytest.tmpdir import TempPathFactory  # type: ignore
+import pytest
+from _pytest.monkeypatch import MonkeyPatch
+from _pytest.tmpdir import TempPathFactory
 from fastapi.testclient import TestClient
 from pytest_mock import MockerFixture
 

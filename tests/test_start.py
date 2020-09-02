@@ -4,8 +4,8 @@ import os
 from pathlib import Path
 from typing import Any, Dict
 
-import pytest  # type: ignore
-from _pytest.monkeypatch import MonkeyPatch  # type: ignore
+import pytest
+from _pytest.monkeypatch import MonkeyPatch
 from pytest_mock import MockerFixture
 
 from inboard import start
@@ -53,6 +53,17 @@ class TestConfigureLogging:
     """Test logging configuration methods.
     ---
     """
+
+    def test_configure_logging_conf_module(
+        self, logging_conf_module_path: str, mock_logger: logging.Logger
+    ) -> None:
+        """Test `start.configure_logging` with correct logging config path."""
+        start.configure_logging(
+            logger=mock_logger, logging_conf=logging_conf_module_path
+        )
+        mock_logger.debug.assert_called_once_with(  # type: ignore
+            f"Logging dict config loaded from {logging_conf_module_path}."
+        )
 
     def test_configure_logging_conf_path(
         self, logging_conf_path: Path, mock_logger: logging.Logger
