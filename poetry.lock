@@ -51,7 +51,7 @@ colorama = ["colorama (>=0.4.3)"]
 d = ["aiohttp (>=3.3.2)", "aiohttp-cors"]
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Python package for providing Mozilla's CA Bundle."
 name = "certifi"
 optional = false
@@ -67,7 +67,7 @@ python-versions = ">=3.6.1"
 version = "3.2.0"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Universal encoding detector for Python 2 and 3"
 name = "chardet"
 optional = false
@@ -205,7 +205,7 @@ version = "1.4.29"
 license = ["editdistance"]
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Internationalized Domain Names in Applications (IDNA)"
 name = "idna"
 optional = false
@@ -436,7 +436,7 @@ python-versions = "*"
 version = "2020.7.14"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Python HTTP for Humans."
 name = "requests"
 optional = false
@@ -497,7 +497,7 @@ python-versions = "*"
 version = "3.7.4.3"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 name = "urllib3"
 optional = false
@@ -575,11 +575,10 @@ version = "8.1"
 
 [extras]
 fastapi = ["fastapi"]
-requests = ["requests"]
 starlette = ["starlette"]
 
 [metadata]
-content-hash = "e31b56fa00fcbf0df425c724713ea9ad539cd4083bfee84fa86ccf22620fb678"
+content-hash = "3f097b81e4ddbaecd434ae5db10a3aa1f8eb994ec9488befe55cfedd84d37219"
 lock-version = "1.0"
 python-versions = "^3.8"
 
