@@ -18,7 +18,7 @@ from inboard.app.starlettebase.main import app as starlette_app
 
 
 @pytest.fixture(scope="session")
-def app_module_tmp_dir(tmp_path_factory: TempPathFactory) -> Path:
+def app_module_tmp_path(tmp_path_factory: TempPathFactory) -> Path:
     """Copy app modules to temporary directory to test custom app module paths."""
     tmp_dir = tmp_path_factory.mktemp("app")
     shutil.copytree(f"{Path(pre_start_module.__file__).parent}", f"{tmp_dir}/tmp_app")
@@ -68,50 +68,40 @@ def logging_conf_dict(mocker: MockerFixture) -> Dict[str, Any]:
 
 
 @pytest.fixture
-def logging_conf_path(monkeypatch: MonkeyPatch) -> Path:
-    """Set path to default logging configuration file."""
-    path = Path(logging_conf_module.__file__)
-    monkeypatch.setenv("LOGGING_CONF", str(path))
-    assert os.getenv("LOGGING_CONF") == str(path)
+def logging_conf_module_path(monkeypatch: MonkeyPatch) -> str:
+    """Set module path to logging_conf.py."""
+    path = "inboard.logging_conf"
+    monkeypatch.setenv("LOGGING_CONF", path)
+    assert os.getenv("LOGGING_CONF") == path
     return path
 
 
-@pytest.fixture
-def logging_conf_path_tmp(tmp_path: Path) -> Path:
-    """Copy logging configuration file to custom temporary file."""
-    tmp_file = shutil.copy(Path(logging_conf_module.__file__), tmp_path)
-    return Path(tmp_file)
+@pytest.fixture(scope="session")
+def logging_conf_tmp_path(tmp_path_factory: TempPathFactory) -> Path:
+    """Copy logging configuration module to custom temporary location."""
+    tmp_dir = tmp_path_factory.mktemp("tmp_log")
+    shutil.copy(Path(logging_conf_module.__file__), f"{tmp_dir}/tmp_log.py")
+    return tmp_dir
 
 
-@pytest.fixture
-def logging_conf_path_tmp_txt(tmp_path: Path) -> Path:
-    """Create custom temporary logging config file with incorrect extension."""
-    tmp_file = tmp_path / "tmp_logging_conf.txt"
-    return Path(tmp_file)
-
-
-@pytest.fixture
-def logging_conf_path_tmp_no_dict(tmp_path: Path) -> Path:
-    """Create custom temporary logging config file.
-    - Correct extension
-    - No `LOGGING_CONFIG` object
-    """
-    tmp_file = tmp_path / "tmp_logging_conf.py"
+@pytest.fixture(scope="session")
+def logging_conf_tmp_path_no_dict(tmp_path_factory: TempPathFactory) -> Path:
+    """Create temporary logging config file without logging config dict."""
+    tmp_dir = tmp_path_factory.mktemp("tmp_log_no_dict")
+    tmp_file = tmp_dir / "no_dict.py"
     with open(Path(tmp_file), "x") as f:
         f.write("print('Hello, World!')\n")
-    return Path(tmp_file)
+    return tmp_dir
 
 
-@pytest.fixture
-def logging_conf_path_tmp_incorrect_type(tmp_path: Path) -> Path:
-    """Create custom temporary logging config file.
-    - Correct extension
-    - Incorrect data type for `LOGGING_CONFIG` object
-    """
-    tmp_file = tmp_path / "tmp_logging_conf_incorrect_type.py"
+@pytest.fixture(scope="session")
+def logging_conf_tmp_path_incorrect_type(tmp_path_factory: TempPathFactory) -> Path:
+    """Create temporary logging config file with incorrect LOGGING_CONFIG type."""
+    tmp_dir = tmp_path_factory.mktemp("tmp_log_incorrect_type")
+    tmp_file = tmp_dir / "incorrect_type.py"
     with open(Path(tmp_file), "x") as f:
         f.write("LOGGING_CONFIG: list = ['Hello', 'World']\n")
-    return Path(tmp_file)
+    return tmp_dir
 
 
 @pytest.fixture

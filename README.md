@@ -248,7 +248,9 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
     - `"/app/inboard/gunicorn_conf.py"` (the default file provided with the Docker image)
   - Custom:
     - `GUNICORN_CONF="/app/package/custom_gunicorn_conf.py"`
+  - Notes
     - Feel free to use the [`gunicorn_conf.py`](./inboard/gunicorn_conf.py) from this repo as a starting point for your own custom configuration.
+    - `GUNICORN_CONF` accepts a file path, instead of a module path, because Gunicorn is typically only run from within Docker, where the file path will be predictable.
 - `HOST`: Host IP address (inside of the container) where Gunicorn will listen for requests.
   - Default: `"0.0.0.0"`
   - Custom: _TODO_
@@ -299,11 +301,9 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 ### Logging
 
-- `LOGGING_CONF`: Path to a [Python logging configuration file](https://docs.python.org/3/library/logging.config.html). The configuration must be a new-style `.py` file, containing a configuration dictionary object named `LOGGING_CONFIG`. The `LOGGING_CONFIG` dictionary will be passed to [`logging.config.dictConfig()`](https://docs.python.org/3/library/logging.config.html). See [br3ndonland/inboard#3](https://github.com/br3ndonland/inboard/pull/3) for more details on this design choice.
-  - Default:
-    - `"/app/inboard/logging_conf.py"` (the default file provided with the Docker image)
-  - Custom:
-    - `LOGGING_CONF="/app/package/custom_logging.py"`
+- `LOGGING_CONF`: Python module containing a logging [configuration dictionary object](https://docs.python.org/3/library/logging.config.html) named `LOGGING_CONFIG`. The `LOGGING_CONFIG` dictionary will be passed to [`logging.config.dictConfig()`](https://docs.python.org/3/library/logging.config.html). See [br3ndonland/inboard#3](https://github.com/br3ndonland/inboard/pull/3) for more details on this design choice.
+  - Default: `"inboard.logging_conf"` (the default module provided with inboard)
+  - Custom: For a logging config module at `/app/package/custom_logging.py`, `LOGGING_CONF="package.custom_logging"`.
 - `LOG_COLORS`: Whether or not to color log messages. Currently only supported for `LOG_FORMAT="uvicorn"`.
   - Default:
     - Auto-detected based on [`sys.stdout.isatty()`](https://docs.python.org/3/library/sys.html#sys.stdout).

@@ -1,4 +1,3 @@
-import importlib.util
 import logging
 import os
 from pathlib import Path
@@ -22,12 +21,6 @@ class TestConfPaths:
         assert "logging" not in str(gunicorn_conf_path)
         assert start.set_conf_path("gunicorn") == str(gunicorn_conf_path)
 
-    def test_set_default_conf_path_logging(self, logging_conf_path: Path) -> None:
-        """Test default logging configuration file path (different without Docker)."""
-        assert "inboard/logging_conf.py" in str(logging_conf_path)
-        assert "gunicorn" not in str(logging_conf_path)
-        assert start.set_conf_path("logging") == str(logging_conf_path)
-
     def test_set_custom_conf_path_gunicorn(
         self, gunicorn_conf_path_tmp: Path, monkeypatch: MonkeyPatch, tmp_path: Path
     ) -> None:
@@ -37,16 +30,6 @@ class TestConfPaths:
         assert f"{tmp_path}/gunicorn_conf.py" in str(gunicorn_conf_path_tmp)
         assert "logging" not in str(gunicorn_conf_path_tmp)
         assert start.set_conf_path("gunicorn") == str(gunicorn_conf_path_tmp)
-
-    def test_set_custom_conf_path_logging(
-        self, logging_conf_path_tmp: Path, monkeypatch: MonkeyPatch, tmp_path: Path
-    ) -> None:
-        """Set path to custom temporary logging configuration file."""
-        monkeypatch.setenv("LOGGING_CONF", str(logging_conf_path_tmp))
-        assert os.getenv("LOGGING_CONF") == str(logging_conf_path_tmp)
-        assert f"{tmp_path}/logging_conf.py" in str(logging_conf_path_tmp)
-        assert "gunicorn" not in str(logging_conf_path_tmp)
-        assert start.set_conf_path("logging") == str(logging_conf_path_tmp)
 
 
 class TestConfigureLogging:
@@ -58,81 +41,59 @@ class TestConfigureLogging:
         self, logging_conf_module_path: str, mock_logger: logging.Logger
     ) -> None:
         """Test `start.configure_logging` with correct logging config path."""
-        start.configure_logging(
-            logger=mock_logger, logging_conf=logging_conf_module_path
-        )
+        start.configure_logging(logger=mock_logger)
         mock_logger.debug.assert_called_once_with(  # type: ignore
             f"Logging dict config loaded from {logging_conf_module_path}."
         )
 
-    def test_configure_logging_conf_path(
-        self, logging_conf_path: Path, mock_logger: logging.Logger
+    def test_configure_logging_conf_module_tmp(
+        self,
+        logging_conf_tmp_path: Path,
+        mock_logger: logging.Logger,
+        monkeypatch: MonkeyPatch,
     ) -> None:
-        """Test `start.configure_logging` with correct logging config path."""
-        start.configure_logging(logger=mock_logger, logging_conf=str(logging_conf_path))
+        """Test `start.configure_logging` with temporary logging config path."""
+        monkeypatch.syspath_prepend(logging_conf_tmp_path)
+        monkeypatch.setenv("LOGGING_CONF", "tmp_log")
+        start.configure_logging(logger=mock_logger)
         mock_logger.debug.assert_called_once_with(  # type: ignore
-            f"Logging dict config loaded from {logging_conf_path}."
+            "Logging dict config loaded from tmp_log."
         )
 
-    def test_configure_logging_conf_path_tmp(
-        self, logging_conf_path_tmp: Path, mock_logger: logging.Logger
+    def test_configure_logging_conf_module_tmp_no_dict(
+        self,
+        logging_conf_tmp_path_no_dict: Path,
+        mock_logger: logging.Logger,
+        monkeypatch: MonkeyPatch,
     ) -> None:
-        """Test `start.configure_logging` with temporary logging config file."""
-        start.configure_logging(
-            logger=mock_logger, logging_conf=str(logging_conf_path_tmp)
-        )
-        mock_logger.debug.assert_called_once_with(  # type: ignore
-            f"Logging dict config loaded from {logging_conf_path_tmp}."
-        )
-
-    def test_configure_logging_incorrect_extension(
-        self, logging_conf_path_tmp_txt: Path, mock_logger: logging.Logger
-    ) -> None:
-        """Test `start.configure_logging` with incorrect temporary file type."""
-        with pytest.raises(ImportError):
-            start.configure_logging(
-                logger=mock_logger, logging_conf=str(logging_conf_path_tmp_txt)
-            )
-            import_error_msg = "Valid path to .py logging config file required."
-            logger_error_msg = "Error when configuring logging:"
-            mock_logger.debug.assert_called_once_with(  # type: ignore
-                f"{logger_error_msg} {import_error_msg}."
-            )
-
-    def test_configure_logging_no_dict(
-        self, logging_conf_path_tmp_no_dict: Path, mock_logger: logging.Logger
-    ) -> None:
-        """Test `start.configure_logging` with temporary logging config file.
-        - Correct extension
+        """Test `start.configure_logging` with temporary logging config path.
+        - Correct module name
         - No `LOGGING_CONFIG` object
         """
+        monkeypatch.syspath_prepend(logging_conf_tmp_path_no_dict)
+        monkeypatch.setenv("LOGGING_CONF", "no_dict")
         with pytest.raises(AttributeError):
-            start.configure_logging(
-                logger=mock_logger, logging_conf=str(logging_conf_path_tmp_no_dict)
-            )
-            spec = importlib.util.spec_from_file_location(
-                "confspec", logging_conf_path_tmp_no_dict
-            )
-            logging_conf_module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(logging_conf_module)  # type: ignore
-            attribute_error_msg = f"No LOGGING_CONFIG in {logging_conf_module}."
+            start.configure_logging(logger=mock_logger)
             logger_error_msg = "Error when configuring logging:"
+            attribute_error_msg = "No LOGGING_CONFIG in no_dict."
             mock_logger.debug.assert_called_once_with(  # type: ignore
                 f"{logger_error_msg} {attribute_error_msg}."
             )
 
-    def test_configure_logging_incorrect_type(
-        self, logging_conf_path_tmp_incorrect_type: Path, mock_logger: logging.Logger
+    def test_configure_logging_conf_module_tmp_incorrect_type(
+        self,
+        logging_conf_tmp_path_incorrect_type: Path,
+        mock_logger: logging.Logger,
+        monkeypatch: MonkeyPatch,
     ) -> None:
-        """Test `start.configure_logging` with temporary logging config file.
-        - Correct extension
-        - Incorrect data type for `LOGGING_CONFIG` object
+        """Test `start.configure_logging` with temporary logging config path.
+        - Correct module name
+        - `LOGGING_CONFIG` object with incorrect type
         """
+        monkeypatch.syspath_prepend(logging_conf_tmp_path_incorrect_type)
+        monkeypatch.setenv("LOGGING_CONF", "incorrect_type")
         with pytest.raises(TypeError):
-            start.configure_logging(
-                logger=mock_logger,
-                logging_conf=str(logging_conf_path_tmp_incorrect_type),
-            )
+            start.configure_logging(logger=mock_logger)
             logger_error_msg = "Error when configuring logging:"
             type_error_msg = "LOGGING_CONFIG is not a dictionary instance."
             mock_logger.debug.assert_called_once_with(  # type: ignore
@@ -177,12 +138,12 @@ class TestSetAppModule:
 
     def test_set_app_module_custom_asgi(
         self,
-        app_module_tmp_dir: Path,
+        app_module_tmp_path: Path,
         mock_logger: logging.Logger,
         monkeypatch: MonkeyPatch,
     ) -> None:
         """Test `start.set_app_module` with custom module path to base ASGI app."""
-        monkeypatch.syspath_prepend(app_module_tmp_dir)
+        monkeypatch.syspath_prepend(app_module_tmp_path)
         monkeypatch.setenv("APP_MODULE", "tmp_app.base.main:app")
         start.set_app_module(logger=mock_logger)
         mock_logger.debug.assert_called_once_with(  # type: ignore
@@ -191,12 +152,12 @@ class TestSetAppModule:
 
     def test_set_app_module_custom_fastapi(
         self,
-        app_module_tmp_dir: Path,
+        app_module_tmp_path: Path,
         mock_logger: logging.Logger,
         monkeypatch: MonkeyPatch,
     ) -> None:
         """Test `start.set_app_module` with custom module path to FastAPI app."""
-        monkeypatch.syspath_prepend(app_module_tmp_dir)
+        monkeypatch.syspath_prepend(app_module_tmp_path)
         monkeypatch.setenv("APP_MODULE", "tmp_app.fastapibase.main:app")
         start.set_app_module(logger=mock_logger)
         mock_logger.debug.assert_called_once_with(  # type: ignore
@@ -205,12 +166,12 @@ class TestSetAppModule:
 
     def test_set_app_module_custom_starlette(
         self,
-        app_module_tmp_dir: Path,
+        app_module_tmp_path: Path,
         mock_logger: logging.Logger,
         monkeypatch: MonkeyPatch,
     ) -> None:
         """Test `start.set_app_module` with custom module path to Starlette app."""
-        monkeypatch.syspath_prepend(app_module_tmp_dir)
+        monkeypatch.syspath_prepend(app_module_tmp_path)
         monkeypatch.setenv("APP_MODULE", "tmp_app.starlettebase.main:app")
         start.set_app_module(logger=mock_logger)
         mock_logger.debug.assert_called_once_with(  # type: ignore

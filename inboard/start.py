@@ -11,45 +11,39 @@ from typing import Any, Dict
 import uvicorn  # type: ignore
 
 
-def set_conf_path(module: str) -> str:
+def set_conf_path(module_stem: str) -> str:
     """Set the path to a configuration file."""
-    conf_var = str(os.getenv(f"{module.upper()}_CONF"))
+    conf_var = str(os.getenv(f"{module_stem.upper()}_CONF"))
     if Path(conf_var).is_file():
         conf_path = conf_var
-    elif Path(f"/app/inboard/{module}_conf.py").is_file():
-        conf_path = f"/app/inboard/{module}_conf.py"
+    elif Path(f"/app/inboard/{module_stem}_conf.py").is_file():
+        conf_path = f"/app/inboard/{module_stem}_conf.py"
     else:
-        conf_path = f"/{module}_conf.py"
-    os.environ[f"{module.upper()}_CONF"] = conf_path
+        conf_path = f"/{module_stem}_conf.py"
+    os.environ[f"{module_stem.upper()}_CONF"] = conf_path
     return conf_path
 
 
-def configure_logging(
-    logger: Logger = logging.getLogger(),
-    logging_conf: str = str(os.getenv("LOGGING_CONF", "/app/inboard/logging_conf.py")),
-) -> Dict[str, Any]:
-    """Configure Python logging based on a path to a logging configuration file."""
+def configure_logging(logger: Logger = logging.getLogger()) -> Dict[str, Any]:
+    """Configure Python logging based on a path to a logging module or file."""
     try:
-        logging_conf_path = Path(logging_conf)
-        if logging_conf_path.is_file() and logging_conf_path.suffix == ".py":
-            spec = importlib.util.spec_from_file_location("confspec", logging_conf_path)
-            logging_conf_module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(logging_conf_module)  # type: ignore
-            if hasattr(logging_conf_module, "LOGGING_CONFIG"):
-                logging_conf_dict = getattr(logging_conf_module, "LOGGING_CONFIG")
-            else:
-                raise AttributeError(f"No LOGGING_CONFIG in {logging_conf_module}.")
-            if isinstance(logging_conf_dict, dict):
-                logging.config.dictConfig(logging_conf_dict)
-                message = f"Logging dict config loaded from {logging_conf}."
-                logger.debug(message)
-                return logging_conf_dict
-            else:
-                raise TypeError("LOGGING_CONFIG is not a dictionary instance.")
+        logging_conf_path = str(os.getenv("LOGGING_CONF", "inboard.logging_conf"))
+        spec = importlib.util.find_spec(logging_conf_path)
+        logging_conf_module = importlib.util.module_from_spec(spec)  # type: ignore
+        spec.loader.exec_module(logging_conf_module)  # type: ignore
+        if hasattr(logging_conf_module, "LOGGING_CONFIG"):
+            logging_conf_dict = getattr(logging_conf_module, "LOGGING_CONFIG")
         else:
-            raise ImportError("Valid path to .py logging config file required.")
+            raise AttributeError(f"No LOGGING_CONFIG in {logging_conf_module}.")
+        if isinstance(logging_conf_dict, dict):
+            logging.config.dictConfig(logging_conf_dict)
+            message = f"Logging dict config loaded from {logging_conf_path}."
+            logger.debug(message)
+            return logging_conf_dict
+        else:
+            raise TypeError("LOGGING_CONFIG is not a dictionary instance.")
     except Exception as e:
-        message = f"Error when configuring logging: {e}."
+        message = f"Error when setting logging module: {e}."
         logger.debug(message)
         raise
 
@@ -125,8 +119,7 @@ def start_server(
 
 if __name__ == "__main__":
     logger = logging.getLogger()
-    logging_conf_path = set_conf_path("logging")
-    logging_conf_dict = configure_logging(logger=logger, logging_conf=logging_conf_path)
+    logging_conf_dict = configure_logging(logger=logger)
     gunicorn_conf_path = set_conf_path("gunicorn")
     app_module = set_app_module(logger=logger)
     run_pre_start_script(logger=logger)
