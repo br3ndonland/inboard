@@ -20,4 +20,4 @@ Closes organization/repo#number
 
 <!-- List issues for GitHub to automatically close after merge to default branch. Type `#` and select from the list. See the [GitHub docs on linking PRs to issues](https://help.github.com/en/github/managing-your-work-on-github/linking-a-pull-request-to-an-issue) for more. -->
 
-- [ ] I have reviewed the [Guidelines for Contributing](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md).
+- [x] I have reviewed the [Guidelines for Contributing](https://github.com/br3ndonland/inboard/blob/develop/.github/CONTRIBUTING.md) and the [Code of Conduct](https://github.com/br3ndonland/inboard/blob/develop/.github/CODE_OF_CONDUCT.md).

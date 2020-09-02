@@ -50,24 +50,24 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Log in to Docker registry
-        run: docker login https://docker.pkg.github.com -u ${{ github.actor }} -p ${{ github.token }}
+        run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.PAT_GHCR }}
       - name: Build Docker images
         run: |
-          docker build . --rm --target base -t docker.pkg.github.com/br3ndonland/inboard/base:latest --cache-from python:3.8
-          docker build . --rm --target fastapi -t docker.pkg.github.com/br3ndonland/inboard/fastapi:latest
-          docker build . --rm --target starlette -t docker.pkg.github.com/br3ndonland/inboard/starlette:latest
+          docker build . --rm --target base -t ghcr.io/br3ndonland/inboard/base:latest --cache-from python:3.8
+          docker build . --rm --target fastapi -t ghcr.io/br3ndonland/inboard/fastapi:latest
+          docker build . --rm --target starlette -t ghcr.io/br3ndonland/inboard/starlette:latest
       - name: Push Docker images to registry
         run: |
-          docker push docker.pkg.github.com/br3ndonland/inboard/base:latest
-          docker push docker.pkg.github.com/br3ndonland/inboard/fastapi:latest
-          docker push docker.pkg.github.com/br3ndonland/inboard/starlette:latest
+          docker push ghcr.io/br3ndonland/inboard/base:latest
+          docker push ghcr.io/br3ndonland/inboard/fastapi:latest
+          docker push ghcr.io/br3ndonland/inboard/starlette:latest
       - name: Add Git tag to Docker images if workflow was triggered by pushing a tag
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           GIT_TAG=$(echo ${{ github.ref }} | cut -d / -f 3)
-          docker tag docker.pkg.github.com/br3ndonland/inboard/base docker.pkg.github.com/br3ndonland/inboard/base:"$GIT_TAG"
-          docker tag docker.pkg.github.com/br3ndonland/inboard/fastapi docker.pkg.github.com/br3ndonland/inboard/fastapi:"$GIT_TAG"
-          docker tag docker.pkg.github.com/br3ndonland/inboard/starlette docker.pkg.github.com/br3ndonland/inboard/starlette:"$GIT_TAG"
-          docker push docker.pkg.github.com/br3ndonland/inboard/base:"$GIT_TAG"
-          docker push docker.pkg.github.com/br3ndonland/inboard/fastapi:"$GIT_TAG"
-          docker push docker.pkg.github.com/br3ndonland/inboard/starlette:"$GIT_TAG"
+          docker tag ghcr.io/br3ndonland/inboard/base ghcr.io/br3ndonland/inboard/base:"$GIT_TAG"
+          docker tag ghcr.io/br3ndonland/inboard/fastapi ghcr.io/br3ndonland/inboard/fastapi:"$GIT_TAG"
+          docker tag ghcr.io/br3ndonland/inboard/starlette ghcr.io/br3ndonland/inboard/starlette:"$GIT_TAG"
+          docker push ghcr.io/br3ndonland/inboard/base:"$GIT_TAG"
+          docker push ghcr.io/br3ndonland/inboard/fastapi:"$GIT_TAG"
+          docker push ghcr.io/br3ndonland/inboard/starlette:"$GIT_TAG"

@@ -15,7 +15,7 @@ Brendon Smith ([br3ndonland](https://github.com/br3ndonland/))
 
 - [Description](#description)
 - [Instructions](#instructions)
-  - [Configure Docker for GitHub Packages](#configure-docker-for-github-packages)
+  - [Configure Docker for GitHub Container Registry](#configure-docker-for-github-container-registry)
   - [Pull images](#pull-images)
   - [Use images in a _Dockerfile_](#use-images-in-a-dockerfile)
   - [Run containers](#run-containers)
@@ -37,25 +37,24 @@ This repo is inspired by [tiangolo/uvicorn-gunicorn-docker](https://github.com/t
 - **One Python requirements file.** This repo uses [Poetry](https://github.com/python-poetry/poetry) with Poetry Extras for dependency management with a single _pyproject.toml_.
 - **One logging configuration.** Logging a Uvicorn+Gunicorn+Starlette/FastAPI stack is unnecessarily complicated. Uvicorn and Gunicorn use different logging configurations, and it can be difficult to unify the log streams. In this repo, Uvicorn, Gunicorn, and FastAPI log streams are propagated to the root logger, and handled by the custom root logging config. Developers can also supply their own custom logging configurations.
 - **One programming language.** Pure Python with no shell scripts.
-- **One platform.** You're already on GitHub. Why not [pull Docker images from GitHub Packages](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages)?
+- **One platform.** You're already on GitHub. Why not [pull Docker images from GitHub Container Registry](https://github.blog/2020-09-01-introducing-github-container-registry/)?
 
 ## Instructions
 
-### Configure Docker for GitHub Packages
+### Configure Docker for GitHub Container Registry
 
-[GitHub Packages](https://docs.github.com/en/packages) is a Docker registry. Follow the instructions in the GitHub docs on [configuring Docker for use with GitHub Packages](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-docker-for-use-with-github-packages).
+[GitHub Container Registry](https://docs.github.com/en/packages/getting-started-with-github-container-registry) (GHCR) is a Docker registry. Follow the instructions in the GitHub docs on [configuring Docker for use with GHCR](https://docs.github.com/en/packages/getting-started-with-github-container-registry/migrating-to-github-container-registry-for-docker-images).
 
-You'll need to [create a personal access token (PAT)](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). Navigate to [github.com/settings/tokens](https://github.com/settings/tokens), then click "Generate new token." The token should have `read:packages` scope. You can then copy the token and use it with [`docker login`](https://docs.docker.com/engine/reference/commandline/login/):
+You'll need to [create a personal access token (PAT)](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). On GitHub, navigate to _Settings -> Developer settings -> Personal access tokens_ ([github.com/settings/tokens](https://github.com/settings/tokens)), then click "Generate new token." The token should have `read:packages` scope. You can then copy the token and use it with [`docker login`](https://docs.docker.com/engine/reference/commandline/login/):
 
 ```sh
 # create PAT in GitHub and copy to clipboard
 
 # transfer PAT from clipboard to file
-pbpaste > pat-github-packages.txt
+pbpaste > pat-ghcr.txt
 
 # log in with file
-cat pat-github-packages.txt | docker login \
-  https://docker.pkg.github.com -u YOUR_GITHUB_USERNAME --password-stdin
+cat pat-ghcr.txt | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
 ```
 
 If you don't want to store your PAT in plain text, encrypt it with PGP instead. [GPG](https://www.gnupg.org/) or [Keybase](https://keybase.io) can be used for this. Here's how to do it with Keybase:
@@ -63,22 +62,23 @@ If you don't want to store your PAT in plain text, encrypt it with PGP instead. 
 ```sh
 # create PAT in GitHub and copy to clipboard
 
-# transfer PAT from clipboard to PGP encrypted file
-pbpaste | keybase pgp encrypt -o pat-github-packages.asc -s
+# transfer PAT from clipboard to encrypted file
+pbpaste | keybase encrypt -o pat-ghcr.asc $YOUR_USERNAME
 
 # decrypt and log in
-keybase pgp decrypt -i pat-github-packages.asc | docker login \
-  https://docker.pkg.github.com -u YOUR_GITHUB_USERNAME --password-stdin
+keybase decrypt -i pat-ghcr.asc | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
+
+# can also use keybase pgp encrypt and keybase pgp decrypt, but must export PGP key
 ```
 
 ### Pull images
 
-After logging in, you can then pull images from `docker.pkg.github.com`. Docker uses the `latest` tag by default.
+After logging in, you can then pull images from `ghcr.io`. Docker uses the `latest` tag by default.
 
 ```sh
-docker pull docker.pkg.github.com/br3ndonland/inboard/base
-docker pull docker.pkg.github.com/br3ndonland/inboard/fastapi
-docker pull docker.pkg.github.com/br3ndonland/inboard/starlette
+docker pull ghcr.io/br3ndonland/inboard/base
+docker pull ghcr.io/br3ndonland/inboard/fastapi
+docker pull ghcr.io/br3ndonland/inboard/starlette
 ```
 
 ### Use images in a _Dockerfile_
@@ -96,7 +96,7 @@ For a [Poetry](https://github.com/python-poetry/poetry) project with the followi
 The _Dockerfile_ could look like this:
 
 ```dockerfile
-FROM docker.pkg.github.com/br3ndonland/inboard/fastapi
+FROM ghcr.io/br3ndonland/inboard/fastapi
 
 # Install Python requirements
 COPY poetry.lock pyproject.toml /app/
@@ -105,7 +105,7 @@ RUN poetry install --no-dev --no-interaction --no-root
 
 # Install Python app
 COPY package /app/package
-
+ENV APP_MODULE=package.main:app
 # RUN command already included in base image
 ```
 
@@ -121,7 +121,7 @@ For a standard `pip` install:
   - `requirements.txt`
 
 ```dockerfile
-FROM docker.pkg.github.com/br3ndonland/inboard/fastapi
+FROM ghcr.io/br3ndonland/inboard/fastapi
 
 # Install Python requirements
 COPY requirements.txt /app/
@@ -130,7 +130,7 @@ RUN python -m pip install -r requirements.txt
 
 # Install Python app
 COPY package /app/package
-
+ENV APP_MODULE=package.main:app
 # RUN command already included in base image
 ```
 
@@ -140,6 +140,8 @@ The image could then be built with:
 cd /path/to/repo
 docker build . -t imagename:latest
 ```
+
+The final argument is the Docker image name (`imagename` in this example). Replace with your image name.
 
 ### Run containers
 
@@ -158,7 +160,9 @@ docker run -d -p 80:80 \
   -v $(pwd)/package:/app/package imagename
 ```
 
-- `start.py` will run Uvicorn with reloading and without Gunicorn. The Gunicorn configuration won't apply, but these environment variables will still work as [described](#configuration):
+Details on the `docker run` command:
+
+- `-e "PROCESS_MANAGER=uvicorn" -e "WITH_RELOAD=true"` will instruct `start.py` to run Uvicorn with reloading and without Gunicorn. The Gunicorn configuration won't apply, but these environment variables will still work as [described](#configuration):
   - `APP_MODULE`
   - `HOST`
   - `PORT`
@@ -166,24 +170,25 @@ docker run -d -p 80:80 \
   - `LOG_FORMAT`
   - `LOG_LEVEL`
 - `-v $(pwd)/package:/app/package`: the specified directory (`/path/to/repo/package` in this example) will be [mounted as a volume](https://docs.docker.com/engine/reference/run/#volume-shared-filesystems) inside of the container at `/app/package`. When files in the working directory change, Docker and Uvicorn will sync the files to the running Docker container.
-- The final argument is the Docker image name (`imagename` in this example). Replace with your image name.
 
 Hit an API endpoint:
 
 ```sh
-docker pull docker.pkg.github.com/br3ndonland/inboard/base
-docker run -d -p 80:80 docker.pkg.github.com/br3ndonland/inboard/base
+docker pull ghcr.io/br3ndonland/inboard/fastapi
+docker run -d -p 80:80 ghcr.io/br3ndonland/inboard/fastapi
 http :80  # HTTPie: https://httpie.org/
 ```
 
 ```text
 HTTP/1.1 200 OK
-content-type: text/plain
-date: Sat, 15 Aug 2020 14:43:53 GMT
+content-length: 17
+content-type: application/json
+date: Wed, 02 Sep 2020 00:31:01 GMT
 server: uvicorn
-transfer-encoding: chunked
 
-Hello World, from Uvicorn, Gunicorn, and Python 3.8!
+{
+    "Hello": "World"
+}
 ```
 
 ## Configuration
@@ -197,13 +202,13 @@ docker run -d -p 80:80 -e APP_MODULE="package.custom.module:api" -e WORKERS_PER_
 To set environment variables within a _Dockerfile_:
 
 ```dockerfile
-FROM docker.pkg.github.com/br3ndonland/inboard/fastapi
+FROM ghcr.io/br3ndonland/inboard/fastapi
 ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 ```
 
 ### General
 
-- `APP_MODULE`: Python module with app instance. Note that the base image sets the environment variable `PYTHONPATH=/app`, so the module name will be relative to `/app` unless you supply a custom `PYTHONPATH`.
+- `APP_MODULE`: Python module with app instance. Note that the base image sets the environment variable `PYTHONPATH=/app`, so the module name will be relative to `/app` unless you supply a custom [`PYTHONPATH`](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH).
 
   - Default: The appropriate app module from inboard.
   - Custom: For a module at `/app/package/custom/module.py` and app instance object `api`, `APP_MODULE="package.custom.module:api"`
