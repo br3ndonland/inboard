@@ -15,7 +15,6 @@ Brendon Smith ([br3ndonland](https://github.com/br3ndonland/))
 
 - [Description](#description)
 - [Instructions](#instructions)
-  - [Configure Docker for GitHub Container Registry](#configure-docker-for-github-container-registry)
   - [Pull images](#pull-images)
   - [Use images in a _Dockerfile_](#use-images-in-a-dockerfile)
   - [Run containers](#run-containers)
@@ -27,6 +26,7 @@ Brendon Smith ([br3ndonland](https://github.com/br3ndonland/))
   - [Code style](#code-style)
   - [Building development images](#building-development-images)
   - [Running development containers](#running-development-containers)
+  - [Configuring Docker for GitHub Container Registry](#configuring-docker-for-github-container-registry)
 
 ## Description
 
@@ -41,39 +41,9 @@ This repo provides [Docker images](https://github.com/users/br3ndonland/packages
 
 ## Instructions
 
-### Configure Docker for GitHub Container Registry
-
-[GitHub Container Registry](https://docs.github.com/en/packages/getting-started-with-github-container-registry) (GHCR) is a Docker registry. Follow the instructions in the GitHub docs on [configuring Docker for use with GHCR](https://docs.github.com/en/packages/getting-started-with-github-container-registry/migrating-to-github-container-registry-for-docker-images).
-
-You'll need to [create a personal access token (PAT)](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). On GitHub, navigate to _Settings -> Developer settings -> Personal access tokens_ ([github.com/settings/tokens](https://github.com/settings/tokens)), then click "Generate new token." The token should have `read:packages` scope. You can then copy the token and use it with [`docker login`](https://docs.docker.com/engine/reference/commandline/login/):
-
-```sh
-# create PAT in GitHub and copy to clipboard
-
-# transfer PAT from clipboard to file
-pbpaste > pat-ghcr.txt
-
-# log in with file
-cat pat-ghcr.txt | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
-```
-
-If you don't want to store your PAT in plain text, encrypt it with PGP instead. [GPG](https://www.gnupg.org/) or [Keybase](https://keybase.io) can be used for this. Here's how to do it with Keybase:
-
-```sh
-# create PAT in GitHub and copy to clipboard
-
-# transfer PAT from clipboard to encrypted file
-pbpaste | keybase encrypt -o pat-ghcr.asc $YOUR_USERNAME
-
-# decrypt and log in
-keybase decrypt -i pat-ghcr.asc | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
-
-# can also use keybase pgp encrypt and keybase pgp decrypt, but must export PGP key
-```
-
 ### Pull images
 
-After logging in, you can then pull images from `ghcr.io`.
+Docker images are stored in [GitHub Container Registry](https://docs.github.com/en/packages/getting-started-with-github-container-registry) (GHCR), which is a Docker registry like Docker Hub. Public Docker images can be pulled anonymously from `ghcr.io`.
 
 ```sh
 # Pull most recent version of each image
@@ -88,6 +58,8 @@ docker pull ghcr.io/br3ndonland/inboard:starlette-0.2.0
 ```
 
 The FastAPI image is also tagged with `latest`. Docker uses the `latest` tag by default, so simply running `docker pull ghcr.io/br3ndonland/inboard` will pull the FastAPI image.
+
+If authentication to GHCR is needed, follow the instructions [below](#configuring-docker-for-github-container-registry).
 
 ### Use images in a _Dockerfile_
 
@@ -418,3 +390,31 @@ http :80/status --auth-type=basic --auth=test_username:plunge-germane-tribal-pil
 ```
 
 Change the port numbers to run multiple containers simultaneously (`-p 81:80`).
+
+### Configuring Docker for GitHub Container Registry
+
+If authentication is needed, follow the instructions in the GitHub docs on [configuring Docker for use with GHCR](https://docs.github.com/en/packages/getting-started-with-github-container-registry/migrating-to-github-container-registry-for-docker-images). You'll need to [create a personal access token (PAT)](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). On GitHub, navigate to _Settings -> Developer settings -> Personal access tokens_ ([github.com/settings/tokens](https://github.com/settings/tokens)), then click "Generate new token." The token should have `read:packages` scope. You can then copy the token and use it with [`docker login`](https://docs.docker.com/engine/reference/commandline/login/):
+
+```sh
+# create PAT in GitHub and copy to clipboard
+
+# transfer PAT from clipboard to file
+pbpaste > pat-ghcr.txt
+
+# log in with file
+cat pat-ghcr.txt | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
+```
+
+If you don't want to store your PAT in plain text, encrypt it with PGP instead. [GPG](https://www.gnupg.org/) or [Keybase](https://keybase.io) can be used for this. Here's how to do it with Keybase:
+
+```sh
+# create PAT in GitHub and copy to clipboard
+
+# transfer PAT from clipboard to encrypted file
+pbpaste | keybase encrypt -o pat-ghcr.asc $YOUR_USERNAME
+
+# decrypt and log in
+keybase decrypt -i pat-ghcr.asc | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
+
+# can also use keybase pgp encrypt and keybase pgp decrypt, but must export PGP key
+```
