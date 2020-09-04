@@ -68,6 +68,15 @@ def logging_conf_dict(mocker: MockerFixture) -> Dict[str, Any]:
 
 
 @pytest.fixture
+def logging_conf_file_path(monkeypatch: MonkeyPatch) -> Path:
+    """Set path to default logging configuration file."""
+    path = Path(logging_conf_module.__file__)
+    monkeypatch.setenv("LOGGING_CONF", str(path))
+    assert os.getenv("LOGGING_CONF") == str(path)
+    return path
+
+
+@pytest.fixture
 def logging_conf_module_path(monkeypatch: MonkeyPatch) -> str:
     """Set module path to logging_conf.py."""
     path = "inboard.logging_conf"
@@ -77,7 +86,7 @@ def logging_conf_module_path(monkeypatch: MonkeyPatch) -> str:
 
 
 @pytest.fixture(scope="session")
-def logging_conf_tmp_path(tmp_path_factory: TempPathFactory) -> Path:
+def logging_conf_tmp_file_path(tmp_path_factory: TempPathFactory) -> Path:
     """Copy logging configuration module to custom temporary location."""
     tmp_dir = tmp_path_factory.mktemp("tmp_log")
     shutil.copy(Path(logging_conf_module.__file__), f"{tmp_dir}/tmp_log.py")
@@ -92,6 +101,13 @@ def logging_conf_tmp_path_no_dict(tmp_path_factory: TempPathFactory) -> Path:
     with open(Path(tmp_file), "x") as f:
         f.write("print('Hello, World!')\n")
     return tmp_dir
+
+
+@pytest.fixture
+def logging_conf_tmp_path_incorrect_extension(tmp_path: Path) -> Path:
+    """Create custom temporary logging config file with incorrect extension."""
+    tmp_file = tmp_path / "tmp_logging_conf.txt"
+    return Path(tmp_file)
 
 
 @pytest.fixture(scope="session")

@@ -37,7 +37,9 @@ keepalive_str = os.getenv("KEEP_ALIVE", "5")
 
 # Gunicorn config variables
 try:
-    logconfig_dict = configure_logging()
+    logconfig_dict = configure_logging(
+        logging_conf=os.getenv("LOGGING_CONF", "inboard.logging_conf")
+    )
 except Exception as e:
     if use_loglevel == "debug":
         msg = "Error loading logging config with Gunicorn:"

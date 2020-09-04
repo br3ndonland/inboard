@@ -24,13 +24,23 @@ def set_conf_path(module_stem: str) -> str:
     return conf_path
 
 
-def configure_logging(logger: Logger = logging.getLogger()) -> Dict[str, Any]:
+def configure_logging(
+    logger: Logger = logging.getLogger(),
+    logging_conf: str = os.getenv("LOGGING_CONF", "inboard.logging_conf"),
+) -> Dict[str, Any]:
     """Configure Python logging based on a path to a logging module or file."""
     try:
-        logging_conf_path = str(os.getenv("LOGGING_CONF", "inboard.logging_conf"))
-        spec = importlib.util.find_spec(logging_conf_path)
-        logging_conf_module = importlib.util.module_from_spec(spec)  # type: ignore
-        spec.loader.exec_module(logging_conf_module)  # type: ignore
+        logging_conf_path = Path(logging_conf)
+        spec = (
+            importlib.util.spec_from_file_location("confspec", logging_conf_path)
+            if logging_conf_path.is_file() and logging_conf_path.suffix == ".py"
+            else importlib.util.find_spec(logging_conf)
+        )
+        if spec:
+            logging_conf_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(logging_conf_module)  # type: ignore[union-attr]
+        else:
+            raise ImportError(f"Unable to import {logging_conf}.")
         if hasattr(logging_conf_module, "LOGGING_CONFIG"):
             logging_conf_dict = getattr(logging_conf_module, "LOGGING_CONFIG")
         else:

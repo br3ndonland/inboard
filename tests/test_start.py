@@ -37,50 +37,74 @@ class TestConfigureLogging:
     ---
     """
 
-    def test_configure_logging_conf_module(
+    def test_configure_logging_file(
+        self, logging_conf_file_path: Path, mock_logger: logging.Logger
+    ) -> None:
+        """Test `start.configure_logging` with correct logging config file path."""
+        start.configure_logging(
+            logger=mock_logger, logging_conf=str(logging_conf_file_path)
+        )
+        mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
+            f"Logging dict config loaded from {logging_conf_file_path}."
+        )
+
+    def test_configure_logging_module(
         self, logging_conf_module_path: str, mock_logger: logging.Logger
     ) -> None:
-        """Test `start.configure_logging` with correct logging config path."""
-        start.configure_logging(logger=mock_logger)
-        mock_logger.debug.assert_called_once_with(  # type: ignore
+        """Test `start.configure_logging` with correct logging config module path."""
+        start.configure_logging(
+            logger=mock_logger, logging_conf=logging_conf_module_path
+        )
+        mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
             f"Logging dict config loaded from {logging_conf_module_path}."
         )
 
-    def test_configure_logging_conf_module_tmp(
+    def test_configure_logging_tmp_file(
+        self, logging_conf_tmp_file_path: Path, mock_logger: logging.Logger
+    ) -> None:
+        """Test `start.configure_logging` with correct logging config file path."""
+        start.configure_logging(
+            logger=mock_logger, logging_conf=f"{logging_conf_tmp_file_path}/tmp_log.py"
+        )
+        mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
+            f"Logging dict config loaded from {logging_conf_tmp_file_path}/tmp_log.py."
+        )
+
+    def test_configure_logging_tmp_file_incorrect_extension(
         self,
-        logging_conf_tmp_path: Path,
+        logging_conf_tmp_path_incorrect_extension: Path,
+        mock_logger: logging.Logger,
+    ) -> None:
+        """Test `start.configure_logging` with incorrect temporary file type."""
+        with pytest.raises(ImportError):
+            start.configure_logging(
+                logger=mock_logger,
+                logging_conf=str(logging_conf_tmp_path_incorrect_extension),
+            )
+            import_error_msg = (
+                f"Unable to import {logging_conf_tmp_path_incorrect_extension}."
+            )
+            logger_error_msg = "Error when configuring logging:"
+            mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
+                f"{logger_error_msg} {import_error_msg}."
+            )
+
+    def test_configure_logging_tmp_module(
+        self,
+        logging_conf_tmp_file_path: Path,
         mock_logger: logging.Logger,
         monkeypatch: MonkeyPatch,
     ) -> None:
         """Test `start.configure_logging` with temporary logging config path."""
-        monkeypatch.syspath_prepend(logging_conf_tmp_path)
+        monkeypatch.syspath_prepend(logging_conf_tmp_file_path)
         monkeypatch.setenv("LOGGING_CONF", "tmp_log")
-        start.configure_logging(logger=mock_logger)
-        mock_logger.debug.assert_called_once_with(  # type: ignore
+        assert os.getenv("LOGGING_CONF") == "tmp_log"
+        start.configure_logging(logger=mock_logger, logging_conf="tmp_log")
+        mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
             "Logging dict config loaded from tmp_log."
         )
 
-    def test_configure_logging_conf_module_tmp_no_dict(
-        self,
-        logging_conf_tmp_path_no_dict: Path,
-        mock_logger: logging.Logger,
-        monkeypatch: MonkeyPatch,
-    ) -> None:
-        """Test `start.configure_logging` with temporary logging config path.
-        - Correct module name
-        - No `LOGGING_CONFIG` object
-        """
-        monkeypatch.syspath_prepend(logging_conf_tmp_path_no_dict)
-        monkeypatch.setenv("LOGGING_CONF", "no_dict")
-        with pytest.raises(AttributeError):
-            start.configure_logging(logger=mock_logger)
-            logger_error_msg = "Error when configuring logging:"
-            attribute_error_msg = "No LOGGING_CONFIG in no_dict."
-            mock_logger.debug.assert_called_once_with(  # type: ignore
-                f"{logger_error_msg} {attribute_error_msg}."
-            )
-
-    def test_configure_logging_conf_module_tmp_incorrect_type(
+    def test_configure_logging_tmp_module_incorrect_type(
         self,
         logging_conf_tmp_path_incorrect_type: Path,
         mock_logger: logging.Logger,
@@ -92,12 +116,34 @@ class TestConfigureLogging:
         """
         monkeypatch.syspath_prepend(logging_conf_tmp_path_incorrect_type)
         monkeypatch.setenv("LOGGING_CONF", "incorrect_type")
+        assert os.getenv("LOGGING_CONF") == "incorrect_type"
         with pytest.raises(TypeError):
-            start.configure_logging(logger=mock_logger)
+            start.configure_logging(logger=mock_logger, logging_conf="incorrect_type")
             logger_error_msg = "Error when configuring logging:"
             type_error_msg = "LOGGING_CONFIG is not a dictionary instance."
-            mock_logger.debug.assert_called_once_with(  # type: ignore
+            mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
                 f"{logger_error_msg} {type_error_msg}."
+            )
+
+    def test_configure_logging_tmp_module_no_dict(
+        self,
+        logging_conf_tmp_path_no_dict: Path,
+        mock_logger: logging.Logger,
+        monkeypatch: MonkeyPatch,
+    ) -> None:
+        """Test `start.configure_logging` with temporary logging config path.
+        - Correct module name
+        - No `LOGGING_CONFIG` object
+        """
+        monkeypatch.syspath_prepend(logging_conf_tmp_path_no_dict)
+        monkeypatch.setenv("LOGGING_CONF", "no_dict")
+        assert os.getenv("LOGGING_CONF") == "no_dict"
+        with pytest.raises(AttributeError):
+            start.configure_logging(logger=mock_logger, logging_conf="no_dict")
+            logger_error_msg = "Error when configuring logging:"
+            attribute_error_msg = "No LOGGING_CONFIG in no_dict."
+            mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
+                f"{logger_error_msg} {attribute_error_msg}."
             )
 
 
