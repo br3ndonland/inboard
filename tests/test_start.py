@@ -158,7 +158,7 @@ class TestSetAppModule:
         """Test `start.set_app_module` using module path to base ASGI app."""
         monkeypatch.setenv("APP_MODULE", "inboard.app.base.main:app")
         start.set_app_module(logger=mock_logger)
-        mock_logger.debug.assert_called_once_with(  # type: ignore
+        mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
             "App module set to inboard.app.base.main:app."
         )
 
@@ -168,7 +168,7 @@ class TestSetAppModule:
         """Test `start.set_app_module` using module path to FastAPI app."""
         monkeypatch.setenv("APP_MODULE", "inboard.app.fastapibase.main:app")
         start.set_app_module(logger=mock_logger)
-        mock_logger.debug.assert_called_once_with(  # type: ignore
+        mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
             "App module set to inboard.app.fastapibase.main:app."
         )
 
@@ -178,7 +178,7 @@ class TestSetAppModule:
         """Test `start.set_app_module` using module path to Starlette app."""
         monkeypatch.setenv("APP_MODULE", "inboard.app.starlettebase.main:app")
         start.set_app_module(logger=mock_logger)
-        mock_logger.debug.assert_called_once_with(  # type: ignore
+        mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
             "App module set to inboard.app.starlettebase.main:app."
         )
 
@@ -192,7 +192,7 @@ class TestSetAppModule:
         monkeypatch.syspath_prepend(app_module_tmp_path)
         monkeypatch.setenv("APP_MODULE", "tmp_app.base.main:app")
         start.set_app_module(logger=mock_logger)
-        mock_logger.debug.assert_called_once_with(  # type: ignore
+        mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
             "App module set to tmp_app.base.main:app."
         )
 
@@ -206,7 +206,7 @@ class TestSetAppModule:
         monkeypatch.syspath_prepend(app_module_tmp_path)
         monkeypatch.setenv("APP_MODULE", "tmp_app.fastapibase.main:app")
         start.set_app_module(logger=mock_logger)
-        mock_logger.debug.assert_called_once_with(  # type: ignore
+        mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
             "App module set to tmp_app.fastapibase.main:app."
         )
 
@@ -220,7 +220,7 @@ class TestSetAppModule:
         monkeypatch.syspath_prepend(app_module_tmp_path)
         monkeypatch.setenv("APP_MODULE", "tmp_app.starlettebase.main:app")
         start.set_app_module(logger=mock_logger)
-        mock_logger.debug.assert_called_once_with(  # type: ignore
+        mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
             "App module set to tmp_app.starlettebase.main:app."
         )
 
@@ -237,7 +237,7 @@ class TestSetAppModule:
             logger_error_msg = "Error when setting app module:"
             incorrect_module_msg = f"No module named {incorrect_module}"
             start.set_app_module(logger=mock_logger)
-            mock_logger.debug.assert_called_once_with(  # type: ignore
+            mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
                 f"{logger_error_msg} {incorrect_module_msg}."
             )
 
@@ -257,7 +257,7 @@ class TestRunPreStartScript:
         """Test `start.run_pre_start_script` using temporary Python pre-start script."""
         monkeypatch.setenv("PRE_START_PATH", str(pre_start_script_tmp_py))
         start.run_pre_start_script(logger=mock_logger)
-        mock_logger.debug.assert_has_calls(  # type: ignore
+        mock_logger.debug.assert_has_calls(  # type: ignore[attr-defined]
             calls=[
                 mocker.call("Checking for pre-start script."),
                 mocker.call(
@@ -279,7 +279,7 @@ class TestRunPreStartScript:
         """Test `start.run_pre_start_script` using temporary pre-start shell script."""
         monkeypatch.setenv("PRE_START_PATH", str(pre_start_script_tmp_sh))
         start.run_pre_start_script(logger=mock_logger)
-        mock_logger.debug.assert_has_calls(  # type: ignore
+        mock_logger.debug.assert_has_calls(  # type: ignore[attr-defined]
             calls=[
                 mocker.call("Checking for pre-start script."),
                 mocker.call(
@@ -300,7 +300,7 @@ class TestRunPreStartScript:
         """Test `start.run_pre_start_script` with an incorrect file path."""
         monkeypatch.setenv("PRE_START_PATH", "/no/file/here")
         start.run_pre_start_script(logger=mock_logger)
-        mock_logger.debug.assert_has_calls(  # type: ignore
+        mock_logger.debug.assert_has_calls(  # type: ignore[attr-defined]
             calls=[
                 mocker.call("Checking for pre-start script."),
                 mocker.call("No pre-start script found."),
@@ -341,7 +341,7 @@ class TestStartServer:
             logging_conf_dict=logging_conf_dict,
             with_reload=False,
         )
-        mock_logger.debug.assert_called_once_with("Running Uvicorn with Gunicorn.")  # type: ignore  # noqa: E501
+        mock_logger.debug.assert_called_once_with("Running Uvicorn with Gunicorn.")  # type: ignore[attr-defined]  # noqa: E501
 
     @pytest.mark.parametrize(
         "app_module",
@@ -370,7 +370,7 @@ class TestStartServer:
             logger=mock_logger,
             logging_conf_dict=logging_conf_dict,
         )
-        mock_logger.debug.assert_called_once_with("Running Uvicorn with Gunicorn.")  # type: ignore  # noqa: E501
+        mock_logger.debug.assert_called_once_with("Running Uvicorn with Gunicorn.")  # type: ignore[attr-defined]  # noqa: E501
 
     def test_start_server_uvicorn_incorrect_module(
         self,
@@ -393,7 +393,7 @@ class TestStartServer:
             )
             logger_error_msg = "Error when starting server with start script:"
             module_error_msg = "No module named incorrect.base.main:app"
-            mock_logger.debug.assert_has_calls(  # type: ignore
+            mock_logger.debug.assert_has_calls(  # type: ignore[attr-defined]
                 calls=[
                     mocker.call("Running Uvicorn without Gunicorn."),
                     mocker.call(f"{logger_error_msg} {module_error_msg}"),
@@ -432,6 +432,6 @@ class TestStartServer:
             process_error_msg = (
                 "Process manager needs to be either uvicorn or gunicorn."
             )
-            mock_logger.debug.assert_called_once_with(  # type: ignore
+            mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
                 f"{logger_error_msg} {process_error_msg}"
             )
