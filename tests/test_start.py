@@ -31,6 +31,12 @@ class TestConfPaths:
         assert "logging" not in str(gunicorn_conf_path_tmp)
         assert start.set_conf_path("gunicorn") == str(gunicorn_conf_path_tmp)
 
+    def test_set_incorrect_conf_path(self, monkeypatch: MonkeyPatch) -> None:
+        """Set path to non-existent file and raise an error."""
+        with pytest.raises(FileNotFoundError):
+            monkeypatch.setenv("GUNICORN_CONF", "/no/file/here")
+            start.set_conf_path("gunicorn")
+
 
 class TestConfigureLogging:
     """Test logging configuration methods.

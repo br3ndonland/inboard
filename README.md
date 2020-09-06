@@ -215,14 +215,11 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 ### Gunicorn and Uvicorn
 
-- `GUNICORN_CONF`: Path to a [Gunicorn configuration file](https://docs.gunicorn.org/en/latest/settings.html#config-file).
+- `GUNICORN_CONF`: Path to a [Gunicorn configuration file](https://docs.gunicorn.org/en/latest/settings.html#config-file). The Gunicorn command-line accepts file paths instead of module paths.
   - Default:
     - `"/app/inboard/gunicorn_conf.py"` (the default file provided with the Docker image)
   - Custom:
     - `GUNICORN_CONF="/app/package/custom_gunicorn_conf.py"`
-  - Notes
-    - Feel free to use the [`gunicorn_conf.py`](./inboard/gunicorn_conf.py) from this repo as a starting point for your own custom configuration.
-    - `GUNICORN_CONF` accepts a file path, instead of a module path, because Gunicorn is typically only run from within Docker, where the file path will be predictable.
 - `HOST`: Host IP address (inside of the container) where Gunicorn will listen for requests.
   - Default: `"0.0.0.0"`
   - Custom: _TODO_

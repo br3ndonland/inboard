@@ -13,14 +13,15 @@ import uvicorn  # type: ignore
 
 def set_conf_path(module_stem: str) -> str:
     """Set the path to a configuration file."""
-    conf_var = str(os.getenv(f"{module_stem.upper()}_CONF"))
-    if Path(conf_var).is_file():
+    conf_var = str(
+        os.getenv(f"{module_stem.upper()}_CONF", f"/app/inboard/{module_stem}_conf.py")
+    )
+    if conf_var and Path(conf_var).is_file():
         conf_path = conf_var
     elif Path(f"/app/inboard/{module_stem}_conf.py").is_file():
         conf_path = f"/app/inboard/{module_stem}_conf.py"
     else:
-        conf_path = f"/{module_stem}_conf.py"
-    os.environ[f"{module_stem.upper()}_CONF"] = conf_path
+        raise FileNotFoundError(f"Unable to find {conf_var}")
     return conf_path
 
 
