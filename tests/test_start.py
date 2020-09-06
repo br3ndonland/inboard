@@ -330,7 +330,6 @@ class TestStartServer:
     def test_start_server_uvicorn(
         self,
         app_module: str,
-        gunicorn_conf_path: Path,
         logging_conf_dict: Dict[str, Any],
         mock_logger: logging.Logger,
         mocker: MockerFixture,
@@ -340,14 +339,17 @@ class TestStartServer:
         monkeypatch.setenv("LOG_FORMAT", "uvicorn")
         monkeypatch.setenv("LOG_LEVEL", "debug")
         monkeypatch.setenv("PROCESS_MANAGER", "uvicorn")
+        assert os.getenv("LOG_FORMAT") == "uvicorn"
+        assert os.getenv("LOG_LEVEL") == "debug"
+        assert os.getenv("PROCESS_MANAGER") == "uvicorn"
+        # TODO: need to send interrupt to stop server. Try with a context manager?
         start.start_server(
+            str(os.getenv("PROCESS_MANAGER")),
             app_module=app_module,
-            gunicorn_conf=str(gunicorn_conf_path),
             logger=mock_logger,
             logging_conf_dict=logging_conf_dict,
-            with_reload=False,
         )
-        mock_logger.debug.assert_called_once_with("Running Uvicorn with Gunicorn.")  # type: ignore[attr-defined]  # noqa: E501
+        mock_logger.debug.assert_called_once_with("Running Uvicorn without Gunicorn.")  # type: ignore[attr-defined]  # noqa: E501
 
     @pytest.mark.parametrize(
         "app_module",
@@ -367,12 +369,16 @@ class TestStartServer:
         monkeypatch: MonkeyPatch,
     ) -> None:
         """Test `start.start_server` with Uvicorn managed by Gunicorn."""
+        assert os.getenv("GUNICORN_CONF", str(gunicorn_conf_path))
         monkeypatch.setenv("LOG_FORMAT", "gunicorn")
         monkeypatch.setenv("LOG_LEVEL", "debug")
         monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
+        assert os.getenv("LOG_FORMAT") == "gunicorn"
+        assert os.getenv("LOG_LEVEL") == "debug"
+        assert os.getenv("PROCESS_MANAGER") == "gunicorn"
         start.start_server(
+            str(os.getenv("PROCESS_MANAGER")),
             app_module=app_module,
-            gunicorn_conf=str(gunicorn_conf_path),
             logger=mock_logger,
             logging_conf_dict=logging_conf_dict,
         )
@@ -380,7 +386,6 @@ class TestStartServer:
 
     def test_start_server_uvicorn_incorrect_module(
         self,
-        gunicorn_conf_path: Path,
         logging_conf_dict: Dict[str, Any],
         mock_logger: logging.Logger,
         mocker: MockerFixture,
@@ -391,11 +396,10 @@ class TestStartServer:
             monkeypatch.setenv("LOG_LEVEL", "debug")
             monkeypatch.setenv("WITH_RELOAD", "false")
             start.start_server(
+                "uvicorn",
                 app_module="incorrect.base.main:app",
-                gunicorn_conf=str(gunicorn_conf_path),
                 logger=mock_logger,
                 logging_conf_dict=logging_conf_dict,
-                process_manager="uvicorn",
             )
             logger_error_msg = "Error when starting server with start script:"
             module_error_msg = "No module named incorrect.base.main:app"
@@ -428,11 +432,10 @@ class TestStartServer:
             monkeypatch.setenv("LOG_LEVEL", "debug")
             monkeypatch.setenv("WITH_RELOAD", "false")
             start.start_server(
+                "incorrect",
                 app_module=app_module,
-                gunicorn_conf=str(gunicorn_conf_path),
                 logger=mock_logger,
                 logging_conf_dict=logging_conf_dict,
-                process_manager="incorrect",
             )
             logger_error_msg = "Error when starting server with start script:"
             process_error_msg = (

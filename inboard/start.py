@@ -93,13 +93,10 @@ def run_pre_start_script(logger: Logger = logging.getLogger()) -> str:
 
 
 def start_server(
+    process_manager: str,
     app_module: str = str(os.getenv("APP_MODULE", "inboard.app.base.main:app")),
-    gunicorn_conf: str = str(
-        os.getenv("GUNICORN_CONF", "/app/inboard/gunicorn_conf.py")
-    ),
     logger: Logger = logging.getLogger(),
     logging_conf_dict: Dict[str, Any] = None,
-    process_manager: str = str(os.getenv("PROCESS_MANAGER", "gunicorn")),
     with_reload: bool = bool(os.getenv("WITH_RELOAD", False)),
     worker_class: str = str(os.getenv("WORKER_CLASS", "uvicorn.workers.UvicornWorker")),
 ) -> None:
@@ -107,7 +104,7 @@ def start_server(
     try:
         if process_manager == "gunicorn":
             logger.debug("Running Uvicorn with Gunicorn.")
-            gunicorn_conf_path = Path(gunicorn_conf)
+            gunicorn_conf_path = set_conf_path("gunicorn")
             subprocess.run(
                 ["gunicorn", "-k", worker_class, "-c", gunicorn_conf_path, app_module]
             )
@@ -131,12 +128,11 @@ def start_server(
 if __name__ == "__main__":
     logger = logging.getLogger()
     logging_conf_dict = configure_logging(logger=logger)
-    gunicorn_conf_path = set_conf_path("gunicorn")
     app_module = set_app_module(logger=logger)
     run_pre_start_script(logger=logger)
     start_server(
+        str(os.getenv("PROCESS_MANAGER", "gunicorn")),
         app_module=app_module,
-        gunicorn_conf=gunicorn_conf_path,
         logger=logger,
         logging_conf_dict=logging_conf_dict,
     )
