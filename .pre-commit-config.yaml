@@ -20,7 +20,7 @@ repos:
     hooks:
       - id: mypy
   - repo: https://github.com/prettier/prettier
-    rev: 2.0.5
+    rev: 2.1.1
     hooks:
       - id: prettier
   - repo: https://github.com/pre-commit/pre-commit-hooks
