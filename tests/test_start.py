@@ -342,7 +342,7 @@ class TestStartServer:
         assert os.getenv("LOG_FORMAT") == "uvicorn"
         assert os.getenv("LOG_LEVEL") == "debug"
         assert os.getenv("PROCESS_MANAGER") == "uvicorn"
-        # TODO: need to send interrupt to stop server. Try with a context manager?
+        mocker.patch("uvicorn.run", autospec=True)
         start.start_server(
             str(os.getenv("PROCESS_MANAGER")),
             app_module=app_module,
