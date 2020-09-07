@@ -578,7 +578,7 @@ fastapi = ["fastapi"]
 starlette = ["starlette"]
 
 [metadata]
-content-hash = "0bd7b7a1f50ec37d8cb072f9bb0053d079a48f5de680f72263f5138c7340cf1a"
+content-hash = "3ffa000b734357ca82b0b6620d163752cf6bdb870c98504adbecf3a61bbefeeb"
 lock-version = "1.0"
 python-versions = "^3.8"
 

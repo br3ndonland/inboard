@@ -24,7 +24,7 @@ docker = "^4.3"
 flake8 = "^3.8"
 isort = "^5.5"
 mypy = "0.782"
-pre-commit = "^2.6"
+pre-commit = "^2.7"
 pytest = "^6"
 pytest-mock = "^3.3"
 
