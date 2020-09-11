@@ -11,6 +11,7 @@ license = "MIT"
 homepage = "https://github.com/br3ndonland/inboard"
 readme = "README.md"
 include = ["inboard/py.typed"]
+keywords = ["asgi", "docker", "fastapi", "gunicorn", "uvicorn"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
