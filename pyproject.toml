@@ -12,6 +12,15 @@ homepage = "https://github.com/br3ndonland/inboard"
 readme = "README.md"
 include = ["inboard/py.typed"]
 keywords = ["asgi", "docker", "fastapi", "gunicorn", "uvicorn"]
+classifiers = [
+  "Natural Language :: English",
+  "Topic :: Internet :: Log Analysis",
+  "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+  "Topic :: Internet :: WWW/HTTP :: WSGI",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
+  "Topic :: System :: Software Distribution",
+  "Topic :: Utilities"
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
