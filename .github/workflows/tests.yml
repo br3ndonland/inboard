@@ -8,6 +8,7 @@ on:
       - "**.lock"
       - "**.py"
       - "**.toml"
+  workflow_dispatch:
 
 jobs:
   test:
