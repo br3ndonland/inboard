@@ -3,13 +3,13 @@ import os
 
 from inboard.start import configure_logging
 
-workers_per_core_str = os.getenv("WORKERS_PER_CORE", "1")
+# Gunicorn setup
 max_workers_str = os.getenv("MAX_WORKERS")
-use_max_workers = None
-if max_workers_str:
-    use_max_workers = int(max_workers_str)
 web_concurrency_str = os.getenv("WEB_CONCURRENCY", None)
-
+workers_per_core_str = os.getenv("WORKERS_PER_CORE", "1")
+use_max_workers = None
+if max_workers_str and int(max_workers_str) > 0:
+    use_max_workers = int(max_workers_str)
 host = os.getenv("HOST", "0.0.0.0")
 port = os.getenv("PORT", "80")
 bind_env = os.getenv("BIND", None)
@@ -18,9 +18,8 @@ use_bind = bind_env if bind_env else f"{host}:{port}"
 cores = multiprocessing.cpu_count()
 workers_per_core = float(workers_per_core_str)
 default_web_concurrency = workers_per_core * cores
-if web_concurrency_str:
+if web_concurrency_str and int(web_concurrency_str) > 0:
     web_concurrency = int(web_concurrency_str)
-    assert web_concurrency > 0
 else:
     web_concurrency = max(int(default_web_concurrency), 2)
     if use_max_workers:
