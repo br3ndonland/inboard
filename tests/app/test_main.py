@@ -153,6 +153,20 @@ class TestEndpoints:
             response = client.get(endpoint, auth=basic_auth)
             assert response.status_code == 200
 
+    @pytest.mark.parametrize("endpoint", ["/health", "/status"])
+    def test_gets_with_starlette_auth_exception(
+        self, clients: List[TestClient], endpoint: str
+    ) -> None:
+        """Test Starlette `GET` requests with incorrect Basic Auth credentials."""
+        starlette_client = clients[1]
+        assert isinstance(starlette_client.app, Starlette)
+        response = starlette_client.get(endpoint, auth=("user", "pass"))
+        assert response.status_code in [401, 403]
+        assert response.json() == {
+            "detail": "Incorrect username or password",
+            "error": "Invalid basic auth credentials",
+        }
+
     def test_get_status_message(
         self,
         basic_auth: tuple,
