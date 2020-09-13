@@ -338,7 +338,7 @@ For more information on Python logging configuration, see the [Python `logging` 
 ### Code style
 
 - Python code is formatted with [Black](https://black.readthedocs.io/en/stable/). Configuration for Black is stored in _[pyproject.toml](pyproject.toml)_.
-- Python imports are organized automatically with [isort](https://timothycrosley.github.io/isort/).
+- Python imports are organized automatically with [isort](https://pycqa.github.io/isort/).
   - The isort package organizes imports in three sections:
     1. Standard library
     2. Dependencies
