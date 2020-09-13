@@ -381,10 +381,8 @@ class TestStartServer:
     ) -> None:
         """Test `start.start_server` with Uvicorn managed by Gunicorn."""
         assert os.getenv("GUNICORN_CONF", str(gunicorn_conf_path))
-        monkeypatch.setenv("LOG_FORMAT", "gunicorn")
         monkeypatch.setenv("LOG_LEVEL", "debug")
         monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
-        assert os.getenv("LOG_FORMAT") == "gunicorn"
         assert os.getenv("LOG_LEVEL") == "debug"
         assert os.getenv("PROCESS_MANAGER") == "gunicorn"
         start.start_server(
