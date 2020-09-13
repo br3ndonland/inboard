@@ -45,7 +45,7 @@ fastapi = ["fastapi"]
 starlette = ["starlette"]
 
 [tool.pytest.ini_options]
-addopts = "-q"
+addopts = "--cov=inboard -q"
 minversion = "6.0"
 testpaths = ["tests"]
 
