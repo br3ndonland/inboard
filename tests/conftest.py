@@ -13,6 +13,7 @@ from pytest_mock import MockerFixture
 from inboard import gunicorn_conf as gunicorn_conf_module
 from inboard import logging_conf as logging_conf_module
 from inboard.app import prestart as pre_start_module
+from inboard.app.base.main import app as base_app
 from inboard.app.fastapibase.main import app as fastapi_app
 from inboard.app.starlettebase.main import app as starlette_app
 
@@ -37,6 +38,12 @@ def basic_auth(
     assert os.getenv("BASIC_AUTH_USERNAME") == username
     assert os.getenv("BASIC_AUTH_PASSWORD") == password
     return username, password
+
+
+@pytest.fixture(scope="session")
+def client_asgi() -> TestClient:
+    """Instantiate test client classes."""
+    return TestClient(base_app)
 
 
 @pytest.fixture(scope="session")
