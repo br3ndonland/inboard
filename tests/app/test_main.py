@@ -1,7 +1,9 @@
+import os
 import re
 from typing import Dict, List
 
 import pytest
+from _pytest.monkeypatch import MonkeyPatch
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from starlette.applications import Starlette
@@ -76,6 +78,42 @@ class TestEndpoints:
     - https://docs.pytest.org/en/latest/parametrize.html
     """
 
+    def test_get_asgi_uvicorn(
+        self, client_asgi: TestClient, monkeypatch: MonkeyPatch
+    ) -> None:
+        """Test `GET` request to base ASGI app set for Uvicorn without Gunicorn."""
+        monkeypatch.setenv("PROCESS_MANAGER", "uvicorn")
+        monkeypatch.setenv("WITH_RELOAD", "false")
+        assert os.getenv("PROCESS_MANAGER") == "uvicorn"
+        assert os.getenv("WITH_RELOAD") == "false"
+        response = client_asgi.get("/")
+        assert response.status_code == 200
+        assert response.text == "Hello World, from Uvicorn and Python 3.8!"
+
+    def test_get_asgi_uvicorn_gunicorn(
+        self, client_asgi: TestClient, monkeypatch: MonkeyPatch
+    ) -> None:
+        """Test `GET` request to base ASGI app set for Uvicorn with Gunicorn."""
+        monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
+        monkeypatch.setenv("WITH_RELOAD", "false")
+        assert os.getenv("PROCESS_MANAGER") == "gunicorn"
+        assert os.getenv("WITH_RELOAD") == "false"
+        response = client_asgi.get("/")
+        assert response.status_code == 200
+        assert response.text == "Hello World, from Uvicorn, Gunicorn, and Python 3.8!"
+
+    def test_get_asgi_incorrect_process_manager(
+        self, client_asgi: TestClient, monkeypatch: MonkeyPatch
+    ) -> None:
+        """Test `GET` request to base ASGI app with incorrect `PROCESS_MANAGER`."""
+        monkeypatch.setenv("PROCESS_MANAGER", "incorrect")
+        monkeypatch.setenv("WITH_RELOAD", "false")
+        assert os.getenv("PROCESS_MANAGER") == "incorrect"
+        assert os.getenv("WITH_RELOAD") == "false"
+        with pytest.raises(NameError) as e:
+            client_asgi.get("/")
+            assert str(e) == "Process manager needs to be either uvicorn or gunicorn."
+
     def test_get_root(self, clients: List[TestClient]) -> None:
         """Test a `GET` request to the root endpoint."""
         for client in clients:
@@ -114,6 +152,20 @@ class TestEndpoints:
             assert [response.status_code in [401, 403] for response in responses]
             response = client.get(endpoint, auth=basic_auth)
             assert response.status_code == 200
+
+    @pytest.mark.parametrize("endpoint", ["/health", "/status"])
+    def test_gets_with_starlette_auth_exception(
+        self, clients: List[TestClient], endpoint: str
+    ) -> None:
+        """Test Starlette `GET` requests with incorrect Basic Auth credentials."""
+        starlette_client = clients[1]
+        assert isinstance(starlette_client.app, Starlette)
+        response = starlette_client.get(endpoint, auth=("user", "pass"))
+        assert response.status_code in [401, 403]
+        assert response.json() == {
+            "detail": "Incorrect username or password",
+            "error": "Invalid basic auth credentials",
+        }
 
     def test_get_status_message(
         self,

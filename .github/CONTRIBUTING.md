@@ -208,7 +208,7 @@ After saving files, changes need to be committed to the Git repository.
 - Python 3 (modern Python) was used. Python 2 (legacy Python) is nearing its [end of life](https://pythonclock.org/).
 - Python code was linted with [Flake8](https://flake8.readthedocs.io/en/latest/) and autoformatted with [Black](https://black.readthedocs.io/en/stable/).
 - Git pre-commit hooks have been installed for the [Black autoformatter](https://black.readthedocs.io/en/stable/version_control_integration.html) and [Flake8 linter](https://flake8.pycqa.org/en/latest/user/using-hooks.html).
-- Within Python modules, `import` statements are organized automatically by [isort](https://timothycrosley.github.io/isort/).
+- Within Python modules, `import` statements are organized automatically by [isort](https://pycqa.github.io/isort/).
 - In general, a [Pythonic](https://docs.python-guide.org/writing/style/) code style following the [Zen of Python](https://www.python.org/dev/peps/pep-0020/) was used. [Foolish consistency](https://pep8.org) was avoided.
 
 ### Python virtual environment tools

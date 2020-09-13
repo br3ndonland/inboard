@@ -65,6 +65,17 @@ class TestConfigureLogging:
             f"Logging dict config loaded from {logging_conf_module_path}."
         )
 
+    def test_configure_logging_module_incorrect(
+        self, mock_logger: logging.Logger
+    ) -> None:
+        with pytest.raises(ImportError):
+            start.configure_logging(logger=mock_logger, logging_conf="no.module.here")
+            import_error_msg = "Unable to import no.module.here."
+            logger_error_msg = "Error when configuring logging:"
+            mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
+                f"{logger_error_msg} {import_error_msg}."
+            )
+
     def test_configure_logging_tmp_file(
         self, logging_conf_tmp_file_path: Path, mock_logger: logging.Logger
     ) -> None:
@@ -370,10 +381,8 @@ class TestStartServer:
     ) -> None:
         """Test `start.start_server` with Uvicorn managed by Gunicorn."""
         assert os.getenv("GUNICORN_CONF", str(gunicorn_conf_path))
-        monkeypatch.setenv("LOG_FORMAT", "gunicorn")
         monkeypatch.setenv("LOG_LEVEL", "debug")
         monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
-        assert os.getenv("LOG_FORMAT") == "gunicorn"
         assert os.getenv("LOG_LEVEL") == "debug"
         assert os.getenv("PROCESS_MANAGER") == "gunicorn"
         start.start_server(
@@ -383,6 +392,50 @@ class TestStartServer:
             logging_conf_dict=logging_conf_dict,
         )
         mock_logger.debug.assert_called_once_with("Running Uvicorn with Gunicorn.")  # type: ignore[attr-defined]  # noqa: E501
+
+    @pytest.mark.parametrize(
+        "app_module",
+        [
+            "inboard.app.base.main:app",
+            "inboard.app.fastapibase.main:app",
+            "inboard.app.starlettebase.main:app",
+        ],
+    )
+    def test_start_server_uvicorn_gunicorn_custom_config(
+        self,
+        app_module: str,
+        gunicorn_conf_path: Path,
+        logging_conf_dict: Dict[str, Any],
+        mock_logger: logging.Logger,
+        mocker: MockerFixture,
+        monkeypatch: MonkeyPatch,
+    ) -> None:
+        """Test `start.start_server` with Uvicorn managed by Gunicorn."""
+        assert os.getenv("GUNICORN_CONF", str(gunicorn_conf_path))
+        monkeypatch.setenv("LOG_FORMAT", "gunicorn")
+        monkeypatch.setenv("LOG_LEVEL", "debug")
+        monkeypatch.setenv("MAX_WORKERS", "1")
+        monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
+        monkeypatch.setenv("WEB_CONCURRENCY", "4")
+        assert os.getenv("LOG_FORMAT") == "gunicorn"
+        assert os.getenv("LOG_LEVEL") == "debug"
+        assert os.getenv("MAX_WORKERS") == "1"
+        assert os.getenv("PROCESS_MANAGER") == "gunicorn"
+        assert os.getenv("WEB_CONCURRENCY") == "4"
+        start.start_server(
+            str(os.getenv("PROCESS_MANAGER")),
+            app_module=app_module,
+            logger=mock_logger,
+            logging_conf_dict=logging_conf_dict,
+        )
+        monkeypatch.delenv("WEB_CONCURRENCY")
+        start.start_server(
+            str(os.getenv("PROCESS_MANAGER")),
+            app_module=app_module,
+            logger=mock_logger,
+            logging_conf_dict=logging_conf_dict,
+        )
+        mock_logger.debug.assert_called_with("Running Uvicorn with Gunicorn.")  # type: ignore[attr-defined]  # noqa: E501
 
     def test_start_server_uvicorn_incorrect_module(
         self,
