@@ -1,7 +1,5 @@
-import json
 import multiprocessing
 import os
-from pathlib import Path
 
 from inboard.start import configure_logging
 
@@ -36,14 +34,9 @@ timeout_str = os.getenv("TIMEOUT", "120")
 keepalive_str = os.getenv("KEEP_ALIVE", "5")
 
 # Gunicorn config variables
-try:
-    logconfig_dict = configure_logging(
-        logging_conf=os.getenv("LOGGING_CONF", "inboard.logging_conf")
-    )
-except Exception as e:
-    if use_loglevel == "debug":
-        msg = "Error loading logging config with Gunicorn:"
-        print(f"[{Path(__file__).stem}] {msg} {e}")
+logconfig_dict = configure_logging(
+    logging_conf=os.getenv("LOGGING_CONF", "inboard.logging_conf")
+)
 loglevel = use_loglevel
 workers = web_concurrency
 bind = use_bind
@@ -53,22 +46,3 @@ accesslog = use_accesslog
 graceful_timeout = int(graceful_timeout_str)
 timeout = int(timeout_str)
 keepalive = int(keepalive_str)
-
-log_data = {
-    # General
-    "host": host,
-    "port": port,
-    "use_max_workers": use_max_workers,
-    "workers_per_core": workers_per_core,
-    # Gunicorn
-    "loglevel": loglevel,
-    "workers": workers,
-    "bind": bind,
-    "graceful_timeout": graceful_timeout,
-    "timeout": timeout,
-    "keepalive": keepalive,
-    "errorlog": errorlog,
-    "accesslog": accesslog,
-}
-if loglevel == "debug":
-    print(f"[{Path(__file__).stem}] Custom configuration:", json.dumps(log_data))
