@@ -37,4 +37,4 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction -E fastapi
       - name: Run unit tests
-        run: pytest
+        run: pytest --cov-report=xml
