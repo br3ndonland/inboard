@@ -18,8 +18,6 @@ def set_conf_path(module_stem: str) -> str:
     )
     if conf_var and Path(conf_var).is_file():
         conf_path = conf_var
-    elif Path(f"/app/inboard/{module_stem}_conf.py").is_file():
-        conf_path = f"/app/inboard/{module_stem}_conf.py"
     else:
         raise FileNotFoundError(f"Unable to find {conf_var}")
     return conf_path
@@ -40,8 +38,6 @@ def configure_logging(
         if spec:
             logging_conf_module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(logging_conf_module)  # type: ignore[union-attr]
-        else:
-            raise ImportError(f"Unable to import {logging_conf}.")
         if hasattr(logging_conf_module, "LOGGING_CONFIG"):
             logging_conf_dict = getattr(logging_conf_module, "LOGGING_CONFIG")
         else:
@@ -74,22 +70,18 @@ def set_app_module(logger: Logger = logging.getLogger()) -> str:
 
 def run_pre_start_script(logger: Logger = logging.getLogger()) -> str:
     """Run a pre-start script at the provided path."""
-    try:
-        logger.debug("Checking for pre-start script.")
-        pre_start_path = os.getenv("PRE_START_PATH", "/app/inboard/app/prestart.py")
-        if Path(pre_start_path).is_file():
-            process = "python" if Path(pre_start_path).suffix == ".py" else "sh"
-            run_message = f"Running pre-start script with {process} {pre_start_path}."
-            logger.debug(run_message)
-            subprocess.run([process, pre_start_path])
-            message = f"Ran pre-start script with {process} {pre_start_path}."
-        else:
-            message = "No pre-start script found."
-    except Exception as e:
-        message = f"Error from pre-start script: {e}."
-    finally:
-        logger.debug(message)
-        return message
+    logger.debug("Checking for pre-start script.")
+    pre_start_path = os.getenv("PRE_START_PATH", "/app/inboard/app/prestart.py")
+    if Path(pre_start_path).is_file():
+        process = "python" if Path(pre_start_path).suffix == ".py" else "sh"
+        run_message = f"Running pre-start script with {process} {pre_start_path}."
+        logger.debug(run_message)
+        subprocess.run([process, pre_start_path])
+        message = f"Ran pre-start script with {process} {pre_start_path}."
+    else:
+        message = "No pre-start script found."
+    logger.debug(message)
+    return message
 
 
 def start_server(
@@ -126,13 +118,11 @@ def start_server(
 
 
 if __name__ == "__main__":
-    logger = logging.getLogger()
-    logging_conf_dict = configure_logging(logger=logger)
-    app_module = set_app_module(logger=logger)
-    run_pre_start_script(logger=logger)
-    start_server(
+    logger = logging.getLogger()  # pragma: no cover
+    run_pre_start_script(logger=logger)  # pragma: no cover
+    start_server(  # pragma: no cover
         str(os.getenv("PROCESS_MANAGER", "gunicorn")),
-        app_module=app_module,
+        app_module=set_app_module(logger=logger),
         logger=logger,
-        logging_conf_dict=logging_conf_dict,
+        logging_conf_dict=configure_logging(logger=logger),
     )

@@ -65,6 +65,17 @@ class TestConfigureLogging:
             f"Logging dict config loaded from {logging_conf_module_path}."
         )
 
+    def test_configure_logging_module_incorrect(
+        self, mock_logger: logging.Logger
+    ) -> None:
+        with pytest.raises(ImportError):
+            start.configure_logging(logger=mock_logger, logging_conf="no.module.here")
+            import_error_msg = "Unable to import no.module.here."
+            logger_error_msg = "Error when configuring logging:"
+            mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
+                f"{logger_error_msg} {import_error_msg}."
+            )
+
     def test_configure_logging_tmp_file(
         self, logging_conf_tmp_file_path: Path, mock_logger: logging.Logger
     ) -> None:
