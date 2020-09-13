@@ -27,6 +27,7 @@ Brendon Smith ([br3ndonland](https://github.com/br3ndonland/))
   - [Logging](#logging)
 - [Development](#development)
   - [Code style](#code-style)
+  - [Testing with pytest](#testing-with-pytest)
   - [GitHub Actions workflows](#github-actions-workflows)
   - [Building development images](#building-development-images)
   - [Running development containers](#running-development-containers)
@@ -369,6 +370,23 @@ For more information on Python logging configuration, see the [Python `logging` 
     ```
 
   - Pre-commit is also useful as a CI tool. The [hooks](.github/workflows/hooks.yml) GitHub Actions workflow runs pre-commit hooks with [GitHub Actions](https://github.com/features/actions).
+
+### Testing with pytest
+
+- Tests are in the _tests/_ directory.
+- Run tests by [invoking `pytest` from the command-line](https://docs.pytest.org/en/stable/usage.html) in the root directory of the repo.
+- [pytest](https://docs.pytest.org/en/latest/) features used include:
+  - [fixtures](https://docs.pytest.org/en/latest/fixture.html)
+  - [monkeypatch](https://docs.pytest.org/en/latest/monkeypatch.html)
+  - [parametrize](https://docs.pytest.org/en/latest/parametrize.html)
+  - [`tmp_path`](https://docs.pytest.org/en/latest/tmpdir.html)
+- [pytest plugins](https://docs.pytest.org/en/stable/plugins.html) include:
+  - [pytest-cov](https://github.com/pytest-dev/pytest-cov)
+  - [pytest-mock](https://github.com/pytest-dev/pytest-mock)
+- [pytest configuration](https://docs.pytest.org/en/stable/customize.html) is in _[pyproject.toml](pyproject.toml)_.
+- [FastAPI testing](https://fastapi.tiangolo.com/tutorial/testing/) and [Starlette testing](https://www.starlette.io/testclient/) rely on the [Starlette `TestClient`](https://www.starlette.io/testclient/), which uses [Requests](https://requests.readthedocs.io/en/master/) under the hood.
+- Test coverage results are reported when invoking `pytest` from the command-line. To see interactive HTML coverage reports, invoke pytest with `pytest --cov-report=html`.
+- Test coverage reports are generated within GitHub Actions workflows by [pytest-cov](https://github.com/pytest-dev/pytest-cov) with [coverage.py](https://github.com/nedbat/coveragepy), and uploaded to [Codecov](https://docs.codecov.io/docs) using [codecov/codecov-action](https://github.com/marketplace/actions/codecov). Codecov is then integrated into pull requests with the [Codecov GitHub app](https://github.com/marketplace/codecov).
 
 ### GitHub Actions workflows
 
