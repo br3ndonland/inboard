@@ -102,6 +102,18 @@ class TestEndpoints:
         assert response.status_code == 200
         assert response.text == "Hello World, from Uvicorn, Gunicorn, and Python 3.8!"
 
+    def test_get_asgi_incorrect_process_manager(
+        self, client_asgi: TestClient, monkeypatch: MonkeyPatch
+    ) -> None:
+        """Test `GET` request to base ASGI app with incorrect `PROCESS_MANAGER`."""
+        monkeypatch.setenv("PROCESS_MANAGER", "incorrect")
+        monkeypatch.setenv("WITH_RELOAD", "false")
+        assert os.getenv("PROCESS_MANAGER") == "incorrect"
+        assert os.getenv("WITH_RELOAD") == "false"
+        with pytest.raises(NameError) as e:
+            client_asgi.get("/")
+            assert str(e) == "Process manager needs to be either uvicorn or gunicorn."
+
     def test_get_root(self, clients: List[TestClient]) -> None:
         """Test a `GET` request to the root endpoint."""
         for client in clients:

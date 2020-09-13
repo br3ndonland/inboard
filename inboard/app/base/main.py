@@ -24,11 +24,10 @@ class App:
             }
         )
         version = f"{sys.version_info.major}.{sys.version_info.minor}"
-        server = (
-            "Uvicorn"
-            if os.getenv("PROCESS_MANAGER") == "uvicorn"
-            else "Uvicorn, Gunicorn,"
-        )
+        process_manager = os.getenv("PROCESS_MANAGER")
+        if process_manager not in ["gunicorn", "uvicorn"]:
+            raise NameError("Process manager needs to be either uvicorn or gunicorn.")
+        server = "Uvicorn" if process_manager == "uvicorn" else "Uvicorn, Gunicorn,"
         message = f"Hello World, from {server} and Python {version}!"
         response: Dict = {"type": "http.response.body", "body": message.encode("utf-8")}
         await send(response)
