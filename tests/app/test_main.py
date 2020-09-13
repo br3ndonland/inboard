@@ -1,7 +1,9 @@
+import os
 import re
 from typing import Dict, List
 
 import pytest
+from _pytest.monkeypatch import MonkeyPatch
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from starlette.applications import Starlette
@@ -75,6 +77,30 @@ class TestEndpoints:
     - https://www.starlette.io/testclient/
     - https://docs.pytest.org/en/latest/parametrize.html
     """
+
+    def test_get_asgi_uvicorn(
+        self, client_asgi: TestClient, monkeypatch: MonkeyPatch
+    ) -> None:
+        """Test `GET` request to base ASGI app set for Uvicorn without Gunicorn."""
+        monkeypatch.setenv("PROCESS_MANAGER", "uvicorn")
+        monkeypatch.setenv("WITH_RELOAD", "false")
+        assert os.getenv("PROCESS_MANAGER") == "uvicorn"
+        assert os.getenv("WITH_RELOAD") == "false"
+        response = client_asgi.get("/")
+        assert response.status_code == 200
+        assert response.text == "Hello World, from Uvicorn and Python 3.8!"
+
+    def test_get_asgi_uvicorn_gunicorn(
+        self, client_asgi: TestClient, monkeypatch: MonkeyPatch
+    ) -> None:
+        """Test `GET` request to base ASGI app set for Uvicorn with Gunicorn."""
+        monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
+        monkeypatch.setenv("WITH_RELOAD", "false")
+        assert os.getenv("PROCESS_MANAGER") == "gunicorn"
+        assert os.getenv("WITH_RELOAD") == "false"
+        response = client_asgi.get("/")
+        assert response.status_code == 200
+        assert response.text == "Hello World, from Uvicorn, Gunicorn, and Python 3.8!"
 
     def test_get_root(self, clients: List[TestClient]) -> None:
         """Test a `GET` request to the root endpoint."""

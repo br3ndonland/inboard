@@ -24,11 +24,15 @@ class App:
             }
         )
         version = f"{sys.version_info.major}.{sys.version_info.minor}"
-        server = "Uvicorn" if bool(os.getenv("WITH_RELOAD")) else "Uvicorn, Gunicorn,"
+        server = (
+            "Uvicorn"
+            if os.getenv("PROCESS_MANAGER") == "uvicorn"
+            else "Uvicorn, Gunicorn,"
+        )
         message = f"Hello World, from {server} and Python {version}!"
         response: Dict = {"type": "http.response.body", "body": message.encode("utf-8")}
         await send(response)
         return response
 
 
-app = App
+app: Callable = App
