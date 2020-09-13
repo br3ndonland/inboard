@@ -27,6 +27,7 @@ Brendon Smith ([br3ndonland](https://github.com/br3ndonland/))
   - [Logging](#logging)
 - [Development](#development)
   - [Code style](#code-style)
+  - [GitHub Actions workflows](#github-actions-workflows)
   - [Building development images](#building-development-images)
   - [Running development containers](#running-development-containers)
   - [Configuring Docker for GitHub Container Registry](#configuring-docker-for-github-container-registry)
@@ -347,6 +348,10 @@ For more information on Python logging configuration, see the [Python `logging` 
   - You can run isort from the command line with `poetry run isort .`.
   - Configuration for isort is stored in _[pyproject.toml](pyproject.toml)_.
 - Other web code (JSON, Markdown, YAML) is formatted with [Prettier](https://prettier.io/).
+
+### GitHub Actions workflows
+
+[GitHub Actions](https://github.com/features/actions) is a continuous integration/continuous deployment (CI/CD) service that runs on GitHub repos. It replaces other services like Travis CI. Actions are grouped into workflows and stored in _.github/workflows_. See my [GitHub Actions Gist](https://gist.github.com/br3ndonland/f9c753eb27381f97336aa21b8d932be6) for more info on GitHub Actions.
 
 ### Building development images
 
