@@ -348,6 +348,27 @@ For more information on Python logging configuration, see the [Python `logging` 
   - You can run isort from the command line with `poetry run isort .`.
   - Configuration for isort is stored in _[pyproject.toml](pyproject.toml)_.
 - Other web code (JSON, Markdown, YAML) is formatted with [Prettier](https://prettier.io/).
+- Code style is enforced with [pre-commit](https://pre-commit.com/), which runs [Git hooks](https://www.git-scm.com/book/en/v2/Customizing-Git-Git-Hooks).
+
+  - Configuration is stored in _[.pre-commit-config.yaml](.pre-commit-config.yaml)_.
+  - Pre-commit can run locally before each commit (hence "pre-commit"), or on different Git events like `pre-push`.
+  - Pre-commit is installed in the Poetry environment. To use:
+
+    ```sh
+    # after running `poetry install`
+    path/to/inboard
+    ❯ poetry shell
+
+    # install hooks that run before each commit
+    path/to/inboard
+    .venv ❯ pre-commit install
+
+    # and/or install hooks that run before each push
+    path/to/inboard
+    .venv ❯ pre-commit install --hook-type pre-push
+    ```
+
+  - Pre-commit is also useful as a CI tool. The [hooks](.github/workflows/hooks.yml) GitHub Actions workflow runs pre-commit hooks with [GitHub Actions](https://github.com/features/actions).
 
 ### GitHub Actions workflows
 
