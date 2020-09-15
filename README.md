@@ -259,7 +259,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 - [`TIMEOUT`](https://docs.gunicorn.org/en/stable/settings.html#timeout): Workers silent for more than this many seconds are killed and restarted.
   - Default: `"120"`
   - Custom: `TIMEOUT="20"`
-- [`GRACEFUL_TIMEOUT`](https://docs.gunicorn.org/en/stable/settings.html#graceful-timeout): Number of seconds to allow workers finish serving requests before restart.
+- [`GRACEFUL_TIMEOUT`](https://docs.gunicorn.org/en/stable/settings.html#graceful-timeout): Number of seconds to wait for workers to finish serving requests before restart.
   - Default: `"120"`
   - Custom: `GRACEFUL_TIMEOUT="20"`
 - [`KEEP_ALIVE`](https://docs.gunicorn.org/en/stable/settings.html#keepalive): Number of seconds to wait for requests on a Keep-Alive connection.
