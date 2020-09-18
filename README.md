@@ -3,7 +3,7 @@
 _Docker images to power your Python APIs and help you ship faster. With support for Uvicorn, Gunicorn, Starlette, and FastAPI._
 
 [![PyPI](https://img.shields.io/pypi/v/inboard?color=success)](https://pypi.org/project/inboard/)
-[![GitHub Container Registry](https://img.shields.io/badge/github%20container%20registry-inboard-success)](https://github.com/users/br3ndonland/packages/container/inboard)
+[![GitHub Container Registry](https://img.shields.io/badge/github%20container%20registry-inboard-success)](https://github.com/users/br3ndonland/packages/container/package/inboard)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://black.readthedocs.io/en/stable/)
 
@@ -35,7 +35,7 @@ Brendon Smith ([br3ndonland](https://github.com/br3ndonland/))
 
 ## Description
 
-This repo provides [Docker images](https://github.com/users/br3ndonland/packages/container/inboard) and a [PyPI package](https://pypi.org/project/inboard/) with useful utilities for Python web servers. It is inspired by [tiangolo/uvicorn-gunicorn-docker](https://github.com/tiangolo/uvicorn-gunicorn-docker), with the following advantages:
+This repo provides [Docker images](https://github.com/users/br3ndonland/packages/container/package/inboard) and a [PyPI package](https://pypi.org/project/inboard/) with useful utilities for Python web servers. It is inspired by [tiangolo/uvicorn-gunicorn-docker](https://github.com/tiangolo/uvicorn-gunicorn-docker), with the following advantages:
 
 - **One repo**. The tiangolo/uvicorn-gunicorn images are in at least three separate repos ([tiangolo/uvicorn-gunicorn-docker](https://github.com/tiangolo/uvicorn-gunicorn-docker), [tiangolo/uvicorn-gunicorn-fastapi-docker](https://github.com/tiangolo/uvicorn-gunicorn-fastapi-docker), and [tiangolo/uvicorn-gunicorn-starlette-docker](https://github.com/tiangolo/uvicorn-gunicorn-starlette-docker)), with large amounts of code duplication, making maintenance difficult for an [already-busy maintainer](https://github.com/encode/uvicorn/pull/705#issuecomment-660042305). This repo combines three into one.
 - **One _Dockerfile_.** This repo leverages [multi-stage builds](https://docs.docker.com/develop/develop-images/multistage-build/) to produce multiple Docker images from one _Dockerfile_.
@@ -233,7 +233,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
   - Custom: `PORT="8080"`
 - [`BIND`](https://docs.gunicorn.org/en/latest/settings.html#server-socket): The actual host and port passed to Gunicorn.
   - Default: `HOST:PORT` (`"0.0.0.0:80"`)
-  - Custom: `BIND="0.0.0.0:8080"`
+  - Custom: `BIND="0.0.0.0:8080"` (if custom `BIND` is set, overrides `HOST` and `PORT`)
 - `PROCESS_MANAGER`: Manager for Uvicorn worker processes. As described in the [Uvicorn docs](https://www.uvicorn.org), "Uvicorn includes a Gunicorn worker class allowing you to run ASGI applications, with all of Uvicorn's performance benefits, while also giving you Gunicorn's fully-featured process management."
   - Default: `"gunicorn"` (run Uvicorn with Gunicorn as the process manager)
   - Custom: `"uvicorn"` (run Uvicorn alone for local development)
@@ -263,7 +263,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
   - Default: `"120"`
   - Custom: `GRACEFUL_TIMEOUT="20"`
 - [`KEEP_ALIVE`](https://docs.gunicorn.org/en/stable/settings.html#keepalive): Number of seconds to wait for requests on a Keep-Alive connection.
-  - Default: `"2"`
+  - Default: `"5"`
   - Custom: `KEEP_ALIVE="20"`
 - `GUNICORN_CMD_ARGS`: Additional [command-line arguments for Gunicorn](https://docs.gunicorn.org/en/stable/settings.html). Gunicorn looks for the `GUNICORN_CMD_ARGS` environment variable automatically, and gives these settings precedence over other environment variables and Gunicorn config files.
   - Custom: To use a custom TLS certificate, copy or mount the certificate and private key into the Docker image, and set [`--keyfile` and `--certfile`](http://docs.gunicorn.org/en/latest/settings.html#ssl) to the location of the files.
