@@ -22,7 +22,7 @@ from inboard.app.starlettebase.main import app as starlette_app
 def app_module_tmp_path(tmp_path_factory: TempPathFactory) -> Path:
     """Copy app modules to temporary directory to test custom app module paths."""
     tmp_dir = tmp_path_factory.mktemp("app")
-    shutil.copytree(f"{Path(pre_start_module.__file__).parent}", f"{tmp_dir}/tmp_app")
+    shutil.copytree(Path(pre_start_module.__file__).parent, Path(f"{tmp_dir}/tmp_app"))
     return tmp_dir
 
 
@@ -61,11 +61,24 @@ def gunicorn_conf_path(monkeypatch: MonkeyPatch) -> Path:
     return path
 
 
+@pytest.fixture(scope="session")
+def gunicorn_conf_tmp_path(tmp_path_factory: TempPathFactory) -> Path:
+    """Create temporary directory for Gunicorn configuration file."""
+    return tmp_path_factory.mktemp("gunicorn")
+
+
 @pytest.fixture
-def gunicorn_conf_path_tmp(tmp_path: Path) -> Path:
-    """Copy gunicorn configuration file to custom temporary file."""
-    tmp_file = shutil.copy(Path(gunicorn_conf_module.__file__), tmp_path)
-    return Path(tmp_file)
+def gunicorn_conf_tmp_file_path(
+    gunicorn_conf_tmp_path: Path,
+    monkeypatch: MonkeyPatch,
+    tmp_path_factory: TempPathFactory,
+) -> Path:
+    """Copy gunicorn configuration file to temporary directory."""
+    tmp_file = Path(f"{gunicorn_conf_tmp_path}/gunicorn_conf.py")
+    shutil.copy(Path(gunicorn_conf_module.__file__), tmp_file)
+    monkeypatch.setenv("GUNICORN_CONF", str(tmp_file))
+    assert os.getenv("GUNICORN_CONF", str(tmp_file))
+    return tmp_file
 
 
 @pytest.fixture
@@ -96,7 +109,7 @@ def logging_conf_module_path(monkeypatch: MonkeyPatch) -> str:
 def logging_conf_tmp_file_path(tmp_path_factory: TempPathFactory) -> Path:
     """Copy logging configuration module to custom temporary location."""
     tmp_dir = tmp_path_factory.mktemp("tmp_log")
-    shutil.copy(Path(logging_conf_module.__file__), f"{tmp_dir}/tmp_log.py")
+    shutil.copy(Path(logging_conf_module.__file__), Path(f"{tmp_dir}/tmp_log.py"))
     return tmp_dir
 
 
