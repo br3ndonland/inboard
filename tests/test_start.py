@@ -1,4 +1,5 @@
 import logging
+import multiprocessing
 import os
 from pathlib import Path
 from typing import Any, Dict
@@ -7,7 +8,7 @@ import pytest
 from _pytest.monkeypatch import MonkeyPatch
 from pytest_mock import MockerFixture
 
-from inboard import start
+from inboard import gunicorn_conf, start
 
 
 class TestConfPaths:
@@ -22,20 +23,77 @@ class TestConfPaths:
         assert start.set_conf_path("gunicorn") == str(gunicorn_conf_path)
 
     def test_set_custom_conf_path_gunicorn(
-        self, gunicorn_conf_path_tmp: Path, monkeypatch: MonkeyPatch, tmp_path: Path
+        self,
+        gunicorn_conf_tmp_file_path: Path,
+        monkeypatch: MonkeyPatch,
+        tmp_path: Path,
     ) -> None:
         """Set path to custom temporary Gunicorn configuration file."""
-        monkeypatch.setenv("GUNICORN_CONF", str(gunicorn_conf_path_tmp))
-        assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_path_tmp)
-        assert f"{tmp_path}/gunicorn_conf.py" in str(gunicorn_conf_path_tmp)
-        assert "logging" not in str(gunicorn_conf_path_tmp)
-        assert start.set_conf_path("gunicorn") == str(gunicorn_conf_path_tmp)
+        monkeypatch.setenv("GUNICORN_CONF", str(gunicorn_conf_tmp_file_path))
+        assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_tmp_file_path)
+        assert "/gunicorn_conf.py" in str(gunicorn_conf_tmp_file_path)
+        assert "logging" not in str(gunicorn_conf_tmp_file_path)
+        assert start.set_conf_path("gunicorn") == str(gunicorn_conf_tmp_file_path)
 
     def test_set_incorrect_conf_path(self, monkeypatch: MonkeyPatch) -> None:
         """Set path to non-existent file and raise an error."""
         with pytest.raises(FileNotFoundError):
             monkeypatch.setenv("GUNICORN_CONF", "/no/file/here")
             start.set_conf_path("gunicorn")
+
+
+class TestConfigureGunicorn:
+    """Test Gunicorn configuration independently of Gunicorn server.
+    ---
+    """
+
+    def test_gunicorn_conf_workers_default(self) -> None:
+        """Test default number of Gunicorn worker processes."""
+        assert gunicorn_conf.workers >= 2
+        assert gunicorn_conf.workers == multiprocessing.cpu_count()
+
+    def test_gunicorn_conf_workers_custom_max(self, monkeypatch: MonkeyPatch) -> None:
+        """Test custom Gunicorn worker process calculation."""
+        monkeypatch.setenv("MAX_WORKERS", "1")
+        monkeypatch.setenv("WEB_CONCURRENCY", "4")
+        monkeypatch.setenv("WORKERS_PER_CORE", "0.5")
+        assert os.getenv("MAX_WORKERS") == "1"
+        assert os.getenv("WEB_CONCURRENCY") == "4"
+        assert os.getenv("WORKERS_PER_CORE") == "0.5"
+        assert (
+            gunicorn_conf.calculate_workers(
+                str(os.getenv("MAX_WORKERS")),
+                str(os.getenv("WEB_CONCURRENCY")),
+                str(os.getenv("WORKERS_PER_CORE")),
+            )
+            == 1
+        )
+
+    def test_gunicorn_conf_workers_custom_concurrency(
+        self, monkeypatch: MonkeyPatch
+    ) -> None:
+        """Test custom Gunicorn worker process calculation."""
+        monkeypatch.setenv("WEB_CONCURRENCY", "4")
+        monkeypatch.setenv("WORKERS_PER_CORE", "0.5")
+        assert os.getenv("WEB_CONCURRENCY") == "4"
+        assert os.getenv("WORKERS_PER_CORE") == "0.5"
+        assert (
+            gunicorn_conf.calculate_workers(
+                None,
+                str(os.getenv("WEB_CONCURRENCY")),
+                str(os.getenv("WORKERS_PER_CORE")),
+            )
+            == 4
+        )
+
+    def test_gunicorn_conf_workers_custom_cores(self, monkeypatch: MonkeyPatch) -> None:
+        """Test custom Gunicorn worker process calculation."""
+        monkeypatch.setenv("WORKERS_PER_CORE", "0.5")
+        assert os.getenv("WORKERS_PER_CORE") == "0.5"
+        cores: int = multiprocessing.cpu_count()
+        assert gunicorn_conf.calculate_workers(
+            None, "2", str(os.getenv("WORKERS_PER_CORE")), cores=cores
+        ) == max(int(cores * 0.5), 2)
 
 
 class TestConfigureLogging:
@@ -347,13 +405,9 @@ class TestStartServer:
         monkeypatch: MonkeyPatch,
     ) -> None:
         """Test `start.start_server` with Uvicorn."""
-        monkeypatch.setenv("LOG_FORMAT", "uvicorn")
-        monkeypatch.setenv("LOG_LEVEL", "debug")
         monkeypatch.setenv("PROCESS_MANAGER", "uvicorn")
-        assert os.getenv("LOG_FORMAT") == "uvicorn"
-        assert os.getenv("LOG_LEVEL") == "debug"
         assert os.getenv("PROCESS_MANAGER") == "uvicorn"
-        mocker.patch("uvicorn.run", autospec=True)
+        mock_run = mocker.patch("uvicorn.run", autospec=True)
         start.start_server(
             str(os.getenv("PROCESS_MANAGER")),
             app_module=app_module,
@@ -361,6 +415,14 @@ class TestStartServer:
             logging_conf_dict=logging_conf_dict,
         )
         mock_logger.debug.assert_called_once_with("Running Uvicorn without Gunicorn.")  # type: ignore[attr-defined]  # noqa: E501
+        mock_run.assert_called_once_with(
+            app_module,
+            host="0.0.0.0",
+            port=80,
+            log_config=logging_conf_dict,
+            log_level="info",
+            reload=False,
+        )
 
     @pytest.mark.parametrize(
         "app_module",
@@ -378,13 +440,18 @@ class TestStartServer:
         mock_logger: logging.Logger,
         mocker: MockerFixture,
         monkeypatch: MonkeyPatch,
+        tmp_path: Path,
     ) -> None:
         """Test `start.start_server` with Uvicorn managed by Gunicorn."""
-        assert os.getenv("GUNICORN_CONF", str(gunicorn_conf_path))
-        monkeypatch.setenv("LOG_LEVEL", "debug")
+        monkeypatch.setenv(
+            "GUNICORN_CMD_ARGS",
+            f"--worker-tmp-dir {tmp_path}",
+        )
         monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
-        assert os.getenv("LOG_LEVEL") == "debug"
+        assert gunicorn_conf_path.parent.exists()
+        assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_path)
         assert os.getenv("PROCESS_MANAGER") == "gunicorn"
+        mock_run = mocker.patch("subprocess.run", autospec=True)
         start.start_server(
             str(os.getenv("PROCESS_MANAGER")),
             app_module=app_module,
@@ -392,6 +459,16 @@ class TestStartServer:
             logging_conf_dict=logging_conf_dict,
         )
         mock_logger.debug.assert_called_once_with("Running Uvicorn with Gunicorn.")  # type: ignore[attr-defined]  # noqa: E501
+        mock_run.assert_called_once_with(
+            [
+                "gunicorn",
+                "-k",
+                "uvicorn.workers.UvicornWorker",
+                "-c",
+                str(gunicorn_conf_path),
+                app_module,
+            ]
+        )
 
     @pytest.mark.parametrize(
         "app_module",
@@ -404,31 +481,26 @@ class TestStartServer:
     def test_start_server_uvicorn_gunicorn_custom_config(
         self,
         app_module: str,
-        gunicorn_conf_path: Path,
+        gunicorn_conf_tmp_file_path: Path,
         logging_conf_dict: Dict[str, Any],
         mock_logger: logging.Logger,
         mocker: MockerFixture,
         monkeypatch: MonkeyPatch,
     ) -> None:
-        """Test `start.start_server` with Uvicorn managed by Gunicorn."""
-        assert os.getenv("GUNICORN_CONF", str(gunicorn_conf_path))
+        """Test customized `start.start_server` with Uvicorn managed by Gunicorn."""
+        monkeypatch.setenv(
+            "GUNICORN_CMD_ARGS",
+            f"--worker-tmp-dir {gunicorn_conf_tmp_file_path.parent}",
+        )
         monkeypatch.setenv("LOG_FORMAT", "gunicorn")
         monkeypatch.setenv("LOG_LEVEL", "debug")
-        monkeypatch.setenv("MAX_WORKERS", "1")
         monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
-        monkeypatch.setenv("WEB_CONCURRENCY", "4")
+        assert gunicorn_conf_tmp_file_path.parent.exists()
+        assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_tmp_file_path)
         assert os.getenv("LOG_FORMAT") == "gunicorn"
         assert os.getenv("LOG_LEVEL") == "debug"
-        assert os.getenv("MAX_WORKERS") == "1"
         assert os.getenv("PROCESS_MANAGER") == "gunicorn"
-        assert os.getenv("WEB_CONCURRENCY") == "4"
-        start.start_server(
-            str(os.getenv("PROCESS_MANAGER")),
-            app_module=app_module,
-            logger=mock_logger,
-            logging_conf_dict=logging_conf_dict,
-        )
-        monkeypatch.delenv("WEB_CONCURRENCY")
+        mock_run = mocker.patch("subprocess.run", autospec=True)
         start.start_server(
             str(os.getenv("PROCESS_MANAGER")),
             app_module=app_module,
@@ -436,6 +508,16 @@ class TestStartServer:
             logging_conf_dict=logging_conf_dict,
         )
         mock_logger.debug.assert_called_with("Running Uvicorn with Gunicorn.")  # type: ignore[attr-defined]  # noqa: E501
+        mock_run.assert_called_with(
+            [
+                "gunicorn",
+                "-k",
+                "uvicorn.workers.UvicornWorker",
+                "-c",
+                str(gunicorn_conf_tmp_file_path),
+                app_module,
+            ]
+        )
 
     def test_start_server_uvicorn_incorrect_module(
         self,

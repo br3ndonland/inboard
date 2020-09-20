@@ -24,7 +24,7 @@ class App:
             }
         )
         version = f"{sys.version_info.major}.{sys.version_info.minor}"
-        process_manager = os.getenv("PROCESS_MANAGER")
+        process_manager = os.getenv("PROCESS_MANAGER", "gunicorn")
         if process_manager not in ["gunicorn", "uvicorn"]:
             raise NameError("Process manager needs to be either uvicorn or gunicorn.")
         server = "Uvicorn" if process_manager == "uvicorn" else "Uvicorn, Gunicorn,"
