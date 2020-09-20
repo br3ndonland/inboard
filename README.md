@@ -225,37 +225,28 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
     - `"/app/inboard/gunicorn_conf.py"` (the default file provided with the Docker image)
   - Custom:
     - `GUNICORN_CONF="/app/package/custom_gunicorn_conf.py"`
-- `HOST`: Host IP address (inside of the container) where Gunicorn will listen for requests.
-  - Default: `"0.0.0.0"`
-  - Custom: _TODO_
-- `PORT`: Port the container should listen on.
-  - Default: `"80"`
-  - Custom: `PORT="8080"`
-- [`BIND`](https://docs.gunicorn.org/en/latest/settings.html#server-socket): The actual host and port passed to Gunicorn.
-  - Default: `HOST:PORT` (`"0.0.0.0:80"`)
-  - Custom: `BIND="0.0.0.0:8080"` (if custom `BIND` is set, overrides `HOST` and `PORT`)
+- [Gunicorn worker processes](https://docs.gunicorn.org/en/latest/settings.html#worker-processes): The number of Gunicorn worker processes to run is determined based on the `MAX_WORKERS`, `WEB_CONCURRENCY`, and `WORKERS_PER_CORE` environment variables, with a default of 1 worker per CPU core and a default minimum of 2. This is the "performance auto-tuning" feature described in [tiangolo/uvicorn-gunicorn-docker](https://github.com/tiangolo/uvicorn-gunicorn-docker).
+  - `MAX_WORKERS`: Maximum number of workers to use, independent of number of CPU cores.
+    - Default: not set (unlimited)
+    - Custom: `MAX_WORKERS="24"`
+  - `WEB_CONCURRENCY`: Set number of workers independently of number of CPU cores.
+    - Default: not set
+    - Custom: `WEB_CONCURRENCY="4"`
+  - `WORKERS_PER_CORE`: Number of Gunicorn workers per CPU core. Overridden if `WEB_CONCURRENCY` is set.
+    - Default: 1
+    - Custom:
+      - `WORKERS_PER_CORE="2"`: Run 2 worker processes per core (8 worker processes on a server with 4 cores).
+      - `WORKERS_PER_CORE="0.5"` (floating point values permitted): Run 1 worker process for every 2 cores (2 worker processes on a server with 4 cores).
+  - Notes:
+    - The default number of workers is the number of CPU cores multiplied by the environment variable `WORKERS_PER_CORE="1"`. On a machine with only 1 CPU core, the default minimum number of workers is 2 to avoid poor performance and blocking, as explained in the release notes for [tiangolo/uvicorn-gunicorn-docker 0.3.0](https://github.com/tiangolo/uvicorn-gunicorn-docker/releases/tag/0.3.0).
+    - If both `MAX_WORKERS` and `WEB_CONCURRENCY` are set, the least of the two will be used as the total number of workers.
+    - If either `MAX_WORKERS` or `WEB_CONCURRENCY` are set to 1, the total number of workers will be 1, overriding the default minimum of 2.
 - `PROCESS_MANAGER`: Manager for Uvicorn worker processes. As described in the [Uvicorn docs](https://www.uvicorn.org), "Uvicorn includes a Gunicorn worker class allowing you to run ASGI applications, with all of Uvicorn's performance benefits, while also giving you Gunicorn's fully-featured process management."
   - Default: `"gunicorn"` (run Uvicorn with Gunicorn as the process manager)
   - Custom: `"uvicorn"` (run Uvicorn alone for local development)
-- [`WORKER_CLASS`](https://docs.gunicorn.org/en/latest/settings.html#worker-processes): The class to be used by Gunicorn for the workers.
+- [`WORKER_CLASS`](https://docs.gunicorn.org/en/latest/settings.html#worker-processes): Uvicorn worker class for Gunicorn to use.
   - Default: `uvicorn.workers.UvicornWorker`
-  - Custom: For the alternate Uvicorn worker, `WORKER_CLASS="uvicorn.workers.UvicornH11Worker"`
-- [`WORKERS_PER_CORE`](https://docs.gunicorn.org/en/latest/settings.html#worker-processes): Number of Gunicorn workers per CPU core.
-  - Default: `"1"`
-  - Custom: `WORKERS_PER_CORE="2"`
-  - Notes:
-    - This image will check how many CPU cores are available in the current server running your container. It will set the number of workers to the number of CPU cores multiplied by this value.
-    - On a server with 2 CPU cores, `WORKERS_PER_CORE="3"` will run 6 worker processes.
-    - Floating point values are permitted. If you have a powerful server (let's say, with 8 CPU cores) running several applications, including an ASGI application that won't need high performance, but you don't want to waste server resources, you could set the environment variable to `WORKERS_PER_CORE="0.5"`. A server with 8 CPU cores would start only 4 worker processes.
-    - By default, if `WORKERS_PER_CORE="1"` and the server has only 1 CPU core, 2 workers will be started instead of 1, to avoid poor performance and blocking applications. This behavior can be overridden using `WEB_CONCURRENCY`.
-- `MAX_WORKERS`: Maximum number of workers to use, independent of number of CPU cores.
-  - Default: unlimited (not set)
-  - Custom: `MAX_WORKERS="24"`
-- [`WEB_CONCURRENCY`](https://docs.gunicorn.org/en/latest/settings.html#worker-processes): Set number of workers independently of number of CPU cores.
-  - Default:
-    - Number of CPU cores multiplied by the environment variable `WORKERS_PER_CORE`.
-    - In a server with 2 cores and default `WORKERS_PER_CORE="1"`, default `"2"`.
-  - Custom: To have 4 workers, `WEB_CONCURRENCY="4"`
+  - Custom: For the [alternate Uvicorn worker](https://www.uvicorn.org/deployment/), `WORKER_CLASS="uvicorn.workers.UvicornH11Worker"` _(TODO: the H11 worker is provided for [PyPy](https://www.pypy.org/) and hasn't yet been tested)_
 - [`TIMEOUT`](https://docs.gunicorn.org/en/stable/settings.html#timeout): Workers silent for more than this many seconds are killed and restarted.
   - Default: `"120"`
   - Custom: `TIMEOUT="20"`
@@ -265,6 +256,15 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 - [`KEEP_ALIVE`](https://docs.gunicorn.org/en/stable/settings.html#keepalive): Number of seconds to wait for requests on a Keep-Alive connection.
   - Default: `"5"`
   - Custom: `KEEP_ALIVE="20"`
+- `HOST`: Host IP address (inside of the container) where Gunicorn will listen for requests.
+  - Default: `"0.0.0.0"`
+  - Custom: _TODO_
+- `PORT`: Port the container should listen on.
+  - Default: `"80"`
+  - Custom: `PORT="8080"`
+- [`BIND`](https://docs.gunicorn.org/en/latest/settings.html#server-socket): The actual host and port passed to Gunicorn.
+  - Default: `HOST:PORT` (`"0.0.0.0:80"`)
+  - Custom: `BIND="0.0.0.0:8080"` (if custom `BIND` is set, overrides `HOST` and `PORT`)
 - `GUNICORN_CMD_ARGS`: Additional [command-line arguments for Gunicorn](https://docs.gunicorn.org/en/stable/settings.html). Gunicorn looks for the `GUNICORN_CMD_ARGS` environment variable automatically, and gives these settings precedence over other environment variables and Gunicorn config files.
   - Custom: To use a custom TLS certificate, copy or mount the certificate and private key into the Docker image, and set [`--keyfile` and `--certfile`](http://docs.gunicorn.org/en/latest/settings.html#ssl) to the location of the files.
     ```sh
