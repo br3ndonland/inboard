@@ -494,26 +494,12 @@ class TestStartServer:
         )
         monkeypatch.setenv("LOG_FORMAT", "gunicorn")
         monkeypatch.setenv("LOG_LEVEL", "debug")
-        monkeypatch.setenv("MAX_WORKERS", "1")
         monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
-        monkeypatch.setenv("WEB_CONCURRENCY", "4")
-        monkeypatch.setenv("WORKERS_PER_CORE", "0.5")
         assert gunicorn_conf_tmp_file_path.parent.exists()
         assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_tmp_file_path)
         assert os.getenv("LOG_FORMAT") == "gunicorn"
         assert os.getenv("LOG_LEVEL") == "debug"
-        assert os.getenv("MAX_WORKERS") == "1"
         assert os.getenv("PROCESS_MANAGER") == "gunicorn"
-        assert os.getenv("WEB_CONCURRENCY") == "4"
-        assert os.getenv("WORKERS_PER_CORE") == "0.5"
-        assert (
-            gunicorn_conf.calculate_workers(
-                str(os.getenv("MAX_WORKERS")),
-                str(os.getenv("WEB_CONCURRENCY")),
-                str(os.getenv("WORKERS_PER_CORE")),
-            )
-            == 1
-        )
         mock_run = mocker.patch("subprocess.run", autospec=True)
         start.start_server(
             str(os.getenv("PROCESS_MANAGER")),
