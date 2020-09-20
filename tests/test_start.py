@@ -93,7 +93,7 @@ class TestConfigureGunicorn:
         cores: int = multiprocessing.cpu_count()
         assert gunicorn_conf.calculate_workers(
             None, "2", str(os.getenv("WORKERS_PER_CORE")), cores=cores
-        ) == int(cores * 0.5)
+        ) == max(int(cores * 0.5), 2)
 
 
 class TestConfigureLogging:
