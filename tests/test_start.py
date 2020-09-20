@@ -52,7 +52,7 @@ class TestConfigureGunicorn:
         assert gunicorn_conf.workers >= 2
         assert gunicorn_conf.workers == multiprocessing.cpu_count()
 
-    def test_gunicorn_conf_workers_custom(self, monkeypatch: MonkeyPatch) -> None:
+    def test_gunicorn_conf_workers_custom_max(self, monkeypatch: MonkeyPatch) -> None:
         """Test custom Gunicorn worker process calculation."""
         monkeypatch.setenv("MAX_WORKERS", "1")
         monkeypatch.setenv("WEB_CONCURRENCY", "4")
@@ -68,7 +68,15 @@ class TestConfigureGunicorn:
             )
             == 1
         )
-        monkeypatch.delenv("MAX_WORKERS")
+
+    def test_gunicorn_conf_workers_custom_concurrency(
+        self, monkeypatch: MonkeyPatch
+    ) -> None:
+        """Test custom Gunicorn worker process calculation."""
+        monkeypatch.setenv("WEB_CONCURRENCY", "4")
+        monkeypatch.setenv("WORKERS_PER_CORE", "0.5")
+        assert os.getenv("WEB_CONCURRENCY") == "4"
+        assert os.getenv("WORKERS_PER_CORE") == "0.5"
         assert (
             gunicorn_conf.calculate_workers(
                 None,
@@ -77,7 +85,11 @@ class TestConfigureGunicorn:
             )
             == 4
         )
-        monkeypatch.delenv("WEB_CONCURRENCY")
+
+    def test_gunicorn_conf_workers_custom_cores(self, monkeypatch: MonkeyPatch) -> None:
+        """Test custom Gunicorn worker process calculation."""
+        monkeypatch.setenv("WORKERS_PER_CORE", "0.5")
+        assert os.getenv("WORKERS_PER_CORE") == "0.5"
         cores: int = multiprocessing.cpu_count()
         assert gunicorn_conf.calculate_workers(
             None, "2", str(os.getenv("WORKERS_PER_CORE")), cores=cores
