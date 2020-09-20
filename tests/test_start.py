@@ -1,4 +1,5 @@
 import logging
+import multiprocessing
 import os
 from pathlib import Path
 from typing import Any, Dict
@@ -7,7 +8,7 @@ import pytest
 from _pytest.monkeypatch import MonkeyPatch
 from pytest_mock import MockerFixture
 
-from inboard import start
+from inboard import gunicorn_conf, start
 
 
 class TestConfPaths:
@@ -39,6 +40,48 @@ class TestConfPaths:
         with pytest.raises(FileNotFoundError):
             monkeypatch.setenv("GUNICORN_CONF", "/no/file/here")
             start.set_conf_path("gunicorn")
+
+
+class TestConfigureGunicorn:
+    """Test Gunicorn configuration independently of Gunicorn server.
+    ---
+    """
+
+    def test_gunicorn_conf_workers_default(self) -> None:
+        """Test default number of Gunicorn worker processes."""
+        assert gunicorn_conf.workers >= 2
+        assert gunicorn_conf.workers == multiprocessing.cpu_count()
+
+    def test_gunicorn_conf_workers_custom(self, monkeypatch: MonkeyPatch) -> None:
+        """Test custom Gunicorn worker process calculation."""
+        monkeypatch.setenv("MAX_WORKERS", "1")
+        monkeypatch.setenv("WEB_CONCURRENCY", "4")
+        monkeypatch.setenv("WORKERS_PER_CORE", "0.5")
+        assert os.getenv("MAX_WORKERS") == "1"
+        assert os.getenv("WEB_CONCURRENCY") == "4"
+        assert os.getenv("WORKERS_PER_CORE") == "0.5"
+        assert (
+            gunicorn_conf.calculate_workers(
+                str(os.getenv("MAX_WORKERS")),
+                str(os.getenv("WEB_CONCURRENCY")),
+                str(os.getenv("WORKERS_PER_CORE")),
+            )
+            == 1
+        )
+        monkeypatch.delenv("MAX_WORKERS")
+        assert (
+            gunicorn_conf.calculate_workers(
+                None,
+                str(os.getenv("WEB_CONCURRENCY")),
+                str(os.getenv("WORKERS_PER_CORE")),
+            )
+            == 4
+        )
+        monkeypatch.delenv("WEB_CONCURRENCY")
+        cores: int = multiprocessing.cpu_count()
+        assert gunicorn_conf.calculate_workers(
+            None, "2", str(os.getenv("WORKERS_PER_CORE")), cores=cores
+        ) == int(cores * 0.5)
 
 
 class TestConfigureLogging:
@@ -393,6 +436,7 @@ class TestStartServer:
             f"--worker-tmp-dir {tmp_path}",
         )
         monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
+        assert gunicorn_conf_path.parent.exists()
         assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_path)
         assert os.getenv("PROCESS_MANAGER") == "gunicorn"
         mock_run = mocker.patch("subprocess.run", autospec=True)
@@ -431,7 +475,7 @@ class TestStartServer:
         mocker: MockerFixture,
         monkeypatch: MonkeyPatch,
     ) -> None:
-        """Test `start.start_server` with Uvicorn managed by Gunicorn."""
+        """Test customized `start.start_server` with Uvicorn managed by Gunicorn."""
         monkeypatch.setenv(
             "GUNICORN_CMD_ARGS",
             f"--worker-tmp-dir {gunicorn_conf_tmp_file_path.parent}",
@@ -441,12 +485,23 @@ class TestStartServer:
         monkeypatch.setenv("MAX_WORKERS", "1")
         monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
         monkeypatch.setenv("WEB_CONCURRENCY", "4")
+        monkeypatch.setenv("WORKERS_PER_CORE", "0.5")
+        assert gunicorn_conf_tmp_file_path.parent.exists()
         assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_tmp_file_path)
         assert os.getenv("LOG_FORMAT") == "gunicorn"
         assert os.getenv("LOG_LEVEL") == "debug"
         assert os.getenv("MAX_WORKERS") == "1"
         assert os.getenv("PROCESS_MANAGER") == "gunicorn"
         assert os.getenv("WEB_CONCURRENCY") == "4"
+        assert os.getenv("WORKERS_PER_CORE") == "0.5"
+        assert (
+            gunicorn_conf.calculate_workers(
+                str(os.getenv("MAX_WORKERS")),
+                str(os.getenv("WEB_CONCURRENCY")),
+                str(os.getenv("WORKERS_PER_CORE")),
+            )
+            == 1
+        )
         mock_run = mocker.patch("subprocess.run", autospec=True)
         start.start_server(
             str(os.getenv("PROCESS_MANAGER")),
