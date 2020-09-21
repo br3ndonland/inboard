@@ -1,13 +1,13 @@
 import multiprocessing
 import os
-from typing import Union
+from typing import Optional
 
 from inboard.start import configure_logging
 
 
 def calculate_workers(
-    max_workers_str: Union[str, None],
-    web_concurrency_str: Union[str, None],
+    max_workers_str: Optional[str],
+    web_concurrency_str: Optional[str],
     workers_per_core_str: str,
     cores: int = multiprocessing.cpu_count(),
 ) -> int:

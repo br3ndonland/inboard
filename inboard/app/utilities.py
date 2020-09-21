@@ -1,7 +1,7 @@
 import base64
 import os
 from secrets import compare_digest
-from typing import Tuple, Union
+from typing import Optional, Tuple
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -17,7 +17,7 @@ from starlette.requests import HTTPConnection
 class BasicAuth(AuthenticationBackend):
     async def authenticate(
         self, request: HTTPConnection
-    ) -> Union[Tuple[AuthCredentials, SimpleUser], None]:
+    ) -> Optional[Tuple[AuthCredentials, SimpleUser]]:
         if "Authorization" not in request.headers:
             return None
 
