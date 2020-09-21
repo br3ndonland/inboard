@@ -117,12 +117,13 @@ def start_server(
         raise
 
 
-if __name__ == "__main__":
-    logger = logging.getLogger()  # pragma: no cover
-    run_pre_start_script(logger=logger)  # pragma: no cover
-    start_server(  # pragma: no cover
+if __name__ == "__main__":  # pragma: no cover
+    logger = logging.getLogger()
+    logging_conf_dict = configure_logging(logger=logger)
+    run_pre_start_script(logger=logger)
+    start_server(
         str(os.getenv("PROCESS_MANAGER", "gunicorn")),
         app_module=set_app_module(logger=logger),
         logger=logger,
-        logging_conf_dict=configure_logging(logger=logger),
+        logging_conf_dict=logging_conf_dict,
     )
