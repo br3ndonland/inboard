@@ -69,13 +69,14 @@ class TestConfigureGunicorn:
             == 1
         )
 
+    @pytest.mark.parametrize("number_of_workers", ["1", "2", "4"])
     def test_gunicorn_conf_workers_custom_concurrency(
-        self, monkeypatch: MonkeyPatch
+        self, monkeypatch: MonkeyPatch, number_of_workers: str
     ) -> None:
         """Test custom Gunicorn worker process calculation."""
-        monkeypatch.setenv("WEB_CONCURRENCY", "4")
+        monkeypatch.setenv("WEB_CONCURRENCY", number_of_workers)
         monkeypatch.setenv("WORKERS_PER_CORE", "0.5")
-        assert os.getenv("WEB_CONCURRENCY") == "4"
+        assert os.getenv("WEB_CONCURRENCY") == number_of_workers
         assert os.getenv("WORKERS_PER_CORE") == "0.5"
         assert (
             gunicorn_conf.calculate_workers(
@@ -83,7 +84,7 @@ class TestConfigureGunicorn:
                 str(os.getenv("WEB_CONCURRENCY")),
                 str(os.getenv("WORKERS_PER_CORE")),
             )
-            == 4
+            == int(number_of_workers)
         )
 
     def test_gunicorn_conf_workers_custom_cores(self, monkeypatch: MonkeyPatch) -> None:

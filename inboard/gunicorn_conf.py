@@ -16,7 +16,7 @@ def calculate_workers(
     if max_workers_str and int(max_workers_str) > 0:
         use_max_workers = int(max_workers_str)
     if web_concurrency_str and int(web_concurrency_str) > 0:
-        use_web_concurrency = max(int(web_concurrency_str), 2)
+        use_web_concurrency = int(web_concurrency_str)
     return (
         min(use_max_workers, use_web_concurrency)
         if max_workers_str and web_concurrency_str
