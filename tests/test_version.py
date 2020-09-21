@@ -1,6 +1,6 @@
 from inboard import __version__, package_version
 
-current_version = "0.5.3"
+current_version = "0.5.4"
 
 
 def test_package_version() -> None:
