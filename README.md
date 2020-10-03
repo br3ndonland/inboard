@@ -337,6 +337,11 @@ For more information on Python logging configuration, see the [Python `logging` 
 
 ## Development
 
+### Installation
+
+- Install Poetry (see the [Poetry docs](https://python-poetry.org/docs/) and _[CONTRIBUTING.md](.github/CONTRIBUTING.md#poetry)_ for instructions)
+- Install project with all dependencies: `poetry install -E fastapi`
+
 ### Code style
 
 - Python code is formatted with [Black](https://black.readthedocs.io/en/stable/). Configuration for Black is stored in _[pyproject.toml](pyproject.toml)_.
@@ -374,7 +379,7 @@ For more information on Python logging configuration, see the [Python `logging` 
 ### Testing with pytest
 
 - Tests are in the _tests/_ directory.
-- Run tests by [invoking `pytest` from the command-line](https://docs.pytest.org/en/stable/usage.html) in the root directory of the repo.
+- Run tests by [invoking `pytest` from the command-line](https://docs.pytest.org/en/stable/usage.html) within the Poetry environment in the root directory of the repo.
 - [pytest](https://docs.pytest.org/en/latest/) features used include:
   - [fixtures](https://docs.pytest.org/en/latest/fixture.html)
   - [monkeypatch](https://docs.pytest.org/en/latest/monkeypatch.html)
