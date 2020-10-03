@@ -26,6 +26,7 @@ Brendon Smith ([br3ndonland](https://github.com/br3ndonland/))
   - [Gunicorn and Uvicorn](#gunicorn-and-uvicorn)
   - [Logging](#logging)
 - [Development](#development)
+  - [Installation](#installation)
   - [Code style](#code-style)
   - [Testing with pytest](#testing-with-pytest)
   - [GitHub Actions workflows](#github-actions-workflows)
@@ -48,7 +49,7 @@ This repo provides [Docker images](https://github.com/users/br3ndonland/packages
 
 ### Pull images
 
-Docker images are stored in [GitHub Container Registry](https://docs.github.com/en/packages/getting-started-with-github-container-registry) (GHCR), which is a Docker registry like Docker Hub. Public Docker images can be pulled anonymously from `ghcr.io`.
+Docker images are stored in [GitHub Container Registry](https://docs.github.com/en/free-pro-team@latest/packages/getting-started-with-github-container-registry) (GHCR), which is a Docker registry like Docker Hub. Public Docker images can be pulled anonymously from `ghcr.io`.
 
 ```sh
 # Pull most recent version of each image
@@ -442,7 +443,7 @@ Change the port numbers to run multiple containers simultaneously (`-p 81:80`).
 
 ### Configuring Docker for GitHub Container Registry
 
-If authentication is needed, follow the instructions in the GitHub docs on [configuring Docker for use with GHCR](https://docs.github.com/en/packages/getting-started-with-github-container-registry/migrating-to-github-container-registry-for-docker-images). You'll need to [create a personal access token (PAT)](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token). On GitHub, navigate to _Settings -> Developer settings -> Personal access tokens_ ([github.com/settings/tokens](https://github.com/settings/tokens)), then click "Generate new token." The token should have `read:packages` scope. You can then copy the token and use it with [`docker login`](https://docs.docker.com/engine/reference/commandline/login/):
+If authentication is needed, follow the instructions in the GitHub docs on [configuring Docker for use with GHCR](https://docs.github.com/en/free-pro-team@latest/packages/getting-started-with-github-container-registry/migrating-to-github-container-registry-for-docker-images). You'll need to [create a personal access token (PAT)](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token). On GitHub, navigate to _Settings -> Developer settings -> Personal access tokens_ ([github.com/settings/tokens](https://github.com/settings/tokens)), then click "Generate new token." The token should have `read:packages` scope. You can then copy the token and use it with [`docker login`](https://docs.docker.com/engine/reference/commandline/login/):
 
 ```sh
 # create PAT in GitHub and copy to clipboard
