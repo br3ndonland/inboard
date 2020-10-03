@@ -5,10 +5,12 @@ LABEL org.opencontainers.image.licenses="MIT"
 LABEL org.opencontainers.image.source="https://github.com/br3ndonland/inboard"
 LABEL org.opencontainers.image.title="inboard"
 LABEL org.opencontainers.image.url="https://github.com/users/br3ndonland/packages/container/package/inboard"
-ENV APP_MODULE=inboard.app.base.main:app POETRY_VIRTUALENVS_CREATE=false PYTHONPATH=/app
+ENV APP_MODULE=inboard.app.base.main:app POETRY_HOME=/opt/poetry POETRY_VIRTUALENVS_CREATE=false PYTHONPATH=/app
 COPY poetry.lock pyproject.toml /app/
 WORKDIR /app/
-RUN python -m pip install poetry && poetry install --no-dev --no-interaction --no-root -E fastapi
+RUN curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py && \
+  python get-poetry.py -y && . $POETRY_HOME/env && \
+  poetry install --no-dev --no-interaction --no-root -E fastapi
 COPY inboard /app/inboard
 CMD python /app/inboard/start.py
 
