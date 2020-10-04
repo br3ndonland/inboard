@@ -1,6 +1,7 @@
 name: builds
 
 on:
+  pull_request:
   push:
     branches: [develop, master]
     tags:
@@ -17,27 +18,25 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.8
-      - name: Set PY environment variable for caching
-        run: echo "::set-env name=PY::$(python --version --version | sha256sum | cut -d' ' -f1)"
       - name: Set up Poetry cache for Python dependencies
         uses: actions/cache@v2
         if: startsWith(runner.os, 'Linux')
         with:
           path: ~/.cache/pypoetry
-          key: ${{ runner.os }}-poetry-${{ env.PY }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: ${{ runner.os }}-poetry-${{ env.PY }}-
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: ${{ runner.os }}-poetry-
       - name: Set up pre-commit cache
         uses: actions/cache@v2
         if: startsWith(runner.os, 'Linux')
         with:
           path: ~/.cache/pre-commit
-          key: ${{ runner.os }}-pre-commit-${{ env.PY }}-${{ hashFiles('.pre-commit-config.yaml') }}
-          restore-keys: ${{ runner.os }}-pre-commit-${{ env.PY }}-
+          key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: ${{ runner.os }}-pre-commit-
       - name: Install Poetry
         run: |
           curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
           python get-poetry.py -y
-          echo ::set-env name=PATH::"$HOME/.poetry/bin:$PATH"
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
       - name: Install dependencies
         run: poetry install --no-interaction -E fastapi
       - name: Run pre-commit hooks
@@ -65,11 +64,12 @@ jobs:
           docker build . --rm --target starlette -t ghcr.io/br3ndonland/inboard:starlette
           docker build . --rm --target fastapi -t ghcr.io/br3ndonland/inboard:fastapi
       - name: Push Docker images to registry
+        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'
         run: |
           docker push ghcr.io/br3ndonland/inboard:base
           docker push ghcr.io/br3ndonland/inboard:starlette
           docker push ghcr.io/br3ndonland/inboard:fastapi
-      - name: Add Git tag to Docker images if workflow was triggered by pushing a tag
+      - name: Add Git tag to Docker images
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           GIT_TAG=$(echo ${{ github.ref }} | cut -d / -f 3)
@@ -79,7 +79,8 @@ jobs:
           docker push ghcr.io/br3ndonland/inboard:base-"$GIT_TAG"
           docker push ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG"
           docker push ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG"
-      - name: Tag and push latest image
+      - name: Tag and push latest Docker image
+        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'
         run: |
           docker tag ghcr.io/br3ndonland/inboard:fastapi ghcr.io/br3ndonland/inboard:latest
           docker push ghcr.io/br3ndonland/inboard:latest
