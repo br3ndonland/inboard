@@ -340,12 +340,12 @@ For more information on Python logging configuration, see the [Python `logging` 
 
 ### Installation
 
-- Install Poetry (see the [Poetry docs](https://python-poetry.org/docs/) and _[CONTRIBUTING.md](.github/CONTRIBUTING.md#poetry)_ for instructions)
+- Install Poetry (see the [Poetry docs](https://python-poetry.org/docs/) and _[CONTRIBUTING.md](https://github.com/br3ndonland/inboard/blob/develop/.github/CONTRIBUTING.md#poetry)_ for instructions)
 - Install project with all dependencies: `poetry install -E fastapi`
 
 ### Code style
 
-- Python code is formatted with [Black](https://black.readthedocs.io/en/stable/). Configuration for Black is stored in _[pyproject.toml](pyproject.toml)_.
+- Python code is formatted with [Black](https://black.readthedocs.io/en/stable/). Configuration for Black is stored in _[pyproject.toml](https://github.com/br3ndonland/inboard/blob/develop/pyproject.toml)_.
 - Python imports are organized automatically with [isort](https://pycqa.github.io/isort/).
   - The isort package organizes imports in three sections:
     1. Standard library
@@ -353,11 +353,11 @@ For more information on Python logging configuration, see the [Python `logging` 
     3. Project
   - Within each of those groups, `import` statements occur first, then `from` statements, in alphabetical order.
   - You can run isort from the command line with `poetry run isort .`.
-  - Configuration for isort is stored in _[pyproject.toml](pyproject.toml)_.
+  - Configuration for isort is stored in _[pyproject.toml](https://github.com/br3ndonland/inboard/blob/develop/pyproject.toml)_.
 - Other web code (JSON, Markdown, YAML) is formatted with [Prettier](https://prettier.io/).
 - Code style is enforced with [pre-commit](https://pre-commit.com/), which runs [Git hooks](https://www.git-scm.com/book/en/v2/Customizing-Git-Git-Hooks).
 
-  - Configuration is stored in _[.pre-commit-config.yaml](.pre-commit-config.yaml)_.
+  - Configuration is stored in _[.pre-commit-config.yaml](https://github.com/br3ndonland/inboard/blob/develop/.pre-commit-config.yaml)_.
   - Pre-commit can run locally before each commit (hence "pre-commit"), or on different Git events like `pre-push`.
   - Pre-commit is installed in the Poetry environment. To use:
 
@@ -375,7 +375,7 @@ For more information on Python logging configuration, see the [Python `logging` 
     .venv ❯ pre-commit install --hook-type pre-push
     ```
 
-  - Pre-commit is also useful as a CI tool. The [hooks](.github/workflows/hooks.yml) GitHub Actions workflow runs pre-commit hooks with [GitHub Actions](https://github.com/features/actions).
+  - Pre-commit is also useful as a CI tool. The [hooks](https://github.com/br3ndonland/inboard/blob/develop/.github/workflows/hooks.yml) GitHub Actions workflow runs pre-commit hooks with [GitHub Actions](https://github.com/features/actions).
 
 ### Testing with pytest
 
@@ -389,14 +389,14 @@ For more information on Python logging configuration, see the [Python `logging` 
 - [pytest plugins](https://docs.pytest.org/en/stable/plugins.html) include:
   - [pytest-cov](https://github.com/pytest-dev/pytest-cov)
   - [pytest-mock](https://github.com/pytest-dev/pytest-mock)
-- [pytest configuration](https://docs.pytest.org/en/stable/customize.html) is in _[pyproject.toml](pyproject.toml)_.
+- [pytest configuration](https://docs.pytest.org/en/stable/customize.html) is in _[pyproject.toml](https://github.com/br3ndonland/inboard/blob/develop/pyproject.toml)_.
 - [FastAPI testing](https://fastapi.tiangolo.com/tutorial/testing/) and [Starlette testing](https://www.starlette.io/testclient/) rely on the [Starlette `TestClient`](https://www.starlette.io/testclient/), which uses [Requests](https://requests.readthedocs.io/en/master/) under the hood.
 - Test coverage results are reported when invoking `pytest` from the command-line. To see interactive HTML coverage reports, invoke pytest with `pytest --cov-report=html`.
 - Test coverage reports are generated within GitHub Actions workflows by [pytest-cov](https://github.com/pytest-dev/pytest-cov) with [coverage.py](https://github.com/nedbat/coveragepy), and uploaded to [Codecov](https://docs.codecov.io/docs) using [codecov/codecov-action](https://github.com/marketplace/actions/codecov). Codecov is then integrated into pull requests with the [Codecov GitHub app](https://github.com/marketplace/codecov).
 
 ### GitHub Actions workflows
 
-[GitHub Actions](https://github.com/features/actions) is a continuous integration/continuous deployment (CI/CD) service that runs on GitHub repos. It replaces other services like Travis CI. Actions are grouped into workflows and stored in _.github/workflows_. See my [GitHub Actions Gist](https://gist.github.com/br3ndonland/f9c753eb27381f97336aa21b8d932be6) for more info on GitHub Actions.
+[GitHub Actions](https://github.com/features/actions) is a continuous integration/continuous deployment (CI/CD) service that runs on GitHub repos. It replaces other services like Travis CI. Actions are grouped into workflows and stored in _.github/workflows_. See [Getting the Gist of GitHub Actions](https://gist.github.com/br3ndonland/f9c753eb27381f97336aa21b8d932be6) for more info.
 
 ### Building development images
 
