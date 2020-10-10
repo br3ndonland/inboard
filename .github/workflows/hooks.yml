@@ -9,11 +9,20 @@ on:
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
+    env:
+      POETRY_VIRTUALENVS_CREATE: false
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
           python-version: 3.8
+      - name: Set up Poetry cache for Python dependencies
+        uses: actions/cache@v2
+        if: startsWith(runner.os, 'Linux')
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: ${{ runner.os }}-poetry-
       - name: Set up pre-commit cache
         uses: actions/cache@v2
         if: startsWith(runner.os, 'Linux')
@@ -21,7 +30,12 @@ jobs:
           path: ~/.cache/pre-commit
           key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
           restore-keys: ${{ runner.os }}-pre-commit-
+      - name: Install Poetry
+        run: |
+          curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py
+          python get-poetry.py -y
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
       - name: Install dependencies
-        run: python -m pip install pre-commit
+        run: poetry install --no-interaction -E fastapi
       - name: Run pre-commit hooks
         run: pre-commit run --all-files
