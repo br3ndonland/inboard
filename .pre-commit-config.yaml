@@ -19,6 +19,8 @@ repos:
     rev: v0.790
     hooks:
       - id: mypy
+        additional_dependencies:
+          - pytest-mock
   - repo: https://github.com/prettier/prettier
     rev: 2.1.2
     hooks:
