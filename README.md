@@ -284,9 +284,12 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
     ```py
     # /app/package/custom_logging.py
+    from typing import Any, Dict
+
     from inboard import logging_conf
 
-    LOGGING_CONFIG = logging_conf.LOGGING_CONFIG
+
+    LOGGING_CONFIG: Dict[str, Any] = logging_conf.LOGGING_CONFIG
     LOGGING_CONFIG["loggers"]["boto3"] = {"propagate": False}
     LOGGING_CONFIG["loggers"]["botocore"] = {"propagate": False}
     LOGGING_CONFIG["loggers"]["s3transfer"] = {"propagate": False}
