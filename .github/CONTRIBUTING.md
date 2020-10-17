@@ -37,7 +37,7 @@
     - Do not allow force pushes
     - Require status checks to pass before merging (commits must have previously been pushed to `develop` and passed all checks)
 - **To create a release:**
-  - Bump the version number in `pyproject.toml` with `poetry version`, and manually in `test_version.py`, and commit the changes to `develop`.
+  - Bump the version number in `pyproject.toml` with `poetry version` and commit the changes to `develop`.
   - Push to `develop` and verify all CI checks pass.
   - Fast-forward merge to `master`, push, and verify all CI checks pass.
   - Create an [annotated and signed Git tag](https://www.git-scm.com/book/en/v2/Git-Basics-Tagging)
