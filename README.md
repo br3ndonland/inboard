@@ -280,16 +280,23 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
   - Default: `"inboard.logging_conf"` (the default module provided with inboard)
   - Custom: For a logging config module at `/app/package/custom_logging.py`, `LOGGING_CONF="package.custom_logging"` or `LOGGING_CONF="/app/package/custom_logging.py"`.
-  - If inboard is installed from PyPI with `pip install inboard`, the logging configuration can be easily extended. For example,
+  - If inboard is installed from PyPI with `pip install inboard`, the logging configuration can be easily extended. For example:
 
     ```py
     # /app/package/custom_logging.py
+    import os
     from typing import Any, Dict
 
     from inboard import logging_conf
 
 
     LOGGING_CONFIG: Dict[str, Any] = logging_conf.LOGGING_CONFIG
+    # only show access logs when running Uvicorn with LOG_LEVEL=debug
+    LOGGING_CONFIG["loggers"]["gunicorn.access"] = {"propagate": False}
+    LOGGING_CONFIG["loggers"]["uvicorn.access"] = {
+        "propagate": str(os.getenv("LOG_LEVEL")) == "debug"
+    }
+    # don't propagate boto3 logs
     LOGGING_CONFIG["loggers"]["boto3"] = {"propagate": False}
     LOGGING_CONFIG["loggers"]["botocore"] = {"propagate": False}
     LOGGING_CONFIG["loggers"]["s3transfer"] = {"propagate": False}
