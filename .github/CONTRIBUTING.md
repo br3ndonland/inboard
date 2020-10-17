@@ -40,9 +40,12 @@
   - Bump the version number in `pyproject.toml` with `poetry version`, and manually in `test_version.py`, and commit the changes to `develop`.
   - Push to `develop` and verify all CI checks pass.
   - Fast-forward merge to `master`, push, and verify all CI checks pass.
-  - Create an annotated and signed Git tag
+  - Create an [annotated and signed Git tag](https://www.git-scm.com/book/en/v2/Git-Basics-Tagging)
     - Follow [SemVer](https://semver.org/) guidelines when choosing a version number.
-    - List PRs and commits in the tag message
+    - List PRs and commits in the tag message:
+      ```sh
+      git log --pretty=format:"- %s (%h)" "$(git describe --abbrev=0 --tags)"..HEAD
+      ```
     - Omit the leading `v` (use `1.0.0` instead of `v1.0.0`)
     - Example: `git tag -a -s 1.0.0`
   - Push the tag. GitHub Actions will build and push the Python package and Docker images.
