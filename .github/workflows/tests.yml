@@ -3,7 +3,7 @@ name: tests
 on:
   pull_request:
   push:
-    branches: [master, develop]
+    branches: [develop, master]
     paths:
       - "**.lock"
       - "**.py"
