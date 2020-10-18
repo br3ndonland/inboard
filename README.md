@@ -213,7 +213,9 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 - `PRE_START_PATH`: Path to a pre-start script. Add a file `prestart.py` or `prestart.sh` to the application directory, and copy the directory into the Docker image as described (for a project with the Python application in `repo/package`, `COPY package /app/package`). The container will automatically detect and run the prestart script before starting the web server.
 
   - Default: `"/app/inboard/prestart.py"` (the default file provided with the Docker image)
-  - Custom: `PRE_START_PATH="/app/package/custom_script.sh"`
+  - Custom:
+  - `PRE_START_PATH="/app/package/custom_script.sh"`
+  - `PRE_START_PATH= ` (set to an empty value) to disable
 
 - [`PYTHONPATH`](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH): Python's search path for module files.
   - Default: `PYTHONPATH="/app"`
@@ -337,12 +339,12 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
   - Default: `"-"` (`stdout`, print in Docker logs)
   - Custom:
     - `ACCESS_LOG="./path/to/accesslogfile.txt"`
-    - `ACCESS_LOG=` (set to an empty value) to disable
+    - `ACCESS_LOG= ` (set to an empty value) to disable
 - `ERROR_LOG`: Error log file to which to write.
   - Default: `"-"` (`stdout`, print in Docker logs)
   - Custom:
     - `ERROR_LOG="./path/to/errorlogfile.txt"`
-    - `ERROR_LOG=` (set to an empty value) to disable
+    - `ERROR_LOG= ` (set to an empty value) to disable
 
 For more information on Python logging configuration, see the [Python `logging` how-to](https://docs.python.org/3/howto/logging.html), [Python `logging` cookbook](https://docs.python.org/3/howto/logging-cookbook.html), [Python `logging` module docs](https://docs.python.org/3/library/logging.html), and [Python `logging.config` module docs](https://docs.python.org/3/library/logging.config.html). Also consider [Loguru](https://loguru.readthedocs.io/en/stable/index.html), an alternative logging module with many improvements over the standard library `logging` module.
 
