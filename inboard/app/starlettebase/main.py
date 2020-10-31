@@ -11,7 +11,7 @@ from starlette.responses import JSONResponse
 from inboard.app.utilities import BasicAuth
 
 server = "Uvicorn" if bool(os.getenv("WITH_RELOAD")) else "Uvicorn, Gunicorn"
-version = f"{sys.version_info.major}.{sys.version_info.minor}"
+version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
 
 
 def on_auth_error(request: Request, e: Exception) -> JSONResponse:

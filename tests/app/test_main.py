@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 from typing import Dict, List
 
 import pytest
@@ -86,9 +87,13 @@ class TestEndpoints:
         monkeypatch.setenv("WITH_RELOAD", "false")
         assert os.getenv("PROCESS_MANAGER") == "uvicorn"
         assert os.getenv("WITH_RELOAD") == "false"
+        version = sys.version_info
         response = client_asgi.get("/")
         assert response.status_code == 200
-        assert response.text == "Hello World, from Uvicorn and Python 3.8!"
+        assert response.text == (
+            f"Hello World, from Uvicorn and Python "
+            f"{version.major}.{version.minor}.{version.micro}!"
+        )
 
     def test_get_asgi_uvicorn_gunicorn(
         self, client_asgi: TestClient, monkeypatch: MonkeyPatch
@@ -98,9 +103,13 @@ class TestEndpoints:
         monkeypatch.setenv("WITH_RELOAD", "false")
         assert os.getenv("PROCESS_MANAGER") == "gunicorn"
         assert os.getenv("WITH_RELOAD") == "false"
+        version = sys.version_info
         response = client_asgi.get("/")
         assert response.status_code == 200
-        assert response.text == "Hello World, from Uvicorn, Gunicorn, and Python 3.8!"
+        assert response.text == (
+            f"Hello World, from Uvicorn, Gunicorn, and Python "
+            f"{version.major}.{version.minor}.{version.micro}!"
+        )
 
     def test_get_asgi_incorrect_process_manager(
         self, client_asgi: TestClient, monkeypatch: MonkeyPatch

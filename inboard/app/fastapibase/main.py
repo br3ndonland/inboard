@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from inboard.app.utilities import basic_auth
 
 server = "Uvicorn" if bool(os.getenv("WITH_RELOAD")) else "Uvicorn, Gunicorn"
-version = f"{sys.version_info.major}.{sys.version_info.minor}"
+version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
 
 app = FastAPI(title="inboard")
 

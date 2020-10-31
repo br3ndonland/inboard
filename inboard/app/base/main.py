@@ -23,7 +23,10 @@ class App:
                 "headers": [[b"content-type", b"text/plain"]],
             }
         )
-        version = f"{sys.version_info.major}.{sys.version_info.minor}"
+        version = (
+            f"{sys.version_info.major}.{sys.version_info.minor}"
+            f".{sys.version_info.micro}"
+        )
         process_manager = os.getenv("PROCESS_MANAGER", "gunicorn")
         if process_manager not in ["gunicorn", "uvicorn"]:
             raise NameError("Process manager needs to be either uvicorn or gunicorn.")
