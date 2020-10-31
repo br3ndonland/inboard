@@ -408,7 +408,7 @@ class TestStartServer:
         """Test `start.start_server` with Uvicorn."""
         monkeypatch.setenv("PROCESS_MANAGER", "uvicorn")
         assert os.getenv("PROCESS_MANAGER") == "uvicorn"
-        mock_run = mocker.patch("uvicorn.run", autospec=True)
+        mock_run = mocker.patch("inboard.start.uvicorn.run", autospec=True)
         start.start_server(
             str(os.getenv("PROCESS_MANAGER")),
             app_module=app_module,
@@ -452,7 +452,7 @@ class TestStartServer:
         assert gunicorn_conf_path.parent.exists()
         assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_path)
         assert os.getenv("PROCESS_MANAGER") == "gunicorn"
-        mock_run = mocker.patch("subprocess.run", autospec=True)
+        mock_run = mocker.patch("inboard.start.subprocess.run", autospec=True)
         start.start_server(
             str(os.getenv("PROCESS_MANAGER")),
             app_module=app_module,
@@ -501,7 +501,7 @@ class TestStartServer:
         assert os.getenv("LOG_FORMAT") == "gunicorn"
         assert os.getenv("LOG_LEVEL") == "debug"
         assert os.getenv("PROCESS_MANAGER") == "gunicorn"
-        mock_run = mocker.patch("subprocess.run", autospec=True)
+        mock_run = mocker.patch("inboard.start.subprocess.run", autospec=True)
         start.start_server(
             str(os.getenv("PROCESS_MANAGER")),
             app_module=app_module,
