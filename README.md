@@ -162,7 +162,7 @@ Hit an API endpoint:
 ```sh
 docker pull ghcr.io/br3ndonland/inboard:fastapi
 docker run -d -p 80:80 ghcr.io/br3ndonland/inboard:fastapi
-http :80  # HTTPie: https://httpie.org/
+http :80  # HTTPie: https://httpie.io/
 ```
 
 ```text
@@ -448,7 +448,7 @@ docker run -d -p 80:80 localhost/br3ndonland/inboard:fastapi
 docker run -d -p 80:80 localhost/br3ndonland/inboard:starlette
 
 # Test HTTP Basic Auth when running the FastAPI or Starlette images:
-http :80/status --auth-type=basic --auth=test_username:plunge-germane-tribal-pillar
+http :80/status -a test_username:plunge-germane-tribal-pillar
 ```
 
 Change the port numbers to run multiple containers simultaneously (`-p 81:80`).
