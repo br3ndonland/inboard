@@ -27,15 +27,15 @@ def calculate_workers(
 
 
 # Gunicorn setup
-max_workers_str = os.getenv("MAX_WORKERS", None)
-web_concurrency_str = os.getenv("WEB_CONCURRENCY", None)
+max_workers_str = os.getenv("MAX_WORKERS")
+web_concurrency_str = os.getenv("WEB_CONCURRENCY")
 workers_per_core_str = os.getenv("WORKERS_PER_CORE", "1")
 workers = calculate_workers(max_workers_str, web_concurrency_str, workers_per_core_str)
 worker_tmp_dir = "/dev/shm"
 host = os.getenv("HOST", "0.0.0.0")
 port = os.getenv("PORT", "80")
-bind_env = os.getenv("BIND", None)
-use_bind = bind_env if bind_env else f"{host}:{port}"
+bind_env = os.getenv("BIND")
+use_bind = bind_env or f"{host}:{port}"
 use_loglevel = os.getenv("LOG_LEVEL", "info")
 accesslog_var = os.getenv("ACCESS_LOG", "-")
 use_accesslog = accesslog_var or None
