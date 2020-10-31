@@ -1,4 +1,4 @@
-FROM python:3.8 AS base
+FROM python:3.9 AS base
 LABEL org.opencontainers.image.authors="Brendon Smith <br3ndonland@protonmail.com>"
 LABEL org.opencontainers.image.description="Docker images to power your Python APIs and help you ship faster."
 LABEL org.opencontainers.image.licenses="MIT"
