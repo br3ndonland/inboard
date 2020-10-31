@@ -576,7 +576,7 @@ starlette = ["starlette"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "502f6e36668458577711d9e236a74c558808eaef92ec79f5109518af6d66fd12"
+content-hash = "1abbb7e1b9157d7fb76481a358eed74b01d217e657d54203b1493d5129de1eea"
 
 [metadata.files]
 appdirs = [
