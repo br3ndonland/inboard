@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: 3.9
       - name: Set up Poetry cache for Python dependencies
         uses: actions/cache@v2
         if: startsWith(runner.os, 'Linux')
@@ -60,7 +60,7 @@ jobs:
         run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.PAT_GHCR }}
       - name: Build Docker images
         run: |
-          docker build . --rm --target base -t ghcr.io/br3ndonland/inboard:base --cache-from python:3.8
+          docker build . --rm --target base -t ghcr.io/br3ndonland/inboard:base --cache-from python:3.9
           docker build . --rm --target starlette -t ghcr.io/br3ndonland/inboard:starlette
           docker build . --rm --target fastapi -t ghcr.io/br3ndonland/inboard:fastapi
       - name: Push Docker images to registry
