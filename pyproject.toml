@@ -30,7 +30,7 @@ fastapi = {version = "^0.61", optional = true}
 starlette = {version = "^0.13", optional = true}
 
 [tool.poetry.dev-dependencies]
-black = {version = "^20.8b1", allow-prereleases = true}
+black = {version = "20.8b1", allow-prereleases = true}
 flake8 = "^3.8"
 isort = "^5.6"
 mypy = "0.790"
