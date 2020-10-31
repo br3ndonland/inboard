@@ -27,16 +27,16 @@ async def get_root() -> Dict[str, str]:
 
 
 @app.get("/health")
-def get_health(auth: str = Depends(basic_auth)) -> Dict[str, str]:
+async def get_health(auth: str = Depends(basic_auth)) -> Dict[str, str]:
     return {"application": app.title, "status": "active"}
 
 
 @app.get("/status")
-def get_status(auth: str = Depends(basic_auth)) -> Dict[str, str]:
+async def get_status(auth: str = Depends(basic_auth)) -> Dict[str, str]:
     message = f"Hello World, from {server}, FastAPI, and Python {version}!"
     return {"application": app.title, "status": "active", "message": message}
 
 
 @app.get("/users/me")
-def get_current_user(username: str = Depends(basic_auth)) -> Dict[str, str]:
+async def get_current_user(username: str = Depends(basic_auth)) -> Dict[str, str]:
     return {"username": username}

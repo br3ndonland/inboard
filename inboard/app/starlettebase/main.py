@@ -42,13 +42,13 @@ async def get_root(request: Request) -> JSONResponse:
 
 @app.route("/health")
 @requires("authenticated")
-def get_health(request: Request) -> JSONResponse:
+async def get_health(request: Request) -> JSONResponse:
     return JSONResponse({"application": "inboard", "status": "active"})
 
 
 @app.route("/status")
 @requires("authenticated")
-def get_status(request: Request) -> JSONResponse:
+async def get_status(request: Request) -> JSONResponse:
     message = f"Hello World, from {server}, Starlette, and Python {version}!"
     return JSONResponse(
         {"application": "inboard", "status": "active", "message": message}
@@ -57,5 +57,5 @@ def get_status(request: Request) -> JSONResponse:
 
 @app.route("/users/me")
 @requires("authenticated")
-def get_current_user(request: Request) -> JSONResponse:
+async def get_current_user(request: Request) -> JSONResponse:
     return JSONResponse({"username": request.user.display_name})
