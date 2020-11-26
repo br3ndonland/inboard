@@ -1,3 +1,6 @@
+[tool.coverage.run]
+concurrency = ["multiprocessing"]
+
 [tool.isort]
 profile = "black"
 src_paths = ["inboard", "tests"]
