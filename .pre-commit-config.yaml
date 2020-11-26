@@ -20,8 +20,8 @@ repos:
     hooks:
       - id: mypy
         language: system
-  - repo: https://github.com/prettier/pre-commit
-    rev: main
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v2.2.0
     hooks:
       - id: prettier
   - repo: https://github.com/pre-commit/pre-commit-hooks
