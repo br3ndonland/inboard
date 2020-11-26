@@ -30,6 +30,7 @@ Brendon Smith ([br3ndonland](https://github.com/br3ndonland/))
   - [Code style](#code-style)
   - [Testing with pytest](#testing-with-pytest)
   - [GitHub Actions workflows](#github-actions-workflows)
+  - [Running the development server](#running-the-development-server)
   - [Building development images](#building-development-images)
   - [Running development containers](#running-development-containers)
   - [Configuring Docker for GitHub Container Registry](#configuring-docker-for-github-container-registry)
@@ -350,6 +351,8 @@ For more information on Python logging configuration, see the [Python `logging` 
 
 ## Development
 
+See _[CONTRIBUTING.md](./.github/CONTRIBUTING.md)_ for general information on how to contribute.
+
 ### Installation
 
 - Install Poetry (see the [Poetry docs](https://python-poetry.org/docs/) and _[CONTRIBUTING.md](https://github.com/br3ndonland/inboard/blob/develop/.github/CONTRIBUTING.md#poetry)_ for instructions)
@@ -409,6 +412,12 @@ For more information on Python logging configuration, see the [Python `logging` 
 ### GitHub Actions workflows
 
 [GitHub Actions](https://github.com/features/actions) is a continuous integration/continuous deployment (CI/CD) service that runs on GitHub repos. It replaces other services like Travis CI. Actions are grouped into workflows and stored in _.github/workflows_. See [Getting the Gist of GitHub Actions](https://gist.github.com/br3ndonland/f9c753eb27381f97336aa21b8d932be6) for more info.
+
+### Running the development server
+
+The easiest way to get started is to run the development server locally with the [VSCode debugger](https://code.visualstudio.com/docs/python/debugging). The debugger config is stored in _[launch.json](https://github.com/Intellia/Interlink/blob/develop/.vscode/launch.json)_. After installing the Poetry environment as described above, start the debugger. Uvicorn enables hot-reloading and addition of debug breakpoints while the server is running.
+
+As explained in the [VSCode docs](https://code.visualstudio.com/docs/containers/python-user-rights), if developing on Linux, note that non-root users may not be able to expose ports less than 1024. The port is set to `1025` in the debugger config for this reason.
 
 ### Building development images
 

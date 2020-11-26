@@ -14,6 +14,7 @@
         "BASIC_AUTH_PASSWORD": "plunge-germane-tribal-pillar",
         "LOG_FORMAT": "uvicorn",
         "LOG_LEVEL": "debug",
+        "PORT": "1025",
         "PROCESS_MANAGER": "uvicorn",
         "WITH_RELOAD": "true"
       },
