@@ -16,8 +16,6 @@ jobs:
         python-version: [3.8, 3.9]
     env:
       POETRY_VIRTUALENVS_CREATE: false
-    outputs:
-      python-version: ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -59,6 +57,9 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     needs: [python]
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9]
     steps:
       - uses: actions/checkout@v2
       - name: Log in to Docker registry
@@ -66,13 +67,13 @@ jobs:
       - name: Build Docker images
         run: |
           docker build . --rm --target base \
-            --build-arg PYTHON_VERSION=${{ needs.python.outputs.python-version }} \
-            --cache-from python:${{ needs.python.outputs.python-version }} \
+            --build-arg PYTHON_VERSION=${{ matrix.python-version }} \
+            --cache-from python:${{ matrix.python-version }} \
             -t ghcr.io/br3ndonland/inboard:base
-          docker build . --rm --target starlette --build-arg PYTHON_VERSION=${{ needs.python.outputs.python-version }} -t ghcr.io/br3ndonland/inboard:starlette
-          docker build . --rm --target fastapi --build-arg PYTHON_VERSION=${{ needs.python.outputs.python-version }} -t ghcr.io/br3ndonland/inboard:fastapi
+          docker build . --rm --target starlette --build-arg PYTHON_VERSION=${{ matrix.python-version }} -t ghcr.io/br3ndonland/inboard:starlette
+          docker build . --rm --target fastapi --build-arg PYTHON_VERSION=${{ matrix.python-version }} -t ghcr.io/br3ndonland/inboard:fastapi
       - name: Push Docker images with latest Python version to registry
-        if: needs.python.outputs.python-version == '3.9' && startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'
+        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' && matrix.python-version == '3.9'
         run: |
           docker push ghcr.io/br3ndonland/inboard:base
           docker push ghcr.io/br3ndonland/inboard:starlette
@@ -80,12 +81,12 @@ jobs:
       - name: Add Python version tag to Docker images
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'
         run: |
-          docker tag ghcr.io/br3ndonland/inboard:base ghcr.io/br3ndonland/inboard:base-python${{ needs.python.outputs.python-version }}
-          docker tag ghcr.io/br3ndonland/inboard:starlette ghcr.io/br3ndonland/inboard:starlette-python${{ needs.python.outputs.python-version }}
-          docker tag ghcr.io/br3ndonland/inboard:fastapi ghcr.io/br3ndonland/inboard:fastapi-python${{ needs.python.outputs.python-version }}
-          docker push ghcr.io/br3ndonland/inboard:base-python${{ needs.python.outputs.python-version }}
-          docker push ghcr.io/br3ndonland/inboard:starlette-python${{ needs.python.outputs.python-version }}
-          docker push ghcr.io/br3ndonland/inboard:fastapi-python${{ needs.python.outputs.python-version }}
+          docker tag ghcr.io/br3ndonland/inboard:base ghcr.io/br3ndonland/inboard:base-python${{ matrix.python-version }}
+          docker tag ghcr.io/br3ndonland/inboard:starlette ghcr.io/br3ndonland/inboard:starlette-python${{ matrix.python-version }}
+          docker tag ghcr.io/br3ndonland/inboard:fastapi ghcr.io/br3ndonland/inboard:fastapi-python${{ matrix.python-version }}
+          docker push ghcr.io/br3ndonland/inboard:base-python${{ matrix.python-version }}
+          docker push ghcr.io/br3ndonland/inboard:starlette-python${{ matrix.python-version }}
+          docker push ghcr.io/br3ndonland/inboard:fastapi-python${{ matrix.python-version }}
       - name: Add Git tag to Docker images
         if: startsWith(github.ref, 'refs/tags/')
         run: |
@@ -93,15 +94,15 @@ jobs:
           docker tag ghcr.io/br3ndonland/inboard:base ghcr.io/br3ndonland/inboard:base-"$GIT_TAG"
           docker tag ghcr.io/br3ndonland/inboard:starlette ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG"
           docker tag ghcr.io/br3ndonland/inboard:fastapi ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG"
-          docker tag ghcr.io/br3ndonland/inboard:base ghcr.io/br3ndonland/inboard:base-"$GIT_TAG"-python${{ needs.python.outputs.python-version }}
-          docker tag ghcr.io/br3ndonland/inboard:starlette ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG"-python${{ needs.python.outputs.python-version }}
-          docker tag ghcr.io/br3ndonland/inboard:fastapi ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG"-python${{ needs.python.outputs.python-version }}
+          docker tag ghcr.io/br3ndonland/inboard:base ghcr.io/br3ndonland/inboard:base-"$GIT_TAG"-python${{ matrix.python-version }}
+          docker tag ghcr.io/br3ndonland/inboard:starlette ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG"-python${{ matrix.python-version }}
+          docker tag ghcr.io/br3ndonland/inboard:fastapi ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG"-python${{ matrix.python-version }}
           docker push ghcr.io/br3ndonland/inboard:base-"$GIT_TAG"
           docker push ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG"
           docker push ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG"
-          docker push ghcr.io/br3ndonland/inboard:base-"$GIT_TAG"-python${{ needs.python.outputs.python-version }}
-          docker push ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG"-python${{ needs.python.outputs.python-version }}
-          docker push ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG"-python${{ needs.python.outputs.python-version }}
+          docker push ghcr.io/br3ndonland/inboard:base-"$GIT_TAG"-python${{ matrix.python-version }}
+          docker push ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG"-python${{ matrix.python-version }}
+          docker push ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG"-python${{ matrix.python-version }}
       - name: Tag and push latest Docker image
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'
         run: |
