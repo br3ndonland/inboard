@@ -13,9 +13,9 @@ from pytest_mock import MockerFixture
 from inboard import gunicorn_conf as gunicorn_conf_module
 from inboard import logging_conf as logging_conf_module
 from inboard.app import prestart as pre_start_module
-from inboard.app.base.main import app as base_app
-from inboard.app.fastapibase.main import app as fastapi_app
-from inboard.app.starlettebase.main import app as starlette_app
+from inboard.app.main_base import app as base_app
+from inboard.app.main_fastapi import app as fastapi_app
+from inboard.app.main_starlette import app as starlette_app
 
 
 @pytest.fixture(scope="session")

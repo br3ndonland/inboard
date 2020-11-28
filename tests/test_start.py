@@ -255,30 +255,30 @@ class TestSetAppModule:
         self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
     ) -> None:
         """Test `start.set_app_module` using module path to base ASGI app."""
-        monkeypatch.setenv("APP_MODULE", "inboard.app.base.main:app")
+        monkeypatch.setenv("APP_MODULE", "inboard.app.main_base:app")
         start.set_app_module(logger=mock_logger)
         mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
-            "App module set to inboard.app.base.main:app."
+            "App module set to inboard.app.main_base:app."
         )
 
     def test_set_app_module_fastapi(
         self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
     ) -> None:
         """Test `start.set_app_module` using module path to FastAPI app."""
-        monkeypatch.setenv("APP_MODULE", "inboard.app.fastapibase.main:app")
+        monkeypatch.setenv("APP_MODULE", "inboard.app.main_fastapi:app")
         start.set_app_module(logger=mock_logger)
         mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
-            "App module set to inboard.app.fastapibase.main:app."
+            "App module set to inboard.app.main_fastapi:app."
         )
 
     def test_set_app_module_starlette(
         self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
     ) -> None:
         """Test `start.set_app_module` using module path to Starlette app."""
-        monkeypatch.setenv("APP_MODULE", "inboard.app.starlettebase.main:app")
+        monkeypatch.setenv("APP_MODULE", "inboard.app.main_starlette:app")
         start.set_app_module(logger=mock_logger)
         mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
-            "App module set to inboard.app.starlettebase.main:app."
+            "App module set to inboard.app.main_starlette:app."
         )
 
     def test_set_app_module_custom_asgi(
@@ -289,10 +289,10 @@ class TestSetAppModule:
     ) -> None:
         """Test `start.set_app_module` with custom module path to base ASGI app."""
         monkeypatch.syspath_prepend(app_module_tmp_path)
-        monkeypatch.setenv("APP_MODULE", "tmp_app.base.main:app")
+        monkeypatch.setenv("APP_MODULE", "tmp_app.main_base:app")
         start.set_app_module(logger=mock_logger)
         mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
-            "App module set to tmp_app.base.main:app."
+            "App module set to tmp_app.main_base:app."
         )
 
     def test_set_app_module_custom_fastapi(
@@ -303,10 +303,10 @@ class TestSetAppModule:
     ) -> None:
         """Test `start.set_app_module` with custom module path to FastAPI app."""
         monkeypatch.syspath_prepend(app_module_tmp_path)
-        monkeypatch.setenv("APP_MODULE", "tmp_app.fastapibase.main:app")
+        monkeypatch.setenv("APP_MODULE", "tmp_app.main_fastapi:app")
         start.set_app_module(logger=mock_logger)
         mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
-            "App module set to tmp_app.fastapibase.main:app."
+            "App module set to tmp_app.main_fastapi:app."
         )
 
     def test_set_app_module_custom_starlette(
@@ -317,10 +317,10 @@ class TestSetAppModule:
     ) -> None:
         """Test `start.set_app_module` with custom module path to Starlette app."""
         monkeypatch.syspath_prepend(app_module_tmp_path)
-        monkeypatch.setenv("APP_MODULE", "tmp_app.starlettebase.main:app")
+        monkeypatch.setenv("APP_MODULE", "tmp_app.main_starlette:app")
         start.set_app_module(logger=mock_logger)
         mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
-            "App module set to tmp_app.starlettebase.main:app."
+            "App module set to tmp_app.main_starlette:app."
         )
 
     def test_set_app_module_incorrect(
@@ -415,9 +415,9 @@ class TestStartServer:
     @pytest.mark.parametrize(
         "app_module",
         [
-            "inboard.app.base.main:app",
-            "inboard.app.fastapibase.main:app",
-            "inboard.app.starlettebase.main:app",
+            "inboard.app.main_base:app",
+            "inboard.app.main_fastapi:app",
+            "inboard.app.main_starlette:app",
         ],
     )
     def test_start_server_uvicorn(
@@ -451,9 +451,9 @@ class TestStartServer:
     @pytest.mark.parametrize(
         "app_module",
         [
-            "inboard.app.base.main:app",
-            "inboard.app.fastapibase.main:app",
-            "inboard.app.starlettebase.main:app",
+            "inboard.app.main_base:app",
+            "inboard.app.main_fastapi:app",
+            "inboard.app.main_starlette:app",
         ],
     )
     def test_start_server_uvicorn_gunicorn(
@@ -497,9 +497,9 @@ class TestStartServer:
     @pytest.mark.parametrize(
         "app_module",
         [
-            "inboard.app.base.main:app",
-            "inboard.app.fastapibase.main:app",
-            "inboard.app.starlettebase.main:app",
+            "inboard.app.main_base:app",
+            "inboard.app.main_fastapi:app",
+            "inboard.app.main_starlette:app",
         ],
     )
     def test_start_server_uvicorn_gunicorn_custom_config(
@@ -572,9 +572,9 @@ class TestStartServer:
     @pytest.mark.parametrize(
         "app_module",
         [
-            "inboard.app.base.main:app",
-            "inboard.app.fastapibase.main:app",
-            "inboard.app.starlettebase.main:app",
+            "inboard.app.main_base:app",
+            "inboard.app.main_fastapi:app",
+            "inboard.app.main_starlette:app",
         ],
     )
     def test_start_server_uvicorn_incorrect_process_manager(

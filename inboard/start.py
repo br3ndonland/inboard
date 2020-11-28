@@ -86,7 +86,7 @@ def run_pre_start_script(logger: Logger = logging.getLogger()) -> str:
 
 def start_server(
     process_manager: str,
-    app_module: str = str(os.getenv("APP_MODULE", "inboard.app.base.main:app")),
+    app_module: str = str(os.getenv("APP_MODULE", "inboard.app.main_base:app")),
     logger: Logger = logging.getLogger(),
     logging_conf_dict: Dict[str, Any] = None,
     with_reload: bool = bool(os.getenv("WITH_RELOAD", False)),
