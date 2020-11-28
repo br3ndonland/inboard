@@ -5,19 +5,22 @@ on:
   push:
     branches: [develop, master]
     tags:
-      - "[0-9v]+.[0-9]+.[0-9a-z]+"
+      - "[0-9]+.[0-9]+.[0-9]+*"
   workflow_dispatch:
 
 jobs:
   python:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9]
     env:
       POETRY_VIRTUALENVS_CREATE: false
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.9
+          python-version: ${{ matrix.python-version }}
       - name: Set up Poetry cache for Python dependencies
         uses: actions/cache@v2
         if: startsWith(runner.os, 'Linux')
@@ -54,21 +57,36 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     needs: [python]
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9]
     steps:
       - uses: actions/checkout@v2
       - name: Log in to Docker registry
         run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.PAT_GHCR }}
       - name: Build Docker images
         run: |
-          docker build . --rm --target base -t ghcr.io/br3ndonland/inboard:base --cache-from python:3.9
-          docker build . --rm --target starlette -t ghcr.io/br3ndonland/inboard:starlette
-          docker build . --rm --target fastapi -t ghcr.io/br3ndonland/inboard:fastapi
-      - name: Push Docker images to registry
-        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'
+          docker build . --rm --target base \
+            --build-arg PYTHON_VERSION=${{ matrix.python-version }} \
+            --cache-from python:${{ matrix.python-version }} \
+            -t ghcr.io/br3ndonland/inboard:base
+          docker build . --rm --target starlette --build-arg PYTHON_VERSION=${{ matrix.python-version }} -t ghcr.io/br3ndonland/inboard:starlette
+          docker build . --rm --target fastapi --build-arg PYTHON_VERSION=${{ matrix.python-version }} -t ghcr.io/br3ndonland/inboard:fastapi
+      - name: Push Docker images with latest Python version to registry
+        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master' && matrix.python-version == '3.9'
         run: |
           docker push ghcr.io/br3ndonland/inboard:base
           docker push ghcr.io/br3ndonland/inboard:starlette
           docker push ghcr.io/br3ndonland/inboard:fastapi
+      - name: Add Python version tag to Docker images
+        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'
+        run: |
+          docker tag ghcr.io/br3ndonland/inboard:base ghcr.io/br3ndonland/inboard:base-python${{ matrix.python-version }}
+          docker tag ghcr.io/br3ndonland/inboard:starlette ghcr.io/br3ndonland/inboard:starlette-python${{ matrix.python-version }}
+          docker tag ghcr.io/br3ndonland/inboard:fastapi ghcr.io/br3ndonland/inboard:fastapi-python${{ matrix.python-version }}
+          docker push ghcr.io/br3ndonland/inboard:base-python${{ matrix.python-version }}
+          docker push ghcr.io/br3ndonland/inboard:starlette-python${{ matrix.python-version }}
+          docker push ghcr.io/br3ndonland/inboard:fastapi-python${{ matrix.python-version }}
       - name: Add Git tag to Docker images
         if: startsWith(github.ref, 'refs/tags/')
         run: |
@@ -76,9 +94,15 @@ jobs:
           docker tag ghcr.io/br3ndonland/inboard:base ghcr.io/br3ndonland/inboard:base-"$GIT_TAG"
           docker tag ghcr.io/br3ndonland/inboard:starlette ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG"
           docker tag ghcr.io/br3ndonland/inboard:fastapi ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG"
+          docker tag ghcr.io/br3ndonland/inboard:base ghcr.io/br3ndonland/inboard:base-"$GIT_TAG"-python${{ matrix.python-version }}
+          docker tag ghcr.io/br3ndonland/inboard:starlette ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG"-python${{ matrix.python-version }}
+          docker tag ghcr.io/br3ndonland/inboard:fastapi ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG"-python${{ matrix.python-version }}
           docker push ghcr.io/br3ndonland/inboard:base-"$GIT_TAG"
           docker push ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG"
           docker push ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG"
+          docker push ghcr.io/br3ndonland/inboard:base-"$GIT_TAG"-python${{ matrix.python-version }}
+          docker push ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG"-python${{ matrix.python-version }}
+          docker push ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG"-python${{ matrix.python-version }}
       - name: Tag and push latest Docker image
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master'
         run: |
