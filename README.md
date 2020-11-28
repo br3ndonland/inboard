@@ -50,21 +50,32 @@ This repo provides [Docker images](https://github.com/users/br3ndonland/packages
 
 ### Pull images
 
-Docker images are stored in [GitHub Container Registry](https://docs.github.com/en/free-pro-team@latest/packages/getting-started-with-github-container-registry) (GHCR), which is a Docker registry like Docker Hub. Public Docker images can be pulled anonymously from `ghcr.io`.
+Docker images are stored in [GitHub Container Registry](https://docs.github.com/en/free-pro-team@latest/packages/getting-started-with-github-container-registry) (GHCR), which is a Docker registry like Docker Hub. Public Docker images can be pulled anonymously from `ghcr.io`. Simply running `docker pull ghcr.io/br3ndonland/inboard` will pull the latest FastAPI image (Docker uses the `latest` tag by default). If specific versions of inboard or Python are desired, append the version numbers to the specified Docker tags as shown below _(new in inboard version 0.6.0)_.
 
 ```sh
-# Pull most recent version of each image
+# Pull latest FastAPI image
+docker pull ghcr.io/br3ndonland/inboard
+
+# Pull latest version of each image
 docker pull ghcr.io/br3ndonland/inboard:base
 docker pull ghcr.io/br3ndonland/inboard:fastapi
 docker pull ghcr.io/br3ndonland/inboard:starlette
 
 # Pull image from specific release
-docker pull ghcr.io/br3ndonland/inboard:base-0.2.0
-docker pull ghcr.io/br3ndonland/inboard:fastapi-0.2.0
-docker pull ghcr.io/br3ndonland/inboard:starlette-0.2.0
-```
+docker pull ghcr.io/br3ndonland/inboard:base-0.6.0
+docker pull ghcr.io/br3ndonland/inboard:fastapi-0.6.0
+docker pull ghcr.io/br3ndonland/inboard:starlette-0.6.0
 
-The FastAPI image is also tagged with `latest`. Docker uses the `latest` tag by default, so simply running `docker pull ghcr.io/br3ndonland/inboard` will pull the FastAPI image.
+# Pull image with specific Python version
+docker pull ghcr.io/br3ndonland/inboard:base-python3.8
+docker pull ghcr.io/br3ndonland/inboard:fastapi-python3.8
+docker pull ghcr.io/br3ndonland/inboard:starlette-python3.8
+
+# Pull image from specific release and with specific Python version
+docker pull ghcr.io/br3ndonland/inboard:base-0.6.0-python3.8
+docker pull ghcr.io/br3ndonland/inboard:fastapi-0.6.0-python3.8
+docker pull ghcr.io/br3ndonland/inboard:starlette-0.6.0-python3.8
+```
 
 If authentication to GHCR is needed, follow the instructions [below](#configuring-docker-for-github-container-registry).
 
