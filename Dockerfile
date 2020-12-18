@@ -10,13 +10,14 @@ ENV APP_MODULE=inboard.app.main_base:app POETRY_HOME=/opt/poetry POETRY_VIRTUALE
 COPY poetry.lock pyproject.toml /app/
 WORKDIR /app/
 RUN curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py && \
-  python get-poetry.py -y && . $POETRY_HOME/env && \
-  poetry install --no-dev --no-interaction --no-root -E fastapi
+  python get-poetry.py -y && . $POETRY_HOME/env && poetry install --no-dev --no-interaction --no-root
 COPY inboard /app/inboard
 CMD python /app/inboard/start.py
 
 FROM base AS fastapi
-ENV APP_MODULE=inboard.app.main_fastapi:app
+ENV APP_MODULE=inboard.app.main_fastapi:app PATH=$POETRY_HOME/bin:$PATH
+RUN poetry install --no-dev --no-interaction --no-root -E fastapi
 
 FROM base AS starlette
-ENV APP_MODULE=inboard.app.main_starlette:app
+ENV APP_MODULE=inboard.app.main_starlette:app PATH=$POETRY_HOME/bin:$PATH
+RUN poetry install --no-dev --no-interaction --no-root -E starlette
