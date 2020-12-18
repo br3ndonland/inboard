@@ -21,11 +21,11 @@ repos:
       - id: mypy
         language: system
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.2.0
+    rev: v2.2.1
     hooks:
       - id: prettier
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.3.0
+    rev: v3.4.0
     hooks:
       - id: check-added-large-files
         args: [--maxkb=800]
