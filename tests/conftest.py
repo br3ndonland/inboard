@@ -5,8 +5,6 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 import pytest
-from _pytest.monkeypatch import MonkeyPatch
-from _pytest.tmpdir import TempPathFactory
 from fastapi.testclient import TestClient
 from pytest_mock import MockerFixture
 
@@ -19,7 +17,7 @@ from inboard.app.main_starlette import app as starlette_app
 
 
 @pytest.fixture(scope="session")
-def app_module_tmp_path(tmp_path_factory: TempPathFactory) -> Path:
+def app_module_tmp_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Copy app modules to temporary directory to test custom app module paths."""
     tmp_dir = tmp_path_factory.mktemp("app")
     shutil.copytree(Path(pre_start_module.__file__).parent, Path(f"{tmp_dir}/tmp_app"))
@@ -28,7 +26,7 @@ def app_module_tmp_path(tmp_path_factory: TempPathFactory) -> Path:
 
 @pytest.fixture
 def basic_auth(
-    monkeypatch: MonkeyPatch,
+    monkeypatch: pytest.MonkeyPatch,
     username: str = "test_username",
     password: str = "plunge-germane-tribal-pillar",
 ) -> tuple:
@@ -53,7 +51,7 @@ def clients() -> List[TestClient]:
 
 
 @pytest.fixture
-def gunicorn_conf_path(monkeypatch: MonkeyPatch) -> Path:
+def gunicorn_conf_path(monkeypatch: pytest.MonkeyPatch) -> Path:
     """Set path to default Gunicorn configuration file."""
     path = Path(gunicorn_conf_module.__file__)
     monkeypatch.setenv("GUNICORN_CONF", str(path))
@@ -62,7 +60,7 @@ def gunicorn_conf_path(monkeypatch: MonkeyPatch) -> Path:
 
 
 @pytest.fixture(scope="session")
-def gunicorn_conf_tmp_path(tmp_path_factory: TempPathFactory) -> Path:
+def gunicorn_conf_tmp_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Create temporary directory for Gunicorn configuration file."""
     return tmp_path_factory.mktemp("gunicorn")
 
@@ -70,8 +68,8 @@ def gunicorn_conf_tmp_path(tmp_path_factory: TempPathFactory) -> Path:
 @pytest.fixture
 def gunicorn_conf_tmp_file_path(
     gunicorn_conf_tmp_path: Path,
-    monkeypatch: MonkeyPatch,
-    tmp_path_factory: TempPathFactory,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path_factory: pytest.TempPathFactory,
 ) -> Path:
     """Copy gunicorn configuration file to temporary directory."""
     tmp_file = Path(f"{gunicorn_conf_tmp_path}/gunicorn_conf.py")
@@ -88,7 +86,7 @@ def logging_conf_dict(mocker: MockerFixture) -> Dict[str, Any]:
 
 
 @pytest.fixture
-def logging_conf_file_path(monkeypatch: MonkeyPatch) -> Path:
+def logging_conf_file_path(monkeypatch: pytest.MonkeyPatch) -> Path:
     """Set path to default logging configuration file."""
     path = Path(logging_conf_module.__file__)
     monkeypatch.setenv("LOGGING_CONF", str(path))
@@ -97,7 +95,7 @@ def logging_conf_file_path(monkeypatch: MonkeyPatch) -> Path:
 
 
 @pytest.fixture
-def logging_conf_module_path(monkeypatch: MonkeyPatch) -> str:
+def logging_conf_module_path(monkeypatch: pytest.MonkeyPatch) -> str:
     """Set module path to logging_conf.py."""
     path = "inboard.logging_conf"
     monkeypatch.setenv("LOGGING_CONF", path)
@@ -106,7 +104,7 @@ def logging_conf_module_path(monkeypatch: MonkeyPatch) -> str:
 
 
 @pytest.fixture(scope="session")
-def logging_conf_tmp_file_path(tmp_path_factory: TempPathFactory) -> Path:
+def logging_conf_tmp_file_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Copy logging configuration module to custom temporary location."""
     tmp_dir = tmp_path_factory.mktemp("tmp_log")
     shutil.copy(Path(logging_conf_module.__file__), Path(f"{tmp_dir}/tmp_log.py"))
@@ -114,7 +112,7 @@ def logging_conf_tmp_file_path(tmp_path_factory: TempPathFactory) -> Path:
 
 
 @pytest.fixture(scope="session")
-def logging_conf_tmp_path_no_dict(tmp_path_factory: TempPathFactory) -> Path:
+def logging_conf_tmp_path_no_dict(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Create temporary logging config file without logging config dict."""
     tmp_dir = tmp_path_factory.mktemp("tmp_log_no_dict")
     tmp_file = tmp_dir / "no_dict.py"
@@ -131,7 +129,9 @@ def logging_conf_tmp_path_incorrect_extension(tmp_path: Path) -> Path:
 
 
 @pytest.fixture(scope="session")
-def logging_conf_tmp_path_incorrect_type(tmp_path_factory: TempPathFactory) -> Path:
+def logging_conf_tmp_path_incorrect_type(
+    tmp_path_factory: pytest.TempPathFactory,
+) -> Path:
     """Create temporary logging config file with incorrect LOGGING_CONFIG type."""
     tmp_dir = tmp_path_factory.mktemp("tmp_log_incorrect_type")
     tmp_file = tmp_dir / "incorrect_type.py"

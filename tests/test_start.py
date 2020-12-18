@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 import pytest
-from _pytest.monkeypatch import MonkeyPatch
 from pytest_mock import MockerFixture
 
 from inboard import gunicorn_conf, start
@@ -25,7 +24,7 @@ class TestConfPaths:
     def test_set_custom_conf_path_gunicorn(
         self,
         gunicorn_conf_tmp_file_path: Path,
-        monkeypatch: MonkeyPatch,
+        monkeypatch: pytest.MonkeyPatch,
         tmp_path: Path,
     ) -> None:
         """Set path to custom temporary Gunicorn configuration file."""
@@ -35,7 +34,7 @@ class TestConfPaths:
         assert "logging" not in str(gunicorn_conf_tmp_file_path)
         assert start.set_conf_path("gunicorn") == str(gunicorn_conf_tmp_file_path)
 
-    def test_set_incorrect_conf_path(self, monkeypatch: MonkeyPatch) -> None:
+    def test_set_incorrect_conf_path(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Set path to non-existent file and raise an error."""
         with pytest.raises(FileNotFoundError):
             monkeypatch.setenv("GUNICORN_CONF", "/no/file/here")
@@ -52,7 +51,9 @@ class TestConfigureGunicorn:
         assert gunicorn_conf.workers >= 2
         assert gunicorn_conf.workers == multiprocessing.cpu_count()
 
-    def test_gunicorn_conf_workers_custom_max(self, monkeypatch: MonkeyPatch) -> None:
+    def test_gunicorn_conf_workers_custom_max(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test custom Gunicorn worker process calculation."""
         monkeypatch.setenv("MAX_WORKERS", "1")
         monkeypatch.setenv("WEB_CONCURRENCY", "4")
@@ -71,7 +72,7 @@ class TestConfigureGunicorn:
 
     @pytest.mark.parametrize("number_of_workers", ["1", "2", "4"])
     def test_gunicorn_conf_workers_custom_concurrency(
-        self, monkeypatch: MonkeyPatch, number_of_workers: str
+        self, monkeypatch: pytest.MonkeyPatch, number_of_workers: str
     ) -> None:
         """Test custom Gunicorn worker process calculation."""
         monkeypatch.setenv("WEB_CONCURRENCY", number_of_workers)
@@ -89,7 +90,7 @@ class TestConfigureGunicorn:
 
     @pytest.mark.parametrize("concurrency", [None, "10"])
     def test_gunicorn_conf_workers_custom_cores(
-        self, monkeypatch: MonkeyPatch, concurrency: Optional[str]
+        self, monkeypatch: pytest.MonkeyPatch, concurrency: Optional[str]
     ) -> None:
         """Test custom Gunicorn worker process calculation.
         - Assert that number of workers equals `WORKERS_PER_CORE`, and is at least 2.
@@ -192,7 +193,7 @@ class TestConfigureLogging:
         self,
         logging_conf_tmp_file_path: Path,
         mock_logger: logging.Logger,
-        monkeypatch: MonkeyPatch,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.configure_logging` with temporary logging config path."""
         monkeypatch.syspath_prepend(logging_conf_tmp_file_path)
@@ -207,7 +208,7 @@ class TestConfigureLogging:
         self,
         logging_conf_tmp_path_incorrect_type: Path,
         mock_logger: logging.Logger,
-        monkeypatch: MonkeyPatch,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.configure_logging` with temporary logging config path.
         - Correct module name
@@ -228,7 +229,7 @@ class TestConfigureLogging:
         self,
         logging_conf_tmp_path_no_dict: Path,
         mock_logger: logging.Logger,
-        monkeypatch: MonkeyPatch,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.configure_logging` with temporary logging config path.
         - Correct module name
@@ -252,7 +253,7 @@ class TestSetAppModule:
     """
 
     def test_set_app_module_asgi(
-        self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
+        self, mock_logger: logging.Logger, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test `start.set_app_module` using module path to base ASGI app."""
         monkeypatch.setenv("APP_MODULE", "inboard.app.main_base:app")
@@ -262,7 +263,7 @@ class TestSetAppModule:
         )
 
     def test_set_app_module_fastapi(
-        self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
+        self, mock_logger: logging.Logger, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test `start.set_app_module` using module path to FastAPI app."""
         monkeypatch.setenv("APP_MODULE", "inboard.app.main_fastapi:app")
@@ -272,7 +273,7 @@ class TestSetAppModule:
         )
 
     def test_set_app_module_starlette(
-        self, mock_logger: logging.Logger, monkeypatch: MonkeyPatch
+        self, mock_logger: logging.Logger, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test `start.set_app_module` using module path to Starlette app."""
         monkeypatch.setenv("APP_MODULE", "inboard.app.main_starlette:app")
@@ -285,7 +286,7 @@ class TestSetAppModule:
         self,
         app_module_tmp_path: Path,
         mock_logger: logging.Logger,
-        monkeypatch: MonkeyPatch,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.set_app_module` with custom module path to base ASGI app."""
         monkeypatch.syspath_prepend(app_module_tmp_path)
@@ -299,7 +300,7 @@ class TestSetAppModule:
         self,
         app_module_tmp_path: Path,
         mock_logger: logging.Logger,
-        monkeypatch: MonkeyPatch,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.set_app_module` with custom module path to FastAPI app."""
         monkeypatch.syspath_prepend(app_module_tmp_path)
@@ -313,7 +314,7 @@ class TestSetAppModule:
         self,
         app_module_tmp_path: Path,
         mock_logger: logging.Logger,
-        monkeypatch: MonkeyPatch,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.set_app_module` with custom module path to Starlette app."""
         monkeypatch.syspath_prepend(app_module_tmp_path)
@@ -327,7 +328,7 @@ class TestSetAppModule:
         self,
         mocker: MockerFixture,
         mock_logger: logging.Logger,
-        monkeypatch: MonkeyPatch,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.set_app_module` with incorrect module path."""
         with pytest.raises(ModuleNotFoundError):
@@ -350,7 +351,7 @@ class TestRunPreStartScript:
         self,
         mock_logger: logging.Logger,
         mocker: MockerFixture,
-        monkeypatch: MonkeyPatch,
+        monkeypatch: pytest.MonkeyPatch,
         pre_start_script_tmp_py: Path,
     ) -> None:
         """Test `start.run_pre_start_script` using temporary Python pre-start script."""
@@ -372,7 +373,7 @@ class TestRunPreStartScript:
         self,
         mock_logger: logging.Logger,
         mocker: MockerFixture,
-        monkeypatch: MonkeyPatch,
+        monkeypatch: pytest.MonkeyPatch,
         pre_start_script_tmp_sh: Path,
     ) -> None:
         """Test `start.run_pre_start_script` using temporary pre-start shell script."""
@@ -394,7 +395,7 @@ class TestRunPreStartScript:
         self,
         mock_logger: logging.Logger,
         mocker: MockerFixture,
-        monkeypatch: MonkeyPatch,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.run_pre_start_script` with an incorrect file path."""
         monkeypatch.setenv("PRE_START_PATH", "/no/file/here")
@@ -426,7 +427,7 @@ class TestStartServer:
         logging_conf_dict: Dict[str, Any],
         mock_logger: logging.Logger,
         mocker: MockerFixture,
-        monkeypatch: MonkeyPatch,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.start_server` with Uvicorn."""
         monkeypatch.setenv("PROCESS_MANAGER", "uvicorn")
@@ -463,7 +464,7 @@ class TestStartServer:
         logging_conf_dict: Dict[str, Any],
         mock_logger: logging.Logger,
         mocker: MockerFixture,
-        monkeypatch: MonkeyPatch,
+        monkeypatch: pytest.MonkeyPatch,
         tmp_path: Path,
     ) -> None:
         """Test `start.start_server` with Uvicorn managed by Gunicorn."""
@@ -509,7 +510,7 @@ class TestStartServer:
         logging_conf_dict: Dict[str, Any],
         mock_logger: logging.Logger,
         mocker: MockerFixture,
-        monkeypatch: MonkeyPatch,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test customized `start.start_server` with Uvicorn managed by Gunicorn."""
         monkeypatch.setenv(
@@ -548,7 +549,7 @@ class TestStartServer:
         logging_conf_dict: Dict[str, Any],
         mock_logger: logging.Logger,
         mocker: MockerFixture,
-        monkeypatch: MonkeyPatch,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.start_server` with Uvicorn and an incorrect module path."""
         with pytest.raises(ModuleNotFoundError):
@@ -584,7 +585,7 @@ class TestStartServer:
         logging_conf_dict: Dict[str, Any],
         mock_logger: logging.Logger,
         mocker: MockerFixture,
-        monkeypatch: MonkeyPatch,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.start_server` with Uvicorn and an incorrect process manager."""
         with pytest.raises(NameError):

@@ -4,7 +4,6 @@ import sys
 from typing import Dict, List
 
 import pytest
-from _pytest.monkeypatch import MonkeyPatch
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from starlette.applications import Starlette
@@ -80,7 +79,7 @@ class TestEndpoints:
     """
 
     def test_get_asgi_uvicorn(
-        self, client_asgi: TestClient, monkeypatch: MonkeyPatch
+        self, client_asgi: TestClient, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test `GET` request to base ASGI app set for Uvicorn without Gunicorn."""
         monkeypatch.setenv("PROCESS_MANAGER", "uvicorn")
@@ -96,7 +95,7 @@ class TestEndpoints:
         )
 
     def test_get_asgi_uvicorn_gunicorn(
-        self, client_asgi: TestClient, monkeypatch: MonkeyPatch
+        self, client_asgi: TestClient, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test `GET` request to base ASGI app set for Uvicorn with Gunicorn."""
         monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
@@ -112,7 +111,7 @@ class TestEndpoints:
         )
 
     def test_get_asgi_incorrect_process_manager(
-        self, client_asgi: TestClient, monkeypatch: MonkeyPatch
+        self, client_asgi: TestClient, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test `GET` request to base ASGI app with incorrect `PROCESS_MANAGER`."""
         monkeypatch.setenv("PROCESS_MANAGER", "incorrect")
