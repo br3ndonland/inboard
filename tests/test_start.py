@@ -447,6 +447,55 @@ class TestStartServer:
             log_config=logging_conf_dict,
             log_level="info",
             reload=False,
+            reload_dirs=None,
+        )
+
+    @pytest.mark.parametrize(
+        "app_module",
+        [
+            "inboard.app.main_base:app",
+            "inboard.app.main_fastapi:app",
+            "inboard.app.main_starlette:app",
+        ],
+    )
+    @pytest.mark.parametrize(
+        "reload_dirs", ["inboard", "inboard,tests", "inboard, tests"]
+    )
+    def test_start_server_uvicorn_reload_dirs(
+        self,
+        app_module: str,
+        logging_conf_dict: Dict[str, Any],
+        mock_logger: logging.Logger,
+        mocker: MockerFixture,
+        monkeypatch: pytest.MonkeyPatch,
+        reload_dirs: str,
+    ) -> None:
+        """Test `start.start_server` with Uvicorn."""
+        monkeypatch.setenv("PROCESS_MANAGER", "uvicorn")
+        monkeypatch.setenv("RELOAD_DIRS", reload_dirs)
+        split_dirs = [d.lstrip() for d in str(os.getenv("RELOAD_DIRS")).split(sep=",")]
+        assert os.getenv("PROCESS_MANAGER") == "uvicorn"
+        assert os.getenv("RELOAD_DIRS") == reload_dirs
+        if reload_dirs == "inboard":
+            assert len(split_dirs) == 1
+        else:
+            assert len(split_dirs) == 2
+        mock_run = mocker.patch("inboard.start.uvicorn.run", autospec=True)
+        start.start_server(
+            str(os.getenv("PROCESS_MANAGER")),
+            app_module=app_module,
+            logger=mock_logger,
+            logging_conf_dict=logging_conf_dict,
+        )
+        mock_logger.debug.assert_called_once_with("Running Uvicorn without Gunicorn.")  # type: ignore[attr-defined]  # noqa: E501
+        mock_run.assert_called_once_with(
+            app_module,
+            host="0.0.0.0",
+            port=80,
+            log_config=logging_conf_dict,
+            log_level="info",
+            reload=False,
+            reload_dirs=split_dirs,
         )
 
     @pytest.mark.parametrize(

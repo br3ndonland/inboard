@@ -89,7 +89,6 @@ def start_server(
     app_module: str = str(os.getenv("APP_MODULE", "inboard.app.main_base:app")),
     logger: Logger = logging.getLogger(),
     logging_conf_dict: Dict[str, Any] = None,
-    with_reload: bool = bool(os.getenv("WITH_RELOAD", False)),
     worker_class: str = str(os.getenv("WORKER_CLASS", "uvicorn.workers.UvicornWorker")),
 ) -> None:
     """Start the Uvicorn or Gunicorn server."""
@@ -101,6 +100,11 @@ def start_server(
                 ["gunicorn", "-k", worker_class, "-c", gunicorn_conf_path, app_module]
             )
         elif process_manager == "uvicorn":
+            reload_dirs = (
+                [d.lstrip() for d in str(os.getenv("RELOAD_DIRS")).split(sep=",")]
+                if os.getenv("RELOAD_DIRS")
+                else None
+            )
             logger.debug("Running Uvicorn without Gunicorn.")
             uvicorn.run(
                 app_module,
@@ -108,12 +112,13 @@ def start_server(
                 port=int(os.getenv("PORT", "80")),
                 log_config=logging_conf_dict,
                 log_level=os.getenv("LOG_LEVEL", "info"),
-                reload=with_reload,
+                reload=bool(os.getenv("WITH_RELOAD", False)),
+                reload_dirs=reload_dirs,
             )
         else:
             raise NameError("Process manager needs to be either uvicorn or gunicorn.")
     except Exception as e:
-        logger.debug(f"Error when starting server with start script: {e}")
+        logger.error(f"Error when starting server with start script: {e}")
         raise
 
 
