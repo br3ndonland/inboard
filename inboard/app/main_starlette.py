@@ -8,7 +8,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from inboard.app.utilities import BasicAuth
+from inboard.app.utilities_starlette import BasicAuth
 
 server = "Uvicorn" if bool(os.getenv("WITH_RELOAD")) else "Uvicorn, Gunicorn"
 version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
