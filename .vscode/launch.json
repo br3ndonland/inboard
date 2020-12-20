@@ -16,6 +16,7 @@
         "LOG_LEVEL": "debug",
         "PORT": "1025",
         "PROCESS_MANAGER": "uvicorn",
+        "RELOAD_DIRS": "inboard",
         "WITH_RELOAD": "true"
       },
       "console": "integratedTerminal",
