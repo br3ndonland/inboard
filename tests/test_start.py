@@ -416,6 +416,7 @@ class TestStartServer:
             "inboard.app.main_starlette:app",
         ],
     )
+    @pytest.mark.timeout(2)
     def test_start_server_uvicorn(
         self,
         app_module: str,
@@ -458,6 +459,7 @@ class TestStartServer:
     @pytest.mark.parametrize(
         "reload_dirs", ["inboard", "inboard,tests", "inboard, tests"]
     )
+    @pytest.mark.timeout(2)
     def test_start_server_uvicorn_reload_dirs(
         self,
         app_module: str,
@@ -505,6 +507,7 @@ class TestStartServer:
             "inboard.app.main_starlette:app",
         ],
     )
+    @pytest.mark.timeout(2)
     def test_start_server_uvicorn_gunicorn(
         self,
         app_module: str,
@@ -553,6 +556,7 @@ class TestStartServer:
             "inboard.app.main_starlette:app",
         ],
     )
+    @pytest.mark.timeout(2)
     def test_start_server_uvicorn_gunicorn_custom_config(
         self,
         app_module: str,
@@ -604,6 +608,7 @@ class TestStartServer:
             "inboard.app.main_starlette:app",
         ],
     )
+    @pytest.mark.timeout(2)
     def test_start_server_uvicorn_incorrect_process_manager(
         self,
         app_module: str,
