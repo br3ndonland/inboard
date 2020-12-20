@@ -17,7 +17,7 @@
 
 ### Contributors
 
-- **Submit PRs from feature branches on forks.**
+- **Submit PRs from feature branches on forks to the `develop` branch.**
 - **Ensure PRs pass all CI checks.**
 - **Maintain test coverage at 100%.**
 
