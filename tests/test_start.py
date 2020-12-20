@@ -151,6 +151,7 @@ class TestConfigureLogging:
     def test_configure_logging_module_incorrect(
         self, mock_logger: logging.Logger
     ) -> None:
+        """Test `start.configure_logging` with incorrect logging config module path."""
         with pytest.raises(ImportError):
             start.configure_logging(logger=mock_logger, logging_conf="no.module.here")
             import_error_msg = "Unable to import no.module.here."
@@ -356,16 +357,13 @@ class TestRunPreStartScript:
     ) -> None:
         """Test `start.run_pre_start_script` using temporary Python pre-start script."""
         monkeypatch.setenv("PRE_START_PATH", str(pre_start_script_tmp_py))
+        pre_start_path = os.getenv("PRE_START_PATH")
         start.run_pre_start_script(logger=mock_logger)
         mock_logger.debug.assert_has_calls(  # type: ignore[attr-defined]
             calls=[
                 mocker.call("Checking for pre-start script."),
-                mocker.call(
-                    f"Running pre-start script with python {os.getenv('PRE_START_PATH')}."  # noqa: E501
-                ),
-                mocker.call(
-                    f"Ran pre-start script with python {os.getenv('PRE_START_PATH')}."
-                ),
+                mocker.call(f"Running pre-start script with python {pre_start_path}."),
+                mocker.call(f"Ran pre-start script with python {pre_start_path}."),
             ]
         )
 
@@ -378,16 +376,13 @@ class TestRunPreStartScript:
     ) -> None:
         """Test `start.run_pre_start_script` using temporary pre-start shell script."""
         monkeypatch.setenv("PRE_START_PATH", str(pre_start_script_tmp_sh))
+        pre_start_path = os.getenv("PRE_START_PATH")
         start.run_pre_start_script(logger=mock_logger)
         mock_logger.debug.assert_has_calls(  # type: ignore[attr-defined]
             calls=[
                 mocker.call("Checking for pre-start script."),
-                mocker.call(
-                    f"Running pre-start script with sh {os.getenv('PRE_START_PATH')}."
-                ),
-                mocker.call(
-                    f"Ran pre-start script with sh {os.getenv('PRE_START_PATH')}."
-                ),
+                mocker.call(f"Running pre-start script with sh {pre_start_path}."),
+                mocker.call(f"Ran pre-start script with sh {pre_start_path}."),
             ]
         )
 
@@ -439,7 +434,9 @@ class TestStartServer:
             logger=mock_logger,
             logging_conf_dict=logging_conf_dict,
         )
-        mock_logger.debug.assert_called_once_with("Running Uvicorn without Gunicorn.")  # type: ignore[attr-defined]  # noqa: E501
+        mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
+            "Running Uvicorn without Gunicorn."
+        )
         mock_run.assert_called_once_with(
             app_module,
             host="0.0.0.0",
@@ -487,7 +484,9 @@ class TestStartServer:
             logger=mock_logger,
             logging_conf_dict=logging_conf_dict,
         )
-        mock_logger.debug.assert_called_once_with("Running Uvicorn without Gunicorn.")  # type: ignore[attr-defined]  # noqa: E501
+        mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
+            "Running Uvicorn without Gunicorn."
+        )
         mock_run.assert_called_once_with(
             app_module,
             host="0.0.0.0",
@@ -532,7 +531,9 @@ class TestStartServer:
             logger=mock_logger,
             logging_conf_dict=logging_conf_dict,
         )
-        mock_logger.debug.assert_called_once_with("Running Uvicorn with Gunicorn.")  # type: ignore[attr-defined]  # noqa: E501
+        mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
+            "Running Uvicorn with Gunicorn."
+        )
         mock_run.assert_called_once_with(
             [
                 "gunicorn",
@@ -581,7 +582,9 @@ class TestStartServer:
             logger=mock_logger,
             logging_conf_dict=logging_conf_dict,
         )
-        mock_logger.debug.assert_called_with("Running Uvicorn with Gunicorn.")  # type: ignore[attr-defined]  # noqa: E501
+        mock_logger.debug.assert_called_with(  # type: ignore[attr-defined]
+            "Running Uvicorn with Gunicorn."
+        )
         mock_run.assert_called_with(
             [
                 "gunicorn",
@@ -637,19 +640,18 @@ class TestStartServer:
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.start_server` with Uvicorn and an incorrect process manager."""
-        with pytest.raises(NameError):
-            monkeypatch.setenv("LOG_LEVEL", "debug")
-            monkeypatch.setenv("WITH_RELOAD", "false")
+        monkeypatch.setenv("LOG_LEVEL", "debug")
+        monkeypatch.setenv("WITH_RELOAD", "false")
+        logger_error_msg = "Error when starting server with start script:"
+        process_error_msg = "Process manager needs to be either uvicorn or gunicorn."
+        with pytest.raises(NameError) as e:
             start.start_server(
                 "incorrect",
                 app_module=app_module,
                 logger=mock_logger,
                 logging_conf_dict=logging_conf_dict,
             )
-            logger_error_msg = "Error when starting server with start script:"
-            process_error_msg = (
-                "Process manager needs to be either uvicorn or gunicorn."
-            )
-            mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
-                f"{logger_error_msg} {process_error_msg}"
-            )
+            assert e.value == process_error_msg
+        mock_logger.error.assert_called_once_with(  # type: ignore[attr-defined]
+            f"{logger_error_msg} {process_error_msg}"
+        )
