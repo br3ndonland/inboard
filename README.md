@@ -18,6 +18,7 @@ Brendon Smith ([br3ndonland](https://github.com/br3ndonland/))
 
 - [Description](#description)
 - [Instructions](#instructions)
+  - [Quickstart](#quickstart)
   - [Pull images](#pull-images)
   - [Use images in a _Dockerfile_](#use-images-in-a-dockerfile)
   - [Run containers](#run-containers)
@@ -47,6 +48,16 @@ This repo provides [Docker images](https://github.com/users/br3ndonland/packages
 - **One platform.** You're already on GitHub. Why not [pull Docker images from GitHub Container Registry](https://github.blog/2020-09-01-introducing-github-container-registry/)?
 
 ## Instructions
+
+### Quickstart
+
+[Get started with Docker](https://www.docker.com/get-started), pull and run an image, and try an API endpoint.
+
+```sh
+docker pull ghcr.io/br3ndonland/inboard
+docker run -d -p 80:80 ghcr.io/br3ndonland/inboard
+http :80  # HTTPie: https://httpie.io/
+```
 
 ### Pull images
 
