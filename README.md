@@ -167,6 +167,8 @@ Details on the `docker run` command:
   - `LOG_COLORS`
   - `LOG_FORMAT`
   - `LOG_LEVEL`
+  - `RELOAD_DIRS`
+  - `WITH_RELOAD`
 - `-v $(pwd)/package:/app/package`: the specified directory (`/path/to/repo/package` in this example) will be [mounted as a volume](https://docs.docker.com/engine/reference/run/#volume-shared-filesystems) inside of the container at `/app/package`. When files in the working directory change, Docker and Uvicorn will sync the files to the running Docker container.
 
 Hit an API endpoint:
@@ -287,6 +289,15 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
       -e GUNICORN_CMD_ARGS="--keyfile=/secrets/key.pem --certfile=/secrets/cert.pem" \
       -e PORT=443 myimage
     ```
+- `WITH_RELOAD`: Configure the [Uvicorn auto-reload setting](https://www.uvicorn.org/settings/).
+  - Default: `"false"` (don't auto-reload when files change)
+  - Custom: `"true"` (watch files with [watchgod](https://github.com/samuelcolvin/watchgod) and auto-reload when files change). Auto-reloading is useful for local development. [Watchgod](https://github.com/samuelcolvin/watchgod) was added as an optional dependency in [Uvicorn 0.11.4](https://github.com/encode/uvicorn/releases/tag/0.11.4), and is included with inboard.
+- `RELOAD_DIRS`: Directories and files to watch for changes with [watchgod](https://github.com/samuelcolvin/watchgod), formatted as comma-separated string. On the command-line, this [Uvicorn setting](https://www.uvicorn.org/settings/) is configured by passing `--reload-dir`, and can be passed multiple times, with one directory each. However, when running Uvicorn programmatically, `uvicorn.run` accepts a list of strings (`uvicorn.run(reload_dirs=["dir1", "dir2"])`), so inboard will parse the environment variable, send the list to Uvicorn, and watchgod will watch each directory or file specified.
+  - Default: watch all directories under project root.
+  - Custom:
+    - `"inboard"` (one directory)
+    - `"inboard, tests"` (two directories)
+    - `"inboard, tests, Dockerfile"` (two directories and a file)
 
 ### Logging
 
