@@ -6,7 +6,7 @@
       "type": "python",
       "request": "launch",
       "stopOnEntry": false,
-      "pythonPath": "${command:python.interpreterPath}",
+      "python": "${command:python.interpreterPath}",
       "module": "inboard.start",
       "env": {
         "APP_MODULE": "inboard.app.main_fastapi:app",
