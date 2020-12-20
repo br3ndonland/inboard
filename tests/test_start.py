@@ -596,32 +596,6 @@ class TestStartServer:
             ]
         )
 
-    def test_start_server_uvicorn_incorrect_module(
-        self,
-        logging_conf_dict: Dict[str, Any],
-        mock_logger: logging.Logger,
-        mocker: MockerFixture,
-        monkeypatch: pytest.MonkeyPatch,
-    ) -> None:
-        """Test `start.start_server` with Uvicorn and an incorrect module path."""
-        with pytest.raises(ModuleNotFoundError):
-            monkeypatch.setenv("LOG_LEVEL", "debug")
-            monkeypatch.setenv("WITH_RELOAD", "false")
-            start.start_server(
-                "uvicorn",
-                app_module="incorrect.base.main:app",
-                logger=mock_logger,
-                logging_conf_dict=logging_conf_dict,
-            )
-            logger_error_msg = "Error when starting server with start script:"
-            module_error_msg = "No module named incorrect.base.main:app"
-            mock_logger.debug.assert_has_calls(  # type: ignore[attr-defined]
-                calls=[
-                    mocker.call("Running Uvicorn without Gunicorn."),
-                    mocker.call(f"{logger_error_msg} {module_error_msg}"),
-                ]
-            )
-
     @pytest.mark.parametrize(
         "app_module",
         [
