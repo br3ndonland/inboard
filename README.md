@@ -1,8 +1,14 @@
-# 🚢 inboard 🐳
+# <div align="center">🚢 inboard 🐳<div>
 
-<img src="https://gist.githubusercontent.com/br3ndonland/d66ce3c8e98cf8bd4f3c24d006409e41/raw/9344741f28c6494c10b0ad142e9b88752e5a6c9a/inboard-logo.svg" alt="inboard logo" width="90%" />
+<div align="center"><img src="https://gist.githubusercontent.com/br3ndonland/d66ce3c8e98cf8bd4f3c24d006409e41/raw/9344741f28c6494c10b0ad142e9b88752e5a6c9a/inboard-logo.svg" alt="inboard logo" width="90%" /></div>
+
+<div align="center">
 
 _Docker images to power your Python APIs and help you ship faster._
+
+</div>
+
+<div align="center">
 
 [![PyPI](https://img.shields.io/pypi/v/inboard?color=success)](https://pypi.org/project/inboard/)
 [![GitHub Container Registry](https://img.shields.io/badge/github%20container%20registry-inboard-success)](https://github.com/users/br3ndonland/packages/container/package/inboard)
@@ -14,7 +20,7 @@ _Docker images to power your Python APIs and help you ship faster._
 [![tests](https://github.com/br3ndonland/inboard/workflows/tests/badge.svg)](https://github.com/br3ndonland/inboard/actions)
 [![codecov](https://codecov.io/gh/br3ndonland/inboard/branch/develop/graph/badge.svg)](https://codecov.io/gh/br3ndonland/inboard)
 
-Brendon Smith ([br3ndonland](https://github.com/br3ndonland/))
+</div>
 
 ## Table of Contents <!-- omit in toc -->
 
@@ -530,3 +536,11 @@ keybase decrypt -i pat-ghcr.asc | docker login ghcr.io -u YOUR_GITHUB_USERNAME -
 
 # can also use keybase pgp encrypt and keybase pgp decrypt, but must export PGP key
 ```
+
+<div align="center">
+
+&mdash; 🚢 <a href="https://github.com/br3ndonland/inboard">inboard</a> 🐳 &mdash;
+
+By Brendon Smith ([br3ndonland](https://github.com/br3ndonland))
+
+</div>
