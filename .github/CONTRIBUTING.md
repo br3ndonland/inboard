@@ -25,13 +25,13 @@
 
 - **The default branch is `develop`.**
 - **PRs should be merged into `develop`.** Head branches are deleted automatically after PRs are merged.
-- **The only merges to `master` should be fast-forward merges from `develop`.**
-- **Branch protection is enabled on `develop` and `master`.**
+- **The only merges to `main` should be fast-forward merges from `develop`.**
+- **Branch protection is enabled on `develop` and `main`.**
   - `develop`:
     - Require signed commits
     - Include adminstrators
     - Allow force pushes
-  - `master`:
+  - `main`:
     - Require signed commits
     - Include adminstrators
     - Do not allow force pushes
@@ -39,7 +39,7 @@
 - **To create a release:**
   - Bump the version number in `pyproject.toml` with `poetry version` and commit the changes to `develop`.
   - Push to `develop` and verify all CI checks pass.
-  - Fast-forward merge to `master`, push, and verify all CI checks pass.
+  - Fast-forward merge to `main`, push, and verify all CI checks pass.
   - Create an [annotated and signed Git tag](https://www.git-scm.com/book/en/v2/Git-Basics-Tagging)
     - Follow [SemVer](https://semver.org/) guidelines when choosing a version number.
     - List PRs and commits in the tag message:
