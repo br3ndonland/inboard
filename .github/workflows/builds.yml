@@ -62,6 +62,10 @@ jobs:
         python-version: [3.8, 3.9]
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python3 -m pip install httpie
       - name: Log in to Docker registry
         run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.PAT_GHCR }}
       - name: Build Docker images
@@ -72,6 +76,49 @@ jobs:
             -t ghcr.io/br3ndonland/inboard:base
           docker build . --rm --target starlette --build-arg PYTHON_VERSION=${{ matrix.python-version }} -t ghcr.io/br3ndonland/inboard:starlette
           docker build . --rm --target fastapi --build-arg PYTHON_VERSION=${{ matrix.python-version }} -t ghcr.io/br3ndonland/inboard:fastapi
+      - name: Run Docker containers for testing
+        run: |
+          docker run -d -p 80:80 ghcr.io/br3ndonland/inboard:base
+          docker run -d -p 81:80 ghcr.io/br3ndonland/inboard:starlette
+          docker run -d -p 82:80 ghcr.io/br3ndonland/inboard:fastapi
+      - name: Smoke test Docker containers
+        run: |
+          handle_error_code() {
+            case "$1" in
+            2) : 'Request timed out!' ;;
+            3) : 'Unexpected HTTP 3xx Redirection!' ;;
+            4) : 'HTTP 4xx Client Error!' ;;
+            5) : 'HTTP 5xx Server Error!' ;;
+            6) : 'Exceeded --max-redirects=<n> redirects!' ;;
+            *) : 'Other Error!' ;;
+            esac
+            echo "$_"
+            return "$1"
+          }
+          smoke_test() {
+            if http --check-status --ignore-stdin -q --timeout=5 "$@"; then
+              echo 'Smoke test passed. OK!'
+            else
+              handle_error_code "$?"
+            fi
+          }
+          smoke_test_xfail() {
+            if http --check-status --ignore-stdin -q --timeout=5 "$@" &>/dev/null; then
+              echo 'Smoke test should have failed!'
+              return 1
+            else
+              echo 'Smoke test expected to fail. OK!'
+            fi
+          }
+          smoke_test :80
+          smoke_test :81
+          smoke_test :82
+          smoke_test -a test_username:plunge-germane-tribal-pillar :81/status
+          smoke_test -a test_username:plunge-germane-tribal-pillar :82/status
+          smoke_test_xfail -a test_username:plunge-germane-tribal-incorrect :81/status
+          smoke_test_xfail -a test_username:plunge-germane-tribal-incorrect :82/status
+          smoke_test_xfail :81/status
+          smoke_test_xfail :82/status
       - name: Push Docker images with latest Python version to registry
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' && matrix.python-version == '3.9'
         run: |
