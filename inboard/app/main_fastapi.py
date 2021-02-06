@@ -5,12 +5,12 @@ from typing import Dict
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from inboard.app.utilities_fastapi import basic_auth
+from inboard.app.utilities_fastapi import Settings, basic_auth
 
 server = "Uvicorn" if bool(os.getenv("WITH_RELOAD")) else "Uvicorn, Gunicorn"
 version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
-
-app = FastAPI(title="inboard")
+settings = Settings()
+app = FastAPI(title=settings.name, version=settings.version)
 
 app.add_middleware(
     CORSMiddleware,
