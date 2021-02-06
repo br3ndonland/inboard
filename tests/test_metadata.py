@@ -1,4 +1,3 @@
-from importlib.metadata import metadata, version
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -63,12 +62,3 @@ def test_load_pyproject_error() -> None:
     assert pyproject_default == {
         "tool": {"poetry": {"name": "inboard", "description": "", "version": ""}}
     }
-
-
-def test_package_version() -> None:
-    """Assert that version number parsed from pyproject.toml matches
-    version number of installed package obtained by importlib.metadata.
-    """
-    assert version("inboard") == settings.version
-    assert metadata("inboard")["name"] == settings.name == "inboard"
-    assert metadata("inboard")["summary"] == settings.description
