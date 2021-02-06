@@ -84,10 +84,10 @@ The recommended installation method is through the [Poetry custom installer](htt
 
 ```sh
 # osx / linux / bashonwindows install instructions
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/HEAD/get-poetry.py | python -
 
 # windows powershell install instructions
-(Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py -UseBasicParsing).Content | python -
+(Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/HEAD/get-poetry.py -UseBasicParsing).Content | python -
 ```
 
 You can also install Poetry however you prefer to install your user Python packages (`pipx install poetry`, `pip install --user poetry`, etc). Use the standard update methods with these tools (`pipx upgrade poetry`, `pip install --user --upgrade poetry`, etc).

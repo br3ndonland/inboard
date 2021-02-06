@@ -9,7 +9,7 @@ LABEL org.opencontainers.image.url="https://github.com/users/br3ndonland/package
 ENV APP_MODULE=inboard.app.main_base:app POETRY_HOME=/opt/poetry POETRY_VIRTUALENVS_CREATE=false PYTHONPATH=/app
 COPY poetry.lock pyproject.toml /app/
 WORKDIR /app/
-RUN curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py && \
+RUN curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/HEAD/get-poetry.py && \
   python get-poetry.py -y && . $POETRY_HOME/env && poetry install --no-dev --no-interaction --no-root
 COPY inboard /app/inboard
 CMD python /app/inboard/start.py
