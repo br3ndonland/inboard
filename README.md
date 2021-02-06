@@ -1,12 +1,8 @@
-# <div align="center">🚢 inboard 🐳<div>
+<div align="center"><h1>🚢 inboard 🐳</h1></div>
 
 <div align="center"><img src="https://gist.githubusercontent.com/br3ndonland/d66ce3c8e98cf8bd4f3c24d006409e41/raw/9344741f28c6494c10b0ad142e9b88752e5a6c9a/inboard-logo.svg" alt="inboard logo" width="90%" /></div>
 
-<div align="center">
-
-_Docker images to power your Python APIs and help you ship faster._
-
-</div>
+<div align="center"><em>Docker images to power your Python APIs and help you ship faster.</em></div>
 
 <div align="center">
 
@@ -14,6 +10,10 @@ _Docker images to power your Python APIs and help you ship faster._
 [![GitHub Container Registry](https://img.shields.io/badge/github%20container%20registry-inboard-success)](https://github.com/users/br3ndonland/packages/container/package/inboard)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://black.readthedocs.io/en/stable/)
+
+</div>
+
+<div align="center">
 
 [![builds](https://github.com/br3ndonland/inboard/workflows/builds/badge.svg)](https://github.com/br3ndonland/inboard/actions)
 [![hooks](https://github.com/br3ndonland/inboard/workflows/hooks/badge.svg)](https://github.com/br3ndonland/inboard/actions)
@@ -537,10 +537,4 @@ keybase decrypt -i pat-ghcr.asc | docker login ghcr.io -u YOUR_GITHUB_USERNAME -
 # can also use keybase pgp encrypt and keybase pgp decrypt, but must export PGP key
 ```
 
-<div align="center">
-
-&mdash; 🚢 <a href="https://github.com/br3ndonland/inboard">inboard</a> 🐳 &mdash;
-
-By Brendon Smith ([br3ndonland](https://github.com/br3ndonland))
-
-</div>
+<div align="center">&mdash; 🚢 <a href="https://github.com/br3ndonland/inboard">inboard</a> 🐳 &mdash;<br /><p>By Brendon Smith (<a href="https://github.com/br3ndonland">br3ndonland</a>)</p></div>
