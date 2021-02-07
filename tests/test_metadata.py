@@ -28,7 +28,7 @@ def test_set_fields_from_pyproject() -> None:
     assert "Topic :: Internet :: WWW/HTTP :: HTTP Servers" in settings.classifiers
 
 
-def test_load_pyproject_error() -> None:
+def test_set_fields_error() -> None:
     """Assert that default dict is loaded when pyproject.toml is not found."""
     pyproject = set_fields_from_pyproject(
         Settings.__fields__,
