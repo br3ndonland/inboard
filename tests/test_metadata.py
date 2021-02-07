@@ -2,10 +2,8 @@ from pathlib import Path
 
 from inboard.app.utilities_fastapi import Settings, set_fields_from_pyproject
 
-settings = Settings()
 
-
-def test_set_fields_from_pyproject() -> None:
+def test_set_fields_from_pyproject(settings: Settings) -> None:
     """Assert that pyproject.toml is successfully loaded and parsed."""
     pyproject = set_fields_from_pyproject(
         Settings.__fields__,
