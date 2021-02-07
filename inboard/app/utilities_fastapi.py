@@ -6,7 +6,7 @@ from typing import List, Optional
 import toml
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from pydantic import BaseSettings
+from pydantic import BaseModel, BaseSettings
 
 
 async def basic_auth(credentials: HTTPBasicCredentials = Depends(HTTPBasic())) -> str:
@@ -65,3 +65,17 @@ class Settings(BaseSettings):
 
     def __init__(self) -> None:
         super().__init__(**set_fields_from_pyproject(self.__fields__))
+
+
+class GetRoot(BaseModel):
+    Hello: str = "World"
+
+
+class GetStatus(BaseModel):
+    application: str
+    status: str
+    message: Optional[str]
+
+
+class GetUser(BaseModel):
+    username: str
