@@ -10,6 +10,7 @@ from starlette.responses import JSONResponse
 
 from inboard.app.utilities_starlette import BasicAuth
 
+origin_regex = r"^(https?:\/\/)(localhost|([\w\.]+\.)?br3ndon.land)(:[0-9]+)?$"
 server = "Uvicorn" if bool(os.getenv("WITH_RELOAD")) else "Uvicorn, Gunicorn"
 version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
 
@@ -28,10 +29,10 @@ app.add_middleware(
 )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins="https://br3ndon.land",
     allow_credentials=True,
-    allow_methods=["*"],
     allow_headers=["*"],
+    allow_methods=["*"],
+    allow_origin_regex=origin_regex,
 )
 
 

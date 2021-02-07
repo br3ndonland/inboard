@@ -7,17 +7,19 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from inboard.app.utilities_fastapi import Settings, basic_auth
 
+origin_regex = r"^(https?:\/\/)(localhost|([\w\.]+\.)?br3ndon.land)(:[0-9]+)?$"
 server = "Uvicorn" if bool(os.getenv("WITH_RELOAD")) else "Uvicorn, Gunicorn"
 version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
-settings = Settings()
-app = FastAPI(title=settings.name, version=settings.version)
 
+settings = Settings()
+
+app = FastAPI(title=settings.name, version=settings.version)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins="https://br3ndon.land",
     allow_credentials=True,
-    allow_methods=["*"],
     allow_headers=["*"],
+    allow_methods=["*"],
+    allow_origin_regex=origin_regex,
 )
 
 

@@ -12,21 +12,36 @@ from starlette.applications import Starlette
 class TestCors:
     """Test CORS middleware integration.
     ---
-    - https://fastapi.tiangolo.com/tutorial/cors/
-    - FastAPI/tests/test_tutorial/test_cors/test_tutorial001.py
-    - Starlette/tests/middleware/test_cors.py
+    See the [FastAPI CORS tutorial](https://fastapi.tiangolo.com/tutorial/cors/) and
+    [Starlette CORS docs](https://www.starlette.io/middleware/#corsmiddleware).
     """
 
-    # Replace uris["good"] with one of your CORS approved origins.
-    uris: Dict[str, str] = {
-        "good": "https://br3ndon.land",
-        "bad": "https://othersite.com",
+    origins: Dict[str, List[str]] = {
+        "allowed": [
+            "http://br3ndon.land",
+            "https://br3ndon.land",
+            "https://inboard.br3ndon.land",
+            "https://inboard.docker.br3ndon.land",
+            "https://www.br3ndon.land",
+            "http://localhost:8000",
+        ],
+        "disallowed": [
+            "https://br3ndon.com",
+            "https://inboar.dbr3ndon.land",
+            "https://example.land",
+            "htttp://localhost:8000",
+            "httpss://br3ndon.land",
+            "othersite.com",
+        ],
     }
 
-    def test_cors_preflight(self, clients: List[TestClient]) -> None:
-        """Test pre-flight response."""
+    @pytest.mark.parametrize("allowed_origin", origins["allowed"])
+    def test_cors_preflight_response_allowed(
+        self, allowed_origin: str, clients: List[TestClient]
+    ) -> None:
+        """Test pre-flight response to cross-origin request from allowed origin."""
         headers: Dict[str, str] = {
-            "Origin": self.uris["good"],
+            "Origin": allowed_origin,
             "Access-Control-Request-Method": "GET",
             "Access-Control-Request-Headers": "X-Example",
         }
@@ -34,32 +49,52 @@ class TestCors:
             response = client.options("/", headers=headers)
             assert response.status_code == 200, response.text
             assert response.text == "OK"
-            assert response.headers["access-control-allow-origin"] == self.uris["good"]
+            assert response.headers["access-control-allow-origin"] == allowed_origin
             assert response.headers["access-control-allow-headers"] == "X-Example"
 
-    @pytest.mark.xfail(reason="CORS disallowed origin")
-    def test_cors_preflight_error(self, clients: List[TestClient]) -> None:
-        """Test pre-flight response to disallowed origin."""
+    @pytest.mark.parametrize("disallowed_origin", origins["disallowed"])
+    def test_cors_preflight_response_disallowed(
+        self, disallowed_origin: str, clients: List[TestClient]
+    ) -> None:
+        """Test pre-flight response to cross-origin request from disallowed origin."""
         headers: Dict[str, str] = {
-            "Origin": self.uris["bad"],
+            "Origin": disallowed_origin,
             "Access-Control-Request-Method": "GET",
             "Access-Control-Request-Headers": "X-Example",
         }
         for client in clients:
             response = client.options("/", headers=headers)
-            assert response.status_code == 200, response.text
-            assert response.text == "OK"
-            assert response.headers["access-control-allow-origin"] == self.uris["bad"]
-            assert response.headers["access-control-allow-headers"] == "X-Example"
+            assert response.status_code >= 400
+            assert "Disallowed CORS origin" in response.text
+            assert not response.headers.get("access-control-allow-origin")
 
-    def test_cors_standard(self, clients: List[TestClient]) -> None:
-        """Test standard response."""
-        headers = {"Origin": self.uris["good"]}
+    @pytest.mark.parametrize("allowed_origin", origins["allowed"])
+    def test_cors_response_allowed(
+        self, allowed_origin: str, clients: List[TestClient]
+    ) -> None:
+        """Test response to cross-origin request from allowed origin."""
+        headers = {"Origin": allowed_origin}
         for client in clients:
             response = client.get("/", headers=headers)
             assert response.status_code == 200, response.text
             assert response.json() == {"Hello": "World"}
-            assert response.headers["access-control-allow-origin"] == self.uris["good"]
+            assert response.headers["access-control-allow-origin"] == allowed_origin
+
+    @pytest.mark.parametrize("disallowed_origin", origins["disallowed"])
+    def test_cors_response_disallowed(
+        self, disallowed_origin: str, clients: List[TestClient]
+    ) -> None:
+        """Test response to cross-origin request from disallowed origin.
+        As explained in the Starlette test suite in tests/middleware/`test_cors.py`,
+        enforcement of CORS allowed origins is the responsibility of the client.
+        On the server side, the "disallowed-ness" results in lack of an
+        "Access-Control-Allow-Origin" header in the response.
+        """
+        headers = {"Origin": disallowed_origin}
+        for client in clients:
+            response = client.get("/", headers=headers)
+            assert response.status_code == 200
+            assert not response.headers.get("access-control-allow-origin")
 
     def test_non_cors(self, clients: List[TestClient]) -> None:
         """Test non-CORS response."""
@@ -71,11 +106,11 @@ class TestCors:
 
 
 class TestEndpoints:
-    """Test API endpoints
+    """Test API endpoints.
     ---
-    - https://fastapi.tiangolo.com/tutorial/testing/
-    - https://www.starlette.io/testclient/
-    - https://docs.pytest.org/en/latest/parametrize.html
+    See the [FastAPI testing docs](https://fastapi.tiangolo.com/tutorial/testing/),
+    [Starlette TestClient docs](https://www.starlette.io/testclient/), and the
+    [pytest docs on parametrize](https://docs.pytest.org/en/latest/parametrize.html).
     """
 
     def test_get_asgi_uvicorn(
