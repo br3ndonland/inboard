@@ -34,12 +34,11 @@ def set_fields_from_pyproject(
 ) -> dict:
     """Create a dictionary of keys and values corresponding to pydantic model fields.
     When instantiating the pydantic model, the dictionary can be unpacked and used to
-    set fields in the model. Model fields not present in the TOML dictionary should be
-    optional, because `dictionary.get(key_not_present)` will return `None`.
+    set fields in the model.
     """
     try:
         pyproject = dict(toml.load(pyproject_path))["tool"]["poetry"]
-        return {key: pyproject.get(key) for key in list(fields.keys())}
+        return {key: pyproject.get(key) for key in fields if pyproject.get(key)}
     except Exception:
         return {"name": name, "version": version}
 
@@ -63,8 +62,8 @@ class Settings(BaseSettings):
     keywords: Optional[List[str]]
     classifiers: Optional[List[str]]
 
-    def __init__(self) -> None:
-        super().__init__(**set_fields_from_pyproject(self.__fields__))
+    def __init__(self, **fields: dict) -> None:
+        super().__init__(**set_fields_from_pyproject(self.__fields__), **fields)
 
 
 class GetRoot(BaseModel):
