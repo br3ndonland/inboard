@@ -120,7 +120,7 @@ jobs:
           smoke_test_xfail :81/status
           smoke_test_xfail :82/status
       - name: Push Docker images with latest Python version to registry
-        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main' && matrix.python-version == '3.9'
+        if: matrix.python-version == '3.9' && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
         run: |
           docker push ghcr.io/br3ndonland/inboard:base
           docker push ghcr.io/br3ndonland/inboard:starlette
@@ -151,7 +151,7 @@ jobs:
           docker push ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG"-python${{ matrix.python-version }}
           docker push ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG"-python${{ matrix.python-version }}
       - name: Tag and push latest Docker image
-        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+        if: matrix.python-version == '3.9' && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main')
         run: |
           docker tag ghcr.io/br3ndonland/inboard:fastapi ghcr.io/br3ndonland/inboard:latest
           docker push ghcr.io/br3ndonland/inboard:latest
