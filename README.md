@@ -2,7 +2,7 @@
 
 <div align="center"><img src="https://gist.githubusercontent.com/br3ndonland/d66ce3c8e98cf8bd4f3c24d006409e41/raw/9344741f28c6494c10b0ad142e9b88752e5a6c9a/inboard-logo.svg" alt="inboard logo" width="90%" /></div>
 
-<div align="center"><em>Docker images to power your Python APIs and help you ship faster.</em></div>
+<p align="center"><em>Docker images to power your Python APIs and help you ship faster.</em></p>
 
 <div align="center">
 
@@ -537,4 +537,4 @@ keybase decrypt -i pat-ghcr.asc | docker login ghcr.io -u YOUR_GITHUB_USERNAME -
 # can also use keybase pgp encrypt and keybase pgp decrypt, but must export PGP key
 ```
 
-<div align="center">&mdash; 🚢 <a href="https://github.com/br3ndonland/inboard">inboard</a> 🐳 &mdash;<br /><p>By Brendon Smith (<a href="https://github.com/br3ndonland">br3ndonland</a>)</p></div>
+<div align="center"><p>&mdash; 🚢 <a href="https://github.com/br3ndonland/inboard">inboard</a> 🐳 &mdash;</p><p>By Brendon Smith (<a href="https://github.com/br3ndonland">br3ndonland</a>)</p></div>
