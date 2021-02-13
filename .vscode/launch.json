@@ -16,6 +16,7 @@
         "LOG_FORMAT": "uvicorn",
         "LOG_LEVEL": "debug",
         "PORT": "8000",
+        "PRE_START_PATH": "${workspaceRoot}/inboard/app/prestart.py",
         "PROCESS_MANAGER": "uvicorn",
         "RELOAD_DIRS": "inboard",
         "WITH_RELOAD": "true"
