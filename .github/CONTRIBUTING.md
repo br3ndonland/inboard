@@ -17,6 +17,9 @@
 
 ### Contributors
 
+**PRs welcome!**
+
+- **Consider starting a [discussion](https://github.com/br3ndonland/inboard/discussions) to see if there's interest in what you want to do.**
 - **Submit PRs from feature branches on forks to the `develop` branch.**
 - **Ensure PRs pass all CI checks.**
 - **Maintain test coverage at 100%.**
