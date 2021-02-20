@@ -133,7 +133,7 @@ poetry export -f requirements.txt > requirements.txt --dev
   - An **image** is the executable set of files read by Docker.
   - A **container** is a running image.
   - The **[Dockerfile](https://docs.docker.com/engine/reference/builder/)** tells Docker how to build the container.
-- To install Docker tools locally:
+- To [get started with Docker](https://www.docker.com/get-started):
   - Ubuntu Linux: follow the [instructions for Ubuntu Linux](https://docs.docker.com/install/linux/docker-ce/ubuntu/), making sure to follow the [postinstallation steps](https://docs.docker.com/install/linux/linux-postinstall/) to activate the Docker daemon.
   - macOS and Windows: install [Docker Desktop](https://www.docker.com/products/docker-desktop) (available via [Homebrew](https://brew.sh/) with `brew cask install docker`).
 - <details><summary>Expand this details element for more <a href="https://docs.docker.com/engine/reference/commandline/cli/">useful Docker commands</a>.</summary>
