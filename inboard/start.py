@@ -6,7 +6,7 @@ import os
 import subprocess
 from logging import Logger
 from pathlib import Path
-from typing import Any, Dict
+from typing import Optional
 
 import uvicorn  # type: ignore
 
@@ -85,7 +85,7 @@ def start_server(
     process_manager: str,
     app_module: str = str(os.getenv("APP_MODULE", "inboard.app.main_base:app")),
     logger: Logger = logging.getLogger(),
-    logging_conf_dict: Dict[str, Any] = None,
+    logging_conf_dict: Optional[dict] = None,
     worker_class: str = str(os.getenv("WORKER_CLASS", "uvicorn.workers.UvicornWorker")),
 ) -> None:
     """Start the Uvicorn or Gunicorn server."""
@@ -113,9 +113,9 @@ def start_server(
                 reload_dirs=reload_dirs,
             )
         else:
-            raise NameError("Process manager needs to be either uvicorn or gunicorn.")
+            raise NameError("Process manager needs to be either uvicorn or gunicorn")
     except Exception as e:
-        logger.error(f"Error when starting server with start script: {e}")
+        logger.error(f"Error when starting server: {e.__class__.__name__} {e}.")
         raise
 
 
