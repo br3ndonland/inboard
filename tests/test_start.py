@@ -363,16 +363,16 @@ class TestRunPreStartScript:
 
     def test_run_pre_start_script_py(
         self,
-        mock_logger: logging.Logger,
         mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
         pre_start_script_tmp_py: Path,
     ) -> None:
         """Test `start.run_pre_start_script` using temporary Python pre-start script."""
+        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
         monkeypatch.setenv("PRE_START_PATH", str(pre_start_script_tmp_py))
         pre_start_path = os.getenv("PRE_START_PATH")
         start.run_pre_start_script(logger=mock_logger)
-        mock_logger.debug.assert_has_calls(  # type: ignore[attr-defined]
+        mock_logger.debug.assert_has_calls(
             calls=[
                 mocker.call("Checking for pre-start script."),
                 mocker.call(f"Running pre-start script with python {pre_start_path}."),
@@ -382,16 +382,16 @@ class TestRunPreStartScript:
 
     def test_run_pre_start_script_sh(
         self,
-        mock_logger: logging.Logger,
         mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
         pre_start_script_tmp_sh: Path,
     ) -> None:
         """Test `start.run_pre_start_script` using temporary pre-start shell script."""
+        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
         monkeypatch.setenv("PRE_START_PATH", str(pre_start_script_tmp_sh))
         pre_start_path = os.getenv("PRE_START_PATH")
         start.run_pre_start_script(logger=mock_logger)
-        mock_logger.debug.assert_has_calls(  # type: ignore[attr-defined]
+        mock_logger.debug.assert_has_calls(
             calls=[
                 mocker.call("Checking for pre-start script."),
                 mocker.call(f"Running pre-start script with sh {pre_start_path}."),
@@ -401,14 +401,14 @@ class TestRunPreStartScript:
 
     def test_run_pre_start_script_no_file(
         self,
-        mock_logger: logging.Logger,
         mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.run_pre_start_script` with an incorrect file path."""
+        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
         monkeypatch.setenv("PRE_START_PATH", "/no/file/here")
         start.run_pre_start_script(logger=mock_logger)
-        mock_logger.debug.assert_has_calls(  # type: ignore[attr-defined]
+        mock_logger.debug.assert_has_calls(
             calls=[
                 mocker.call("Checking for pre-start script."),
                 mocker.call("No pre-start script found."),
