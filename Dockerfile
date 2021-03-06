@@ -12,7 +12,8 @@ WORKDIR /app/
 RUN curl -fsS -o get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/HEAD/get-poetry.py && \
   python get-poetry.py -y && . $POETRY_HOME/env && poetry install --no-dev --no-interaction --no-root
 COPY inboard /app/inboard
-CMD python /app/inboard/start.py
+ENTRYPOINT ["python"]
+CMD ["-m", "inboard.start"]
 
 FROM base AS fastapi
 ENV APP_MODULE=inboard.app.main_fastapi:app PATH=$POETRY_HOME/bin:$PATH
