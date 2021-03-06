@@ -56,12 +56,12 @@ def set_app_module(logger: Logger = logging.getLogger()) -> str:
     """Set the name of the Python module with the app instance to run."""
     try:
         app_module = str(os.getenv("APP_MODULE"))
-        importlib.util.find_spec(app_module)
+        if not importlib.util.find_spec((module := app_module.split(sep=":")[0])):
+            raise ImportError(f"Unable to find or import {module}")
         logger.debug(f"App module set to {app_module}.")
         return app_module
     except Exception as e:
-        message = f"Error when setting app module: {e}."
-        logger.debug(message)
+        logger.error(f"Error when setting app module: {e.__class__.__name__} {e}.")
         raise
 
 
