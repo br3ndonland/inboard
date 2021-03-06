@@ -332,7 +332,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
     from inboard import logging_conf
 
 
-    LOGGING_CONFIG: Dict[str, Any] = logging_conf.LOGGING_CONFIG
+    LOGGING_CONFIG: dict = logging_conf.LOGGING_CONFIG
     # only show access logs when running Uvicorn with LOG_LEVEL=debug
     LOGGING_CONFIG["loggers"]["gunicorn.access"] = {"propagate": False}
     LOGGING_CONFIG["loggers"]["uvicorn.access"] = {

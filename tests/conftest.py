@@ -2,7 +2,7 @@ import logging
 import os
 import shutil
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import List
 
 import pytest
 from fastapi.testclient import TestClient
@@ -81,7 +81,7 @@ def gunicorn_conf_tmp_file_path(
 
 
 @pytest.fixture
-def logging_conf_dict(mocker: MockerFixture) -> Dict[str, Any]:
+def logging_conf_dict(mocker: MockerFixture) -> dict:
     """Load logging configuration dictionary from logging configuration module."""
     return mocker.patch.dict(logging_conf_module.LOGGING_CONFIG)
 
@@ -122,11 +122,16 @@ def logging_conf_tmp_path_no_dict(tmp_path_factory: pytest.TempPathFactory) -> P
     return tmp_dir
 
 
-@pytest.fixture
-def logging_conf_tmp_path_incorrect_extension(tmp_path: Path) -> Path:
+@pytest.fixture(scope="session")
+def logging_conf_tmp_path_incorrect_extension(
+    tmp_path_factory: pytest.TempPathFactory,
+) -> Path:
     """Create custom temporary logging config file with incorrect extension."""
-    tmp_file = tmp_path / "tmp_logging_conf.txt"
-    return Path(tmp_file)
+    tmp_dir = tmp_path_factory.mktemp("tmp_log_incorrect_extension")
+    tmp_file = tmp_dir / "tmp_logging_conf"
+    with open(Path(tmp_file), "x") as f:
+        f.write("This file doesn't have the correct extension.\n")
+    return tmp_dir
 
 
 @pytest.fixture(scope="session")

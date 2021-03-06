@@ -127,125 +127,133 @@ class TestConfigureLogging:
     """
 
     def test_configure_logging_file(
-        self, logging_conf_file_path: Path, mock_logger: logging.Logger
+        self, logging_conf_file_path: Path, mocker: MockerFixture
     ) -> None:
         """Test `start.configure_logging` with correct logging config file path."""
+        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
         start.configure_logging(
             logger=mock_logger, logging_conf=str(logging_conf_file_path)
         )
-        mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
+        mock_logger.debug.assert_called_once_with(
             f"Logging dict config loaded from {logging_conf_file_path}."
         )
 
     def test_configure_logging_module(
-        self, logging_conf_module_path: str, mock_logger: logging.Logger
+        self, logging_conf_module_path: str, mocker: MockerFixture
     ) -> None:
         """Test `start.configure_logging` with correct logging config module path."""
+        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
         start.configure_logging(
             logger=mock_logger, logging_conf=logging_conf_module_path
         )
-        mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
+        mock_logger.debug.assert_called_once_with(
             f"Logging dict config loaded from {logging_conf_module_path}."
         )
 
-    def test_configure_logging_module_incorrect(
-        self, mock_logger: logging.Logger
-    ) -> None:
+    def test_configure_logging_module_incorrect(self, mocker: MockerFixture) -> None:
         """Test `start.configure_logging` with incorrect logging config module path."""
-        with pytest.raises(ImportError):
+        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
+        mock_logger_error_msg = "Error when setting logging module"
+        with pytest.raises(ModuleNotFoundError):
             start.configure_logging(logger=mock_logger, logging_conf="no.module.here")
-            import_error_msg = "Unable to import no.module.here."
-            logger_error_msg = "Error when configuring logging:"
-            mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
-                f"{logger_error_msg} {import_error_msg}."
-            )
+        assert mock_logger_error_msg in mock_logger.error.call_args.args[0]
+        assert "ModuleNotFoundError" in mock_logger.error.call_args.args[0]
 
     def test_configure_logging_tmp_file(
-        self, logging_conf_tmp_file_path: Path, mock_logger: logging.Logger
+        self, logging_conf_tmp_file_path: Path, mocker: MockerFixture
     ) -> None:
-        """Test `start.configure_logging` with correct logging config file path."""
-        start.configure_logging(
-            logger=mock_logger, logging_conf=f"{logging_conf_tmp_file_path}/tmp_log.py"
-        )
-        mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
-            f"Logging dict config loaded from {logging_conf_tmp_file_path}/tmp_log.py."
+        """Test `start.configure_logging` with temporary logging config file path."""
+        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
+        logging_conf_file = f"{logging_conf_tmp_file_path}/tmp_log.py"
+        start.configure_logging(logger=mock_logger, logging_conf=logging_conf_file)
+        mock_logger.debug.assert_called_once_with(
+            f"Logging dict config loaded from {logging_conf_file}."
         )
 
     def test_configure_logging_tmp_file_incorrect_extension(
         self,
         logging_conf_tmp_path_incorrect_extension: Path,
-        mock_logger: logging.Logger,
+        mocker: MockerFixture,
     ) -> None:
         """Test `start.configure_logging` with incorrect temporary file type."""
-        with pytest.raises(ImportError):
+        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
+        incorrect_logging_conf = logging_conf_tmp_path_incorrect_extension.joinpath(
+            "tmp_logging_conf"
+        )
+        logger_error_msg = "Error when setting logging module"
+        import_error_msg = f"Unable to import {incorrect_logging_conf}"
+        with pytest.raises(ImportError) as e:
             start.configure_logging(
                 logger=mock_logger,
-                logging_conf=str(logging_conf_tmp_path_incorrect_extension),
+                logging_conf=str(incorrect_logging_conf),
             )
-            import_error_msg = (
-                f"Unable to import {logging_conf_tmp_path_incorrect_extension}."
-            )
-            logger_error_msg = "Error when configuring logging:"
-            mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
-                f"{logger_error_msg} {import_error_msg}."
-            )
+        assert str(e.value) in import_error_msg
+        mock_logger.error.assert_called_once_with(
+            f"{logger_error_msg}: ImportError {import_error_msg}."
+        )
+        with open(incorrect_logging_conf, "r") as f:
+            contents = f.read()
+            assert "This file doesn't have the correct extension" in contents
 
     def test_configure_logging_tmp_module(
         self,
         logging_conf_tmp_file_path: Path,
-        mock_logger: logging.Logger,
+        mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.configure_logging` with temporary logging config path."""
+        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
         monkeypatch.syspath_prepend(logging_conf_tmp_file_path)
         monkeypatch.setenv("LOGGING_CONF", "tmp_log")
         assert os.getenv("LOGGING_CONF") == "tmp_log"
         start.configure_logging(logger=mock_logger, logging_conf="tmp_log")
-        mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
+        mock_logger.debug.assert_called_once_with(
             "Logging dict config loaded from tmp_log."
         )
 
     def test_configure_logging_tmp_module_incorrect_type(
         self,
         logging_conf_tmp_path_incorrect_type: Path,
-        mock_logger: logging.Logger,
+        mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.configure_logging` with temporary logging config path.
         - Correct module name
         - `LOGGING_CONFIG` object with incorrect type
         """
+        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
         monkeypatch.syspath_prepend(logging_conf_tmp_path_incorrect_type)
         monkeypatch.setenv("LOGGING_CONF", "incorrect_type")
+        logger_error_msg = "Error when setting logging module"
+        type_error_msg = "LOGGING_CONFIG is not a dictionary instance"
         assert os.getenv("LOGGING_CONF") == "incorrect_type"
         with pytest.raises(TypeError):
             start.configure_logging(logger=mock_logger, logging_conf="incorrect_type")
-            logger_error_msg = "Error when configuring logging:"
-            type_error_msg = "LOGGING_CONFIG is not a dictionary instance."
-            mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
-                f"{logger_error_msg} {type_error_msg}."
-            )
+        mock_logger.error.assert_called_once_with(
+            f"{logger_error_msg}: TypeError {type_error_msg}."
+        )
 
     def test_configure_logging_tmp_module_no_dict(
         self,
         logging_conf_tmp_path_no_dict: Path,
-        mock_logger: logging.Logger,
+        mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.configure_logging` with temporary logging config path.
         - Correct module name
         - No `LOGGING_CONFIG` object
         """
+        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
         monkeypatch.syspath_prepend(logging_conf_tmp_path_no_dict)
         monkeypatch.setenv("LOGGING_CONF", "no_dict")
+        logger_error_msg = "Error when setting logging module"
+        attribute_error_msg = "No LOGGING_CONFIG in no_dict"
         assert os.getenv("LOGGING_CONF") == "no_dict"
         with pytest.raises(AttributeError):
             start.configure_logging(logger=mock_logger, logging_conf="no_dict")
-            logger_error_msg = "Error when configuring logging:"
-            attribute_error_msg = "No LOGGING_CONFIG in no_dict."
-            mock_logger.debug.assert_called_once_with(  # type: ignore[attr-defined]
-                f"{logger_error_msg} {attribute_error_msg}."
-            )
+        mock_logger.error.assert_called_once_with(
+            f"{logger_error_msg}: AttributeError {attribute_error_msg}."
+        )
 
 
 class TestSetAppModule:
