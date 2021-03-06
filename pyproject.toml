@@ -37,7 +37,7 @@ toml = {version = ">=0.10", optional = true}
 black = {version = "20.8b1", allow-prereleases = true}
 flake8 = "^3.8"
 isort = "^5.6"
-mypy = "0.800"
+mypy = "0.812"
 pre-commit = "^2.8"
 pytest = "^6.2"
 pytest-cov = "^2.10"
