@@ -6,7 +6,7 @@ import os
 import subprocess
 from logging import Logger
 from pathlib import Path
-from typing import Any, Dict
+from typing import Optional
 
 import uvicorn  # type: ignore
 
@@ -26,7 +26,7 @@ def set_conf_path(module_stem: str) -> str:
 def configure_logging(
     logger: Logger = logging.getLogger(),
     logging_conf: str = os.getenv("LOGGING_CONF", "inboard.logging_conf"),
-) -> Dict[str, Any]:
+) -> dict:
     """Configure Python logging based on a path to a logging module or file."""
     try:
         logging_conf_path = Path(logging_conf)
@@ -35,23 +35,20 @@ def configure_logging(
             if logging_conf_path.is_file() and logging_conf_path.suffix == ".py"
             else importlib.util.find_spec(logging_conf)
         )
-        if spec:
-            logging_conf_module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(logging_conf_module)  # type: ignore[union-attr]
-        if hasattr(logging_conf_module, "LOGGING_CONFIG"):
-            logging_conf_dict = getattr(logging_conf_module, "LOGGING_CONFIG")
-        else:
-            raise AttributeError(f"No LOGGING_CONFIG in {logging_conf_module}.")
-        if isinstance(logging_conf_dict, dict):
-            logging.config.dictConfig(logging_conf_dict)
-            message = f"Logging dict config loaded from {logging_conf_path}."
-            logger.debug(message)
-            return logging_conf_dict
-        else:
-            raise TypeError("LOGGING_CONFIG is not a dictionary instance.")
+        if not spec:
+            raise ImportError(f"Unable to import {logging_conf}")
+        logging_conf_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(logging_conf_module)  # type: ignore[union-attr]
+        if not hasattr(logging_conf_module, "LOGGING_CONFIG"):
+            raise AttributeError(f"No LOGGING_CONFIG in {logging_conf_module.__name__}")
+        logging_conf_dict = getattr(logging_conf_module, "LOGGING_CONFIG")
+        if not isinstance(logging_conf_dict, dict):
+            raise TypeError("LOGGING_CONFIG is not a dictionary instance")
+        logging.config.dictConfig(logging_conf_dict)
+        logger.debug(f"Logging dict config loaded from {logging_conf_path}.")
+        return logging_conf_dict
     except Exception as e:
-        message = f"Error when setting logging module: {e}."
-        logger.debug(message)
+        logger.error(f"Error when setting logging module: {e.__class__.__name__} {e}.")
         raise
 
 
@@ -59,12 +56,12 @@ def set_app_module(logger: Logger = logging.getLogger()) -> str:
     """Set the name of the Python module with the app instance to run."""
     try:
         app_module = str(os.getenv("APP_MODULE"))
-        importlib.util.find_spec(app_module)
+        if not importlib.util.find_spec((module := app_module.split(sep=":")[0])):
+            raise ImportError(f"Unable to find or import {module}")
         logger.debug(f"App module set to {app_module}.")
         return app_module
     except Exception as e:
-        message = f"Error when setting app module: {e}."
-        logger.debug(message)
+        logger.error(f"Error when setting app module: {e.__class__.__name__} {e}.")
         raise
 
 
@@ -88,7 +85,7 @@ def start_server(
     process_manager: str,
     app_module: str = str(os.getenv("APP_MODULE", "inboard.app.main_base:app")),
     logger: Logger = logging.getLogger(),
-    logging_conf_dict: Dict[str, Any] = None,
+    logging_conf_dict: Optional[dict] = None,
     worker_class: str = str(os.getenv("WORKER_CLASS", "uvicorn.workers.UvicornWorker")),
 ) -> None:
     """Start the Uvicorn or Gunicorn server."""
@@ -116,9 +113,9 @@ def start_server(
                 reload_dirs=reload_dirs,
             )
         else:
-            raise NameError("Process manager needs to be either uvicorn or gunicorn.")
+            raise NameError("Process manager needs to be either uvicorn or gunicorn")
     except Exception as e:
-        logger.error(f"Error when starting server with start script: {e}")
+        logger.error(f"Error when starting server: {e.__class__.__name__} {e}.")
         raise
 
 
