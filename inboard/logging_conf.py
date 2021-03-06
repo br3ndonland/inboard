@@ -1,11 +1,10 @@
 import os
 import sys
-from typing import Dict, Union
 
 LOG_COLORS = bool(os.getenv("LOG_COLORS", sys.stdout.isatty()))
 LOG_FORMAT = str(os.getenv("LOG_FORMAT", "simple"))
 LOG_LEVEL = str(os.getenv("LOG_LEVEL", "info")).upper()
-LOGGING_CONFIG: Dict[str, Union[Dict, bool, int, str]] = {
+LOGGING_CONFIG: dict = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {

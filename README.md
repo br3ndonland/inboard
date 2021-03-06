@@ -322,26 +322,44 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
   - Default: `"inboard.logging_conf"` (the default module provided with inboard)
   - Custom: For a logging config module at `/app/package/custom_logging.py`, `LOGGING_CONF="package.custom_logging"` or `LOGGING_CONF="/app/package/custom_logging.py"`.
-  - If inboard is installed from PyPI with `pip install inboard`, the logging configuration can be easily extended. For example:
+  - If inboard is installed from PyPI with `poetry add inboard` or `pip install inboard`, the logging configuration can be easily extended or overridden. For example:
 
     ```py
-    # /app/package/custom_logging.py
+    # /app/package/custom_logging.py: set with LOGGING_CONF=package.custom_logging
+    import logging
     import os
-    from typing import Any, Dict
 
-    from inboard import logging_conf
+    from inboard.logging_conf import LOGGING_CONFIG
+
+    # add a custom logging format: set with LOG_FORMAT=mycustomformat
+    LOGGING_CONFIG["formatters"]["mycustomformat"] = {
+        "format": "[%(name)s] %(levelname)s %(message)s"
+    }
 
 
-    LOGGING_CONFIG: dict = logging_conf.LOGGING_CONFIG
+    class MyFormatterClass(logging.Formatter):
+        """Define a custom logging format class."""
+
+        def __init__(self) -> None:
+            super().__init__(fmt="[%(name)s] %(levelname)s %(message)s")
+
+
+    # use a custom logging format class: set with LOG_FORMAT=mycustomclass
+    LOGGING_CONFIG["formatters"]["mycustomclass"] = {
+        "()": "package.custom_logging.MyFormatterClass",
+    }
+
     # only show access logs when running Uvicorn with LOG_LEVEL=debug
     LOGGING_CONFIG["loggers"]["gunicorn.access"] = {"propagate": False}
     LOGGING_CONFIG["loggers"]["uvicorn.access"] = {
         "propagate": str(os.getenv("LOG_LEVEL")) == "debug"
     }
+
     # don't propagate boto3 logs
     LOGGING_CONFIG["loggers"]["boto3"] = {"propagate": False}
     LOGGING_CONFIG["loggers"]["botocore"] = {"propagate": False}
     LOGGING_CONFIG["loggers"]["s3transfer"] = {"propagate": False}
+
     ```
 
 - `LOG_COLORS`: Whether or not to color log messages. Currently only supported for `LOG_FORMAT="uvicorn"`.
