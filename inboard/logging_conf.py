@@ -1,7 +1,13 @@
 import os
 import sys
 
-LOG_COLORS = bool(os.getenv("LOG_COLORS", sys.stdout.isatty()))
+LOG_COLORS = (
+    True
+    if (value := os.getenv("LOG_COLORS")) and value.lower() == "true"
+    else False
+    if value and value.lower() == "false"
+    else sys.stdout.isatty()
+)
 LOG_FORMAT = str(os.getenv("LOG_FORMAT", "simple"))
 LOG_LEVEL = str(os.getenv("LOG_LEVEL", "info")).upper()
 LOGGING_CONFIG: dict = {

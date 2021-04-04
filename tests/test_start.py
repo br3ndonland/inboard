@@ -440,6 +440,7 @@ class TestStartServer:
         mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
         mock_run = mocker.patch("inboard.start.uvicorn.run", autospec=True)
         monkeypatch.setenv("PROCESS_MANAGER", "uvicorn")
+        monkeypatch.setenv("WITH_RELOAD", "false")
         start.start_server(
             str(os.getenv("PROCESS_MANAGER")),
             app_module=app_module,
@@ -447,6 +448,7 @@ class TestStartServer:
             logging_conf_dict=logging_conf_dict,
         )
         assert os.getenv("PROCESS_MANAGER") == "uvicorn"
+        assert os.getenv("WITH_RELOAD") == "false"
         mock_logger.debug.assert_called_once_with("Running Uvicorn without Gunicorn.")
         mock_run.assert_called_once_with(
             app_module,
@@ -481,9 +483,11 @@ class TestStartServer:
         """Test `start.start_server` with Uvicorn."""
         mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
         monkeypatch.setenv("PROCESS_MANAGER", "uvicorn")
+        monkeypatch.setenv("WITH_RELOAD", "true")
         monkeypatch.setenv("RELOAD_DIRS", reload_dirs)
         split_dirs = [d.lstrip() for d in str(os.getenv("RELOAD_DIRS")).split(sep=",")]
         assert os.getenv("PROCESS_MANAGER") == "uvicorn"
+        assert os.getenv("WITH_RELOAD") == "true"
         assert os.getenv("RELOAD_DIRS") == reload_dirs
         if reload_dirs == "inboard":
             assert len(split_dirs) == 1
@@ -503,7 +507,7 @@ class TestStartServer:
             port=80,
             log_config=logging_conf_dict,
             log_level="info",
-            reload=False,
+            reload=True,
             reload_dirs=split_dirs,
         )
 

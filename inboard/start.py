@@ -97,6 +97,11 @@ def start_server(
                 ["gunicorn", "-k", worker_class, "-c", gunicorn_conf_path, app_module]
             )
         elif process_manager == "uvicorn":
+            with_reload = (
+                True
+                if (value := os.getenv("WITH_RELOAD")) and value.lower() == "true"
+                else False
+            )
             reload_dirs = (
                 [d.lstrip() for d in str(os.getenv("RELOAD_DIRS")).split(sep=",")]
                 if os.getenv("RELOAD_DIRS")
@@ -109,7 +114,7 @@ def start_server(
                 port=int(os.getenv("PORT", "80")),
                 log_config=logging_conf_dict,
                 log_level=os.getenv("LOG_LEVEL", "info"),
-                reload=bool(os.getenv("WITH_RELOAD", False)),
+                reload=with_reload,
                 reload_dirs=reload_dirs,
             )
         else:

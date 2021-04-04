@@ -11,7 +11,11 @@ from starlette.responses import JSONResponse
 from inboard.app.utilities_starlette import BasicAuth
 
 origin_regex = r"^(https?:\/\/)(localhost|([\w\.]+\.)?br3ndon.land)(:[0-9]+)?$"
-server = "Uvicorn" if bool(os.getenv("WITH_RELOAD")) else "Uvicorn, Gunicorn"
+server = (
+    "Uvicorn"
+    if (value := os.getenv("PROCESS_MANAGER")) and value.title() == "Uvicorn"
+    else "Uvicorn, Gunicorn"
+)
 version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
 
 
