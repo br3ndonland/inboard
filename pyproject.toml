@@ -22,7 +22,8 @@ classifiers = [
   "Topic :: Internet :: WWW/HTTP :: WSGI",
   "Topic :: Software Development :: Libraries :: Application Frameworks",
   "Topic :: System :: Software Distribution",
-  "Topic :: Utilities"
+  "Topic :: Utilities",
+  "Typing :: Typed"
 ]
 
 [tool.poetry.dependencies]
