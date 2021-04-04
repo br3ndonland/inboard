@@ -9,37 +9,6 @@ from pytest_mock import MockerFixture
 from inboard import gunicorn_conf, start
 
 
-class TestConfPaths:
-    """Test paths to configuration files.
-    ---
-    """
-
-    def test_set_default_conf_path_gunicorn(self, gunicorn_conf_path: Path) -> None:
-        """Test default Gunicorn configuration file path (different without Docker)."""
-        assert "inboard/gunicorn_conf.py" in str(gunicorn_conf_path)
-        assert "logging" not in str(gunicorn_conf_path)
-        assert start.set_conf_path("gunicorn") == str(gunicorn_conf_path)
-
-    def test_set_custom_conf_path_gunicorn(
-        self,
-        gunicorn_conf_tmp_file_path: Path,
-        monkeypatch: pytest.MonkeyPatch,
-        tmp_path: Path,
-    ) -> None:
-        """Set path to custom temporary Gunicorn configuration file."""
-        monkeypatch.setenv("GUNICORN_CONF", str(gunicorn_conf_tmp_file_path))
-        assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_tmp_file_path)
-        assert "/gunicorn_conf.py" in str(gunicorn_conf_tmp_file_path)
-        assert "logging" not in str(gunicorn_conf_tmp_file_path)
-        assert start.set_conf_path("gunicorn") == str(gunicorn_conf_tmp_file_path)
-
-    def test_set_incorrect_conf_path(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Set path to non-existent file and raise an error."""
-        with pytest.raises(FileNotFoundError):
-            monkeypatch.setenv("GUNICORN_CONF", "/no/file/here")
-            start.set_conf_path("gunicorn")
-
-
 class TestConfigureGunicorn:
     """Test Gunicorn configuration independently of Gunicorn server.
     ---
@@ -255,6 +224,66 @@ class TestConfigureLogging:
         )
 
 
+class TestRunPreStartScript:
+    """Run pre-start scripts using the method in `start.py`.
+    ---
+    """
+
+    def test_run_pre_start_script_py(
+        self,
+        mocker: MockerFixture,
+        monkeypatch: pytest.MonkeyPatch,
+        pre_start_script_tmp_py: Path,
+    ) -> None:
+        """Test `start.run_pre_start_script` using temporary Python pre-start script."""
+        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
+        monkeypatch.setenv("PRE_START_PATH", str(pre_start_script_tmp_py))
+        pre_start_path = os.getenv("PRE_START_PATH")
+        start.run_pre_start_script(logger=mock_logger)
+        mock_logger.debug.assert_has_calls(
+            calls=[
+                mocker.call("Checking for pre-start script."),
+                mocker.call(f"Running pre-start script with python {pre_start_path}."),
+                mocker.call(f"Ran pre-start script with python {pre_start_path}."),
+            ]
+        )
+
+    def test_run_pre_start_script_sh(
+        self,
+        mocker: MockerFixture,
+        monkeypatch: pytest.MonkeyPatch,
+        pre_start_script_tmp_sh: Path,
+    ) -> None:
+        """Test `start.run_pre_start_script` using temporary pre-start shell script."""
+        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
+        monkeypatch.setenv("PRE_START_PATH", str(pre_start_script_tmp_sh))
+        pre_start_path = os.getenv("PRE_START_PATH")
+        start.run_pre_start_script(logger=mock_logger)
+        mock_logger.debug.assert_has_calls(
+            calls=[
+                mocker.call("Checking for pre-start script."),
+                mocker.call(f"Running pre-start script with sh {pre_start_path}."),
+                mocker.call(f"Ran pre-start script with sh {pre_start_path}."),
+            ]
+        )
+
+    def test_run_pre_start_script_no_file(
+        self,
+        mocker: MockerFixture,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Test `start.run_pre_start_script` with an incorrect file path."""
+        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
+        monkeypatch.setenv("PRE_START_PATH", "/no/file/here")
+        start.run_pre_start_script(logger=mock_logger)
+        mock_logger.debug.assert_has_calls(
+            calls=[
+                mocker.call("Checking for pre-start script."),
+                mocker.call("No pre-start script found."),
+            ]
+        )
+
+
 class TestSetAppModule:
     """Set app module string using the method in `start.py`.
     ---
@@ -355,63 +384,92 @@ class TestSetAppModule:
         )
 
 
-class TestRunPreStartScript:
-    """Run pre-start scripts using the method in `start.py`.
+class TestSetGunicornOptions:
+    """Test Gunicorn configuration options method.
     ---
     """
 
-    def test_run_pre_start_script_py(
-        self,
-        mocker: MockerFixture,
-        monkeypatch: pytest.MonkeyPatch,
-        pre_start_script_tmp_py: Path,
+    def test_set_gunicorn_options_default(
+        self, gunicorn_conf_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """Test `start.run_pre_start_script` using temporary Python pre-start script."""
-        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
-        monkeypatch.setenv("PRE_START_PATH", str(pre_start_script_tmp_py))
-        pre_start_path = os.getenv("PRE_START_PATH")
-        start.run_pre_start_script(logger=mock_logger)
-        mock_logger.debug.assert_has_calls(
-            calls=[
-                mocker.call("Checking for pre-start script."),
-                mocker.call(f"Running pre-start script with python {pre_start_path}."),
-                mocker.call(f"Ran pre-start script with python {pre_start_path}."),
-            ]
+        """Test default Gunicorn server options."""
+        monkeypatch.setenv("GUNICORN_CONF", str(gunicorn_conf_path))
+        result = start.set_gunicorn_options()
+        assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_path)
+        assert "/gunicorn_conf.py" in str(gunicorn_conf_path)
+        assert "logging" not in str(gunicorn_conf_path)
+        assert isinstance(result, list)
+        assert result == [
+            "gunicorn",
+            "-k",
+            "uvicorn.workers.UvicornWorker",
+            "-c",
+            str(gunicorn_conf_path),
+        ]
+
+    def test_set_gunicorn_options_custom(
+        self,
+        gunicorn_conf_tmp_file_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Path,
+    ) -> None:
+        """Test custom Gunicorn server options with temporary configuration file."""
+        monkeypatch.setenv("GUNICORN_CONF", str(gunicorn_conf_tmp_file_path))
+        result = start.set_gunicorn_options()
+        assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_tmp_file_path)
+        assert "/gunicorn_conf.py" in str(gunicorn_conf_tmp_file_path)
+        assert "logging" not in str(gunicorn_conf_tmp_file_path)
+        assert isinstance(result, list)
+        assert result == [
+            "gunicorn",
+            "-k",
+            "uvicorn.workers.UvicornWorker",
+            "-c",
+            str(gunicorn_conf_tmp_file_path),
+        ]
+
+    def test_set_incorrect_conf_path(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Set path to non-existent file and raise an error."""
+        monkeypatch.setenv("GUNICORN_CONF", "/no/file/here")
+        with pytest.raises(FileNotFoundError):
+            start.set_gunicorn_options()
+
+
+class TestSetUvicornOptions:
+    """Test Uvicorn configuration options method.
+    ---
+    """
+
+    def test_set_uvicorn_options_default(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """Test default Uvicorn server options."""
+        monkeypatch.setenv("WITH_RELOAD", "false")
+        result = start.set_uvicorn_options()
+        assert isinstance(result, dict)
+        assert result == dict(
+            host="0.0.0.0",
+            port=80,
+            log_config=None,
+            log_level="info",
+            reload=False,
+            reload_dirs=None,
         )
 
-    def test_run_pre_start_script_sh(
-        self,
-        mocker: MockerFixture,
-        monkeypatch: pytest.MonkeyPatch,
-        pre_start_script_tmp_sh: Path,
+    def test_set_uvicorn_options_custom(
+        self, logging_conf_dict: dict, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """Test `start.run_pre_start_script` using temporary pre-start shell script."""
-        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
-        monkeypatch.setenv("PRE_START_PATH", str(pre_start_script_tmp_sh))
-        pre_start_path = os.getenv("PRE_START_PATH")
-        start.run_pre_start_script(logger=mock_logger)
-        mock_logger.debug.assert_has_calls(
-            calls=[
-                mocker.call("Checking for pre-start script."),
-                mocker.call(f"Running pre-start script with sh {pre_start_path}."),
-                mocker.call(f"Ran pre-start script with sh {pre_start_path}."),
-            ]
-        )
-
-    def test_run_pre_start_script_no_file(
-        self,
-        mocker: MockerFixture,
-        monkeypatch: pytest.MonkeyPatch,
-    ) -> None:
-        """Test `start.run_pre_start_script` with an incorrect file path."""
-        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
-        monkeypatch.setenv("PRE_START_PATH", "/no/file/here")
-        start.run_pre_start_script(logger=mock_logger)
-        mock_logger.debug.assert_has_calls(
-            calls=[
-                mocker.call("Checking for pre-start script."),
-                mocker.call("No pre-start script found."),
-            ]
+        """Test custom Uvicorn server options."""
+        monkeypatch.setenv("LOG_LEVEL", "debug")
+        monkeypatch.setenv("WITH_RELOAD", "true")
+        monkeypatch.setenv("RELOAD_DIRS", "inboard, tests")
+        result = start.set_uvicorn_options(log_config=logging_conf_dict)
+        assert isinstance(result, dict)
+        assert result == dict(
+            host="0.0.0.0",
+            port=80,
+            log_config=logging_conf_dict,
+            log_level="debug",
+            reload=True,
+            reload_dirs=["inboard", "tests"],
         )
 
 
