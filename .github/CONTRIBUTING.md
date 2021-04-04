@@ -75,23 +75,15 @@ This project uses [Poetry](https://python-poetry.org/) for dependency management
 
 #### Highlights
 
-- **Automatic dependency management:** rather than having to run `pip freeze > requirements.txt`, Poetry automatically manages the dependency file (called _pyproject.toml_), and enables SemVer-level control over dependencies like [npm](https://semver.npmjs.com/) does.
-- **Separation of development and production dependencies**: Poetry can maintain separate lists of dependencies for development and production in the _pyproject.toml_. Production installs can skip development dependencies to speed up Docker builds.
-- **Dependency resolution:** Poetry will automatically resolve any dependency version conflicts. As explained in the [pip docs](https://pip.pypa.io/en/latest/user_guide/#requirements-files) and [pypa/pip#988](https://github.com/pypa/pip/issues/988) (open since 2013), pip does not have dependency resolution. PSF has funded an [effort](https://www.pythonpodcast.com/pip-resolver-dependency-management-episode-264/) to improve pip dependency resolution.
-- **Lockfile:** similar to _package-lock.json_, Poetry will automatically track specific versions and hashes for every dependency.
-- **Builds:** Poetry has features for easily building the application.
+- **Automatic virtual environment management**: Poetry automatically manages the `virtualenv` for the application.
+- **Automatic dependency management**: rather than having to run `pip freeze > requirements.txt`, Poetry automatically manages the dependency file (called _pyproject.toml_), and enables SemVer-level control over dependencies like [npm](https://semver.npmjs.com/). Poetry also manages a lockfile (called _poetry.lock_), which is similar to _package-lock.json_ for npm. Poetry uses this lockfile to automatically track specific versions and hashes for every dependency.
+- **Dependency resolution**: Poetry will automatically resolve any dependency version conflicts. pip did not have dependency resolution [until the end of 2020](https://pip.pypa.io/en/latest/user_guide/#changes-to-the-pip-dependency-resolver-in-20-3-2020).
+- **Dependency separation**: Poetry can maintain separate lists of dependencies for development and production in the _pyproject.toml_. Production installs can skip development dependencies to speed up Docker builds.
+- **Builds**: Poetry has features for easily building the project into a Python package.
 
 #### Installation
 
 The recommended installation method is through the [Poetry custom installer](https://python-poetry.org/docs/#installation), which vendorizes dependencies into an isolated environment, and allows you to update Poetry with `poetry self update`:
-
-```sh
-# osx / linux / bashonwindows install instructions
-curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/HEAD/get-poetry.py | python -
-
-# windows powershell install instructions
-(Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/HEAD/get-poetry.py -UseBasicParsing).Content | python -
-```
 
 You can also install Poetry however you prefer to install your user Python packages (`pipx install poetry`, `pip install --user poetry`, etc). Use the standard update methods with these tools (`pipx upgrade poetry`, `pip install --user --upgrade poetry`, etc).
 
@@ -99,33 +91,17 @@ You can also install Poetry however you prefer to install your user Python packa
 
 ```sh
 # Basic usage: https://python-poetry.org/docs/basic-usage/
-# install virtual environment, like python3 -m venv venv or virtualenv virtual
-# also installs dependencies, like pip install -r requirements.txt
-poetry install
-
-# list installed packages
-poetry show --tree
-
-# add a package, like pip install package (add --dev for dev-only install)
-poetry add PACKAGE
-
-# update dependencies (not available with standard tools)
-poetry update
-
-# activate the virtual environment, like source venv/bin/activate
-poetry shell
-
-# run a command within the virtual environment
-poetry run COMMAND
-
-# manage environments: https://python-poetry.org/docs/managing-environments/
-poetry env info
-
-# configure your Poetry installation to install virtualenvs into .venv
-poetry config virtualenvs.in-project true
-
-# export dependencies to requirements.txt
-poetry export -f requirements.txt > requirements.txt --dev
+poetry install  # create virtual environment and install dependencies
+poetry show --tree  # list installed packages
+poetry add PACKAGE@VERSION # add a package to production dependencies, like pip install
+poetry add PACKAGE@VERSION --dev # add a package to development dependencies
+poetry update  # update dependencies (not available with standard tools)
+poetry version  # list or update version of this package
+poetry shell  # activate the virtual environment, like source venv/bin/activate
+poetry run COMMAND  # run a command within the virtual environment
+poetry env info  # manage environments: https://python-poetry.org/docs/managing-environments/
+poetry config virtualenvs.in-project true  # configure Poetry to install virtualenvs into .venv
+poetry export -f requirements.txt > requirements.txt --dev  # export dependencies
 ```
 
 ## Docker
