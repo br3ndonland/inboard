@@ -289,83 +289,30 @@ class TestSetAppModule:
     ---
     """
 
-    def test_set_app_module_asgi(
-        self, mocker: MockerFixture, monkeypatch: pytest.MonkeyPatch
+    @pytest.mark.parametrize("module", ("base", "fastapi", "starlette"))
+    def test_set_app_module(
+        self, module: str, mocker: MockerFixture, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """Test `start.set_app_module` using module path to base ASGI app."""
+        """Test `start.set_app_module` with default module path."""
         mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
-        monkeypatch.setenv("APP_MODULE", "inboard.app.main_base:app")
+        monkeypatch.setenv("APP_MODULE", f"inboard.app.main_{module}:app")
         start.set_app_module(logger=mock_logger)
-        mock_logger.debug.assert_called_once_with(
-            "App module set to inboard.app.main_base:app."
-        )
+        assert mocker.call(f"App module set to inboard.app.main_{module}:app.")
 
-    def test_set_app_module_fastapi(
-        self, mocker: MockerFixture, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        """Test `start.set_app_module` using module path to FastAPI app."""
-        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
-        monkeypatch.setenv("APP_MODULE", "inboard.app.main_fastapi:app")
-        start.set_app_module(logger=mock_logger)
-        mock_logger.debug.assert_called_once_with(
-            "App module set to inboard.app.main_fastapi:app."
-        )
-
-    def test_set_app_module_starlette(
-        self, mocker: MockerFixture, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        """Test `start.set_app_module` using module path to Starlette app."""
-        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
-        monkeypatch.setenv("APP_MODULE", "inboard.app.main_starlette:app")
-        start.set_app_module(logger=mock_logger)
-        mock_logger.debug.assert_called_once_with(
-            "App module set to inboard.app.main_starlette:app."
-        )
-
-    def test_set_app_module_custom_asgi(
+    @pytest.mark.parametrize("module", ("base", "fastapi", "starlette"))
+    def test_set_app_module_custom(
         self,
         app_module_tmp_path: Path,
+        module: str,
         mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
-        """Test `start.set_app_module` with custom module path to base ASGI app."""
+        """Test `start.set_app_module` with custom module path."""
         mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
         monkeypatch.syspath_prepend(app_module_tmp_path)
-        monkeypatch.setenv("APP_MODULE", "tmp_app.main_base:app")
+        monkeypatch.setenv("APP_MODULE", f"tmp_app.main_{module}:app")
         start.set_app_module(logger=mock_logger)
-        mock_logger.debug.assert_called_once_with(
-            "App module set to tmp_app.main_base:app."
-        )
-
-    def test_set_app_module_custom_fastapi(
-        self,
-        app_module_tmp_path: Path,
-        mocker: MockerFixture,
-        monkeypatch: pytest.MonkeyPatch,
-    ) -> None:
-        """Test `start.set_app_module` with custom module path to FastAPI app."""
-        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
-        monkeypatch.syspath_prepend(app_module_tmp_path)
-        monkeypatch.setenv("APP_MODULE", "tmp_app.main_fastapi:app")
-        start.set_app_module(logger=mock_logger)
-        mock_logger.debug.assert_called_once_with(
-            "App module set to tmp_app.main_fastapi:app."
-        )
-
-    def test_set_app_module_custom_starlette(
-        self,
-        app_module_tmp_path: Path,
-        mocker: MockerFixture,
-        monkeypatch: pytest.MonkeyPatch,
-    ) -> None:
-        """Test `start.set_app_module` with custom module path to Starlette app."""
-        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
-        monkeypatch.syspath_prepend(app_module_tmp_path)
-        monkeypatch.setenv("APP_MODULE", "tmp_app.main_starlette:app")
-        start.set_app_module(logger=mock_logger)
-        mock_logger.debug.assert_called_once_with(
-            "App module set to tmp_app.main_starlette:app."
-        )
+        assert mocker.call(f"App module set to tmp_app.main_{module}:app.")
 
     def test_set_app_module_incorrect(
         self,
@@ -379,9 +326,7 @@ class TestSetAppModule:
         incorrect_module_msg = "Unable to find or import inboard.app.incorrect"
         with pytest.raises(ImportError):
             start.set_app_module(logger=mock_logger)
-        mock_logger.error.assert_called_once_with(
-            f"{logger_error_msg}: ImportError {incorrect_module_msg}."
-        )
+        assert mocker.call(f"{logger_error_msg}: ImportError {incorrect_module_msg}.")
 
 
 class TestSetGunicornOptions:
