@@ -256,8 +256,11 @@ class TestSetGunicornOptions:
         self, gunicorn_conf_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test default Gunicorn server options."""
+        app_module = "inboard.app.main_fastapi:app"
+        monkeypatch.setenv("APP_MODULE", app_module)
         monkeypatch.setenv("GUNICORN_CONF", str(gunicorn_conf_path))
-        result = start.set_gunicorn_options()
+        result = start.set_gunicorn_options(app_module)
+        assert os.getenv("APP_MODULE") == app_module
         assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_path)
         assert "/gunicorn_conf.py" in str(gunicorn_conf_path)
         assert "logging" not in str(gunicorn_conf_path)
@@ -268,6 +271,7 @@ class TestSetGunicornOptions:
             "uvicorn.workers.UvicornWorker",
             "-c",
             str(gunicorn_conf_path),
+            app_module,
         ]
 
     def test_set_gunicorn_options_custom(
@@ -277,8 +281,11 @@ class TestSetGunicornOptions:
         tmp_path: Path,
     ) -> None:
         """Test custom Gunicorn server options with temporary configuration file."""
+        app_module = "inboard.app.main_starlette:app"
+        monkeypatch.setenv("APP_MODULE", app_module)
         monkeypatch.setenv("GUNICORN_CONF", str(gunicorn_conf_tmp_file_path))
-        result = start.set_gunicorn_options()
+        result = start.set_gunicorn_options(app_module)
+        assert os.getenv("APP_MODULE") == app_module
         assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_tmp_file_path)
         assert "/gunicorn_conf.py" in str(gunicorn_conf_tmp_file_path)
         assert "logging" not in str(gunicorn_conf_tmp_file_path)
@@ -289,13 +296,14 @@ class TestSetGunicornOptions:
             "uvicorn.workers.UvicornWorker",
             "-c",
             str(gunicorn_conf_tmp_file_path),
+            app_module,
         ]
 
     def test_set_incorrect_conf_path(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Set path to non-existent file and raise an error."""
         monkeypatch.setenv("GUNICORN_CONF", "/no/file/here")
         with pytest.raises(FileNotFoundError):
-            start.set_gunicorn_options()
+            start.set_gunicorn_options("inboard.app.main_fastapi:app")
 
 
 class TestSetUvicornOptions:

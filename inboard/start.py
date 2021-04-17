@@ -68,34 +68,37 @@ def set_app_module(logger: logging.Logger = logging.getLogger()) -> str:
         raise
 
 
-def set_gunicorn_options() -> list:
+def set_gunicorn_options(app_module: str) -> list:
     """Set options for running the Gunicorn server."""
     gunicorn_conf_path = os.getenv("GUNICORN_CONF", "/app/inboard/gunicorn_conf.py")
     worker_class = os.getenv("WORKER_CLASS", "uvicorn.workers.UvicornWorker")
     if not Path(gunicorn_conf_path).is_file():
         raise FileNotFoundError(f"Unable to find {gunicorn_conf_path}")
-    return ["gunicorn", "-k", worker_class, "-c", gunicorn_conf_path]
+    return ["gunicorn", "-k", worker_class, "-c", gunicorn_conf_path, app_module]
 
 
 def set_uvicorn_options(log_config: Optional[dict] = None) -> dict:
     """Set options for running the Uvicorn server."""
-    with_reload = (
-        True
-        if (value := os.getenv("WITH_RELOAD")) and value.lower() == "true"
-        else False
-    )
+    host = os.getenv("HOST", "0.0.0.0")
+    port = int(os.getenv("PORT", "80"))
+    log_level = os.getenv("LOG_LEVEL", "info")
     reload_dirs = (
         [d.lstrip() for d in str(os.getenv("RELOAD_DIRS")).split(sep=",")]
         if os.getenv("RELOAD_DIRS")
         else None
     )
+    use_reload = (
+        True
+        if (value := os.getenv("WITH_RELOAD")) and value.lower() == "true"
+        else False
+    )
     return dict(
-        host=os.getenv("HOST", "0.0.0.0"),
-        port=int(os.getenv("PORT", "80")),
+        host=host,
+        port=port,
         log_config=log_config,
-        log_level=os.getenv("LOG_LEVEL", "info"),
-        reload=with_reload,
+        log_level=log_level,
         reload_dirs=reload_dirs,
+        reload=use_reload,
     )
 
 
@@ -109,8 +112,7 @@ def start_server(
     try:
         if process_manager == "gunicorn":
             logger.debug("Running Uvicorn with Gunicorn.")
-            gunicorn_options: list = set_gunicorn_options()
-            gunicorn_options.append(app_module)
+            gunicorn_options: list = set_gunicorn_options(app_module)
             subprocess.run(gunicorn_options)
         elif process_manager == "uvicorn":
             logger.debug("Running Uvicorn without Gunicorn.")
