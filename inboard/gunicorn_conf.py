@@ -19,33 +19,18 @@ def calculate_workers(
     return use_least or use_max or use_total or use_default
 
 
-# Gunicorn setup
-max_workers_str = os.getenv("MAX_WORKERS")
-web_concurrency_str = os.getenv("WEB_CONCURRENCY")
-workers_per_core_str = os.getenv("WORKERS_PER_CORE", "1")
-workers = calculate_workers(max_workers_str, web_concurrency_str, workers_per_core_str)
+# Gunicorn settings
+bind = os.getenv("BIND") or f'{os.getenv("HOST", "0.0.0.0")}:{os.getenv("PORT", "80")}'
+accesslog = os.getenv("ACCESS_LOG", "-")
+errorlog = os.getenv("ERROR_LOG", "-")
+graceful_timeout = int(os.getenv("GRACEFUL_TIMEOUT", "120"))
+keepalive = int(os.getenv("KEEP_ALIVE", "5"))
+logconfig_dict = configure_logging()
+loglevel = os.getenv("LOG_LEVEL", "info")
+timeout = int(os.getenv("TIMEOUT", "120"))
 worker_tmp_dir = "/dev/shm"
-host = os.getenv("HOST", "0.0.0.0")
-port = os.getenv("PORT", "80")
-bind_env = os.getenv("BIND")
-use_bind = bind_env or f"{host}:{port}"
-use_loglevel = os.getenv("LOG_LEVEL", "info")
-accesslog_var = os.getenv("ACCESS_LOG", "-")
-use_accesslog = accesslog_var or None
-errorlog_var = os.getenv("ERROR_LOG", "-")
-use_errorlog = errorlog_var or None
-graceful_timeout_str = os.getenv("GRACEFUL_TIMEOUT", "120")
-timeout_str = os.getenv("TIMEOUT", "120")
-keepalive_str = os.getenv("KEEP_ALIVE", "5")
-
-# Gunicorn config variables
-logconfig_dict = configure_logging(
-    logging_conf=os.getenv("LOGGING_CONF", "inboard.logging_conf")
+workers = calculate_workers(
+    os.getenv("MAX_WORKERS"),
+    os.getenv("WEB_CONCURRENCY"),
+    workers_per_core=os.getenv("WORKERS_PER_CORE", "1"),
 )
-loglevel = use_loglevel
-bind = use_bind
-errorlog = use_errorlog
-accesslog = use_accesslog
-graceful_timeout = int(graceful_timeout_str)
-timeout = int(timeout_str)
-keepalive = int(keepalive_str)
