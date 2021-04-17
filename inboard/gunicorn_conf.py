@@ -6,24 +6,17 @@ from inboard.start import configure_logging
 
 
 def calculate_workers(
-    max_workers_str: Optional[str],
-    web_concurrency_str: Optional[str],
-    workers_per_core_str: str,
-    cores: int = multiprocessing.cpu_count(),
+    max_workers: Optional[str] = None,
+    total_workers: Optional[str] = None,
+    workers_per_core: str = "1",
 ) -> int:
     """Calculate the number of Gunicorn worker processes."""
-    use_default_workers = max(int(float(workers_per_core_str) * cores), 2)
-    if max_workers_str and int(max_workers_str) > 0:
-        use_max_workers = int(max_workers_str)
-    if web_concurrency_str and int(web_concurrency_str) > 0:
-        use_web_concurrency = int(web_concurrency_str)
-    return (
-        min(use_max_workers, use_web_concurrency)
-        if max_workers_str and web_concurrency_str
-        else use_web_concurrency
-        if web_concurrency_str
-        else use_default_workers
-    )
+    cores = multiprocessing.cpu_count()
+    use_default = max(int(float(workers_per_core) * cores), 2)
+    use_max = m if max_workers and (m := int(max_workers)) > 0 else False
+    use_total = t if total_workers and (t := int(total_workers)) > 0 else False
+    use_least = min(use_max, use_total) if use_max and use_total else False
+    return use_least or use_max or use_total or use_default
 
 
 # Gunicorn setup
