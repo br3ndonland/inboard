@@ -260,10 +260,10 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
   - Custom:
     - `GUNICORN_CONF="/app/package/custom_gunicorn_conf.py"`
 - [Gunicorn worker processes](https://docs.gunicorn.org/en/latest/settings.html#worker-processes): The number of Gunicorn worker processes to run is determined based on the `MAX_WORKERS`, `WEB_CONCURRENCY`, and `WORKERS_PER_CORE` environment variables, with a default of 1 worker per CPU core and a default minimum of 2. This is the "performance auto-tuning" feature described in [tiangolo/uvicorn-gunicorn-docker](https://github.com/tiangolo/uvicorn-gunicorn-docker).
-  - `MAX_WORKERS`: Maximum number of workers to use, independent of number of CPU cores.
+  - `MAX_WORKERS`: Maximum number of workers, independent of number of CPU cores.
     - Default: not set (unlimited)
     - Custom: `MAX_WORKERS="24"`
-  - `WEB_CONCURRENCY`: Set number of workers independently of number of CPU cores.
+  - `WEB_CONCURRENCY`: Total number of workers, independent of number of CPU cores.
     - Default: not set
     - Custom: `WEB_CONCURRENCY="4"`
   - `WORKERS_PER_CORE`: Number of Gunicorn workers per CPU core. Overridden if `WEB_CONCURRENCY` is set.
@@ -272,7 +272,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
       - `WORKERS_PER_CORE="2"`: Run 2 worker processes per core (8 worker processes on a server with 4 cores).
       - `WORKERS_PER_CORE="0.5"` (floating point values permitted): Run 1 worker process for every 2 cores (2 worker processes on a server with 4 cores).
   - Notes:
-    - The default number of workers is the number of CPU cores multiplied by the environment variable `WORKERS_PER_CORE="1"`. On a machine with only 1 CPU core, the default minimum number of workers is 2 to avoid poor performance and blocking, as explained in the release notes for [tiangolo/uvicorn-gunicorn-docker 0.3.0](https://github.com/tiangolo/uvicorn-gunicorn-docker/releases/tag/0.3.0).
+    - The default number of workers is the number of CPU cores multiplied by the value of the environment variable `WORKERS_PER_CORE` (which defaults to 1). On a machine with only 1 CPU core, the default minimum number of workers is 2 to avoid poor performance and blocking, as explained in the release notes for [tiangolo/uvicorn-gunicorn-docker 0.3.0](https://github.com/tiangolo/uvicorn-gunicorn-docker/releases/tag/0.3.0).
     - If both `MAX_WORKERS` and `WEB_CONCURRENCY` are set, the least of the two will be used as the total number of workers.
     - If either `MAX_WORKERS` or `WEB_CONCURRENCY` are set to 1, the total number of workers will be 1, overriding the default minimum of 2.
 - `PROCESS_MANAGER`: Manager for Uvicorn worker processes. As described in the [Uvicorn docs](https://www.uvicorn.org), "Uvicorn includes a Gunicorn worker class allowing you to run ASGI applications, with all of Uvicorn's performance benefits, while also giving you Gunicorn's fully-featured process management."
