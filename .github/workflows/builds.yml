@@ -78,9 +78,18 @@ jobs:
           docker build . --rm --target fastapi --build-arg PYTHON_VERSION=${{ matrix.python-version }} -t ghcr.io/br3ndonland/inboard:fastapi
       - name: Run Docker containers for testing
         run: |
-          docker run -d -p 80:80 ghcr.io/br3ndonland/inboard:base
-          docker run -d -p 81:80 ghcr.io/br3ndonland/inboard:starlette
-          docker run -d -p 82:80 ghcr.io/br3ndonland/inboard:fastapi
+          docker run -d -p 80:80 \
+            -e "BASIC_AUTH_USERNAME=test_user" \
+            -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
+            ghcr.io/br3ndonland/inboard:base
+          docker run -d -p 81:80 \
+            -e "BASIC_AUTH_USERNAME=test_user" \
+            -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
+            ghcr.io/br3ndonland/inboard:starlette
+          docker run -d -p 82:80 \
+            -e "BASIC_AUTH_USERNAME=test_user" \
+            -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
+            ghcr.io/br3ndonland/inboard:fastapi
       - name: Smoke test Docker containers
         run: |
           handle_error_code() {
@@ -113,10 +122,10 @@ jobs:
           smoke_test :80
           smoke_test :81
           smoke_test :82
-          smoke_test -a test_username:plunge-germane-tribal-pillar :81/status
-          smoke_test -a test_username:plunge-germane-tribal-pillar :82/status
-          smoke_test_xfail -a test_username:plunge-germane-tribal-incorrect :81/status
-          smoke_test_xfail -a test_username:plunge-germane-tribal-incorrect :82/status
+          smoke_test -a test_user:r4ndom_bUt_memorable :81/status
+          smoke_test -a test_user:r4ndom_bUt_memorable :82/status
+          smoke_test_xfail -a test_user:incorrect_password :81/status
+          smoke_test_xfail -a test_user:incorrect_password :82/status
           smoke_test_xfail :81/status
           smoke_test_xfail :82/status
       - name: Push Docker images with latest Python version to registry

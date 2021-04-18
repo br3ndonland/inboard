@@ -498,24 +498,33 @@ docker build . --rm --target starlette -t localhost/br3ndonland/inboard:starlett
 cd inboard
 
 docker run -d -p 80:80 \
+  -e "BASIC_AUTH_USERNAME=test_user" -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
   -e "LOG_LEVEL=debug" -e "PROCESS_MANAGER=uvicorn" -e "WITH_RELOAD=true" \
   -v $(pwd)/inboard:/app/inboard localhost/br3ndonland/inboard:base
 
 docker run -d -p 80:80 \
+  -e "BASIC_AUTH_USERNAME=test_user" -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
   -e "LOG_LEVEL=debug" -e "PROCESS_MANAGER=uvicorn" -e "WITH_RELOAD=true" \
   -v $(pwd)/inboard:/app/inboard localhost/br3ndonland/inboard:fastapi
 
 docker run -d -p 80:80 \
+  -e "BASIC_AUTH_USERNAME=test_user" -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
   -e "LOG_LEVEL=debug" -e "PROCESS_MANAGER=uvicorn" -e "WITH_RELOAD=true" \
   -v $(pwd)/inboard:/app/inboard localhost/br3ndonland/inboard:starlette
 
 # Run Docker container with Gunicorn and Uvicorn
-docker run -d -p 80:80 localhost/br3ndonland/inboard:base
-docker run -d -p 80:80 localhost/br3ndonland/inboard:fastapi
-docker run -d -p 80:80 localhost/br3ndonland/inboard:starlette
+docker run -d -p 80:80 \
+  -e "BASIC_AUTH_USERNAME=test_user" -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
+  localhost/br3ndonland/inboard:base
+docker run -d -p 80:80 \
+  -e "BASIC_AUTH_USERNAME=test_user" -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
+  localhost/br3ndonland/inboard:fastapi
+docker run -d -p 80:80 \
+  -e "BASIC_AUTH_USERNAME=test_user" -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
+  localhost/br3ndonland/inboard:starlette
 
-# Test HTTP Basic Auth when running the FastAPI or Starlette images:
-http :80/status -a test_username:plunge-germane-tribal-pillar
+# Test HTTP Basic auth when running the FastAPI or Starlette images:
+http :80/status -a test_user:r4ndom_bUt_memorable
 ```
 
 Change the port numbers to run multiple containers simultaneously (`-p 81:80`).

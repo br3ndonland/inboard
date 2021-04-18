@@ -21,7 +21,7 @@ version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.
 
 def on_auth_error(request: Request, e: Exception) -> JSONResponse:
     return JSONResponse(
-        {"detail": "Incorrect username or password", "error": str(e)}, status_code=401
+        {"error": "Incorrect username or password", "detail": str(e)}, status_code=401
     )
 
 
