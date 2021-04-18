@@ -21,7 +21,8 @@ def configure_logging(
         if not spec:
             raise ImportError(f"Unable to import {logging_conf}")
         logging_conf_module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(logging_conf_module)  # type: ignore[union-attr]
+        exec_module = getattr(spec.loader, "exec_module")
+        exec_module(logging_conf_module)
         if not hasattr(logging_conf_module, "LOGGING_CONFIG"):
             raise AttributeError(f"No LOGGING_CONFIG in {logging_conf_module.__name__}")
         logging_conf_dict = getattr(logging_conf_module, "LOGGING_CONFIG")
