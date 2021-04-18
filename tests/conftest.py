@@ -27,10 +27,10 @@ def app_module_tmp_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
 @pytest.fixture
 def basic_auth(
     monkeypatch: pytest.MonkeyPatch,
-    username: str = "test_username",
-    password: str = "plunge-germane-tribal-pillar",
+    username: str = "test_user",
+    password: str = "r4ndom_bUt_memorable",
 ) -> tuple:
-    """Set username and password for HTTP Basic Auth."""
+    """Set username and password for HTTP Basic auth."""
     monkeypatch.setenv("BASIC_AUTH_USERNAME", username)
     monkeypatch.setenv("BASIC_AUTH_PASSWORD", password)
     assert os.getenv("BASIC_AUTH_USERNAME") == username

@@ -168,7 +168,7 @@ class TestEndpoints:
     def test_gets_with_basic_auth(
         self, basic_auth: tuple, clients: List[TestClient], endpoint: str
     ) -> None:
-        """Test `GET` requests to endpoints that require HTTP Basic Auth."""
+        """Test `GET` requests to endpoints that require HTTP Basic auth."""
         for client in clients:
             assert client.get(endpoint).status_code in [401, 403]
             response = client.get(endpoint, auth=basic_auth)
@@ -182,7 +182,7 @@ class TestEndpoints:
     def test_gets_with_basic_auth_incorrect(
         self, basic_auth: tuple, clients: List[TestClient], endpoint: str
     ) -> None:
-        """Test `GET` requests to Basic Auth endpoints with incorrect credentials."""
+        """Test `GET` requests with incorrect HTTP Basic auth credentials."""
         basic_auth_username, basic_auth_password = basic_auth
         for client in clients:
             assert client.get(endpoint).status_code in [401, 403]
@@ -197,17 +197,59 @@ class TestEndpoints:
             assert response.status_code == 200
 
     @pytest.mark.parametrize("endpoint", ["/health", "/status"])
-    def test_gets_with_starlette_auth_exception(
+    def test_gets_with_fastapi_auth_incorrect_credentials(
+        self, clients: List[TestClient], endpoint: str, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Test FastAPI `GET` requests with incorrect HTTP Basic auth credentials."""
+        monkeypatch.setenv("BASIC_AUTH_USERNAME", "test_user")
+        monkeypatch.setenv("BASIC_AUTH_PASSWORD", "r4ndom_bUt_memorable")
+        fastapi_client = clients[0]
+        response = fastapi_client.get(endpoint, auth=("user", "pass"))
+        assert isinstance(fastapi_client.app, FastAPI)
+        assert response.status_code in [401, 403]
+        assert response.json() == {"detail": "HTTP Basic auth credentials not correct"}
+
+    @pytest.mark.parametrize("endpoint", ["/health", "/status"])
+    def test_gets_with_fastapi_auth_no_credentials(
         self, clients: List[TestClient], endpoint: str
     ) -> None:
-        """Test Starlette `GET` requests with incorrect Basic Auth credentials."""
-        starlette_client = clients[1]
-        assert isinstance(starlette_client.app, Starlette)
-        response = starlette_client.get(endpoint, auth=("user", "pass"))
+        """Test FastAPI `GET` requests without HTTP Basic auth credentials set."""
+        fastapi_client = clients[0]
+        response = fastapi_client.get(endpoint, auth=("user", "pass"))
+        assert isinstance(fastapi_client.app, FastAPI)
         assert response.status_code in [401, 403]
         assert response.json() == {
-            "detail": "Incorrect username or password",
-            "error": "Invalid basic auth credentials",
+            "detail": "Server HTTP Basic auth credentials not set"
+        }
+
+    @pytest.mark.parametrize("endpoint", ["/health", "/status"])
+    def test_gets_with_starlette_auth_incorrect_credentials(
+        self, clients: List[TestClient], endpoint: str, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Test Starlette `GET` requests with incorrect HTTP Basic auth credentials."""
+        monkeypatch.setenv("BASIC_AUTH_USERNAME", "test_user")
+        monkeypatch.setenv("BASIC_AUTH_PASSWORD", "r4ndom_bUt_memorable")
+        starlette_client = clients[1]
+        response = starlette_client.get(endpoint, auth=("user", "pass"))
+        assert isinstance(starlette_client.app, Starlette)
+        assert response.status_code in [401, 403]
+        assert response.json() == {
+            "detail": "HTTP Basic auth credentials not correct",
+            "error": "Incorrect username or password",
+        }
+
+    @pytest.mark.parametrize("endpoint", ["/health", "/status"])
+    def test_gets_with_starlette_auth_no_credentials(
+        self, clients: List[TestClient], endpoint: str
+    ) -> None:
+        """Test Starlette `GET` requests without HTTP Basic auth credentials set."""
+        starlette_client = clients[1]
+        response = starlette_client.get(endpoint, auth=("user", "pass"))
+        assert isinstance(starlette_client.app, Starlette)
+        assert response.status_code in [401, 403]
+        assert response.json() == {
+            "detail": "Server HTTP Basic auth credentials not set",
+            "error": "Incorrect username or password",
         }
 
     def test_get_status_message(
@@ -245,4 +287,4 @@ class TestEndpoints:
             assert response.status_code == 200
             assert "application" not in response.json().keys()
             assert "status" not in response.json().keys()
-            assert response.json()["username"] == "test_username"
+            assert response.json()["username"] == "test_user"
