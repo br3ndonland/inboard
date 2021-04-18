@@ -1,227 +1,10 @@
-import multiprocessing
 import os
 from pathlib import Path
-from typing import Optional
 
 import pytest
 from pytest_mock import MockerFixture
 
-from inboard import gunicorn_conf, start
-
-
-class TestConfigureGunicorn:
-    """Test Gunicorn configuration independently of Gunicorn server.
-    ---
-    """
-
-    def test_gunicorn_conf_workers_default(self) -> None:
-        """Test default number of Gunicorn worker processes."""
-        assert gunicorn_conf.workers >= 2
-        assert gunicorn_conf.workers == multiprocessing.cpu_count()
-
-    def test_gunicorn_conf_workers_custom_max(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
-        """Test custom Gunicorn worker process calculation."""
-        monkeypatch.setenv("MAX_WORKERS", "1")
-        monkeypatch.setenv("WEB_CONCURRENCY", "4")
-        monkeypatch.setenv("WORKERS_PER_CORE", "0.5")
-        assert os.getenv("MAX_WORKERS") == "1"
-        assert os.getenv("WEB_CONCURRENCY") == "4"
-        assert os.getenv("WORKERS_PER_CORE") == "0.5"
-        assert (
-            gunicorn_conf.calculate_workers(
-                str(os.getenv("MAX_WORKERS")),
-                str(os.getenv("WEB_CONCURRENCY")),
-                str(os.getenv("WORKERS_PER_CORE")),
-            )
-            == 1
-        )
-
-    @pytest.mark.parametrize("number_of_workers", ["1", "2", "4"])
-    def test_gunicorn_conf_workers_custom_concurrency(
-        self, monkeypatch: pytest.MonkeyPatch, number_of_workers: str
-    ) -> None:
-        """Test custom Gunicorn worker process calculation."""
-        monkeypatch.setenv("WEB_CONCURRENCY", number_of_workers)
-        monkeypatch.setenv("WORKERS_PER_CORE", "0.5")
-        assert os.getenv("WEB_CONCURRENCY") == number_of_workers
-        assert os.getenv("WORKERS_PER_CORE") == "0.5"
-        assert (
-            gunicorn_conf.calculate_workers(
-                None,
-                str(os.getenv("WEB_CONCURRENCY")),
-                str(os.getenv("WORKERS_PER_CORE")),
-            )
-            == int(number_of_workers)
-        )
-
-    @pytest.mark.parametrize("concurrency", [None, "10"])
-    def test_gunicorn_conf_workers_custom_cores(
-        self, monkeypatch: pytest.MonkeyPatch, concurrency: Optional[str]
-    ) -> None:
-        """Test custom Gunicorn worker process calculation.
-        - Assert that number of workers equals `WORKERS_PER_CORE`, and is at least 2.
-        - Assert that setting `WEB_CONCURRENCY` overrides `WORKERS_PER_CORE`.
-        """
-        monkeypatch.setenv("WORKERS_PER_CORE", "0.5")
-        workers_per_core = os.getenv("WORKERS_PER_CORE")
-        assert workers_per_core == "0.5"
-        cores: int = multiprocessing.cpu_count()
-        assert gunicorn_conf.calculate_workers(
-            None, None, workers_per_core, cores=cores
-        ) == max(int(cores * float(workers_per_core)), 2)
-        assert (
-            gunicorn_conf.calculate_workers(None, "10", workers_per_core, cores=cores)
-            == 10
-        )
-        monkeypatch.setenv("WEB_CONCURRENCY", concurrency) if concurrency else None
-        assert os.getenv("WEB_CONCURRENCY") == concurrency
-        assert (
-            (
-                gunicorn_conf.calculate_workers(
-                    None, concurrency, workers_per_core, cores=cores
-                )
-                == 10
-            )
-            if concurrency
-            else max(int(cores * float(workers_per_core)), 2)
-        )
-
-
-class TestConfigureLogging:
-    """Test logging configuration methods.
-    ---
-    """
-
-    def test_configure_logging_file(
-        self, logging_conf_file_path: Path, mocker: MockerFixture
-    ) -> None:
-        """Test `start.configure_logging` with correct logging config file path."""
-        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
-        start.configure_logging(
-            logger=mock_logger, logging_conf=str(logging_conf_file_path)
-        )
-        mock_logger.debug.assert_called_once_with(
-            f"Logging dict config loaded from {logging_conf_file_path}."
-        )
-
-    def test_configure_logging_module(
-        self, logging_conf_module_path: str, mocker: MockerFixture
-    ) -> None:
-        """Test `start.configure_logging` with correct logging config module path."""
-        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
-        start.configure_logging(
-            logger=mock_logger, logging_conf=logging_conf_module_path
-        )
-        mock_logger.debug.assert_called_once_with(
-            f"Logging dict config loaded from {logging_conf_module_path}."
-        )
-
-    def test_configure_logging_module_incorrect(self, mocker: MockerFixture) -> None:
-        """Test `start.configure_logging` with incorrect logging config module path."""
-        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
-        mock_logger_error_msg = "Error when setting logging module"
-        with pytest.raises(ModuleNotFoundError):
-            start.configure_logging(logger=mock_logger, logging_conf="no.module.here")
-        assert mock_logger_error_msg in mock_logger.error.call_args.args[0]
-        assert "ModuleNotFoundError" in mock_logger.error.call_args.args[0]
-
-    def test_configure_logging_tmp_file(
-        self, logging_conf_tmp_file_path: Path, mocker: MockerFixture
-    ) -> None:
-        """Test `start.configure_logging` with temporary logging config file path."""
-        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
-        logging_conf_file = f"{logging_conf_tmp_file_path}/tmp_log.py"
-        start.configure_logging(logger=mock_logger, logging_conf=logging_conf_file)
-        mock_logger.debug.assert_called_once_with(
-            f"Logging dict config loaded from {logging_conf_file}."
-        )
-
-    def test_configure_logging_tmp_file_incorrect_extension(
-        self,
-        logging_conf_tmp_path_incorrect_extension: Path,
-        mocker: MockerFixture,
-    ) -> None:
-        """Test `start.configure_logging` with incorrect temporary file type."""
-        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
-        incorrect_logging_conf = logging_conf_tmp_path_incorrect_extension.joinpath(
-            "tmp_logging_conf"
-        )
-        logger_error_msg = "Error when setting logging module"
-        import_error_msg = f"Unable to import {incorrect_logging_conf}"
-        with pytest.raises(ImportError) as e:
-            start.configure_logging(
-                logger=mock_logger,
-                logging_conf=str(incorrect_logging_conf),
-            )
-        assert str(e.value) in import_error_msg
-        mock_logger.error.assert_called_once_with(
-            f"{logger_error_msg}: ImportError {import_error_msg}."
-        )
-        with open(incorrect_logging_conf, "r") as f:
-            contents = f.read()
-            assert "This file doesn't have the correct extension" in contents
-
-    def test_configure_logging_tmp_module(
-        self,
-        logging_conf_tmp_file_path: Path,
-        mocker: MockerFixture,
-        monkeypatch: pytest.MonkeyPatch,
-    ) -> None:
-        """Test `start.configure_logging` with temporary logging config path."""
-        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
-        monkeypatch.syspath_prepend(logging_conf_tmp_file_path)
-        monkeypatch.setenv("LOGGING_CONF", "tmp_log")
-        assert os.getenv("LOGGING_CONF") == "tmp_log"
-        start.configure_logging(logger=mock_logger, logging_conf="tmp_log")
-        mock_logger.debug.assert_called_once_with(
-            "Logging dict config loaded from tmp_log."
-        )
-
-    def test_configure_logging_tmp_module_incorrect_type(
-        self,
-        logging_conf_tmp_path_incorrect_type: Path,
-        mocker: MockerFixture,
-        monkeypatch: pytest.MonkeyPatch,
-    ) -> None:
-        """Test `start.configure_logging` with temporary logging config path.
-        - Correct module name
-        - `LOGGING_CONFIG` object with incorrect type
-        """
-        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
-        monkeypatch.syspath_prepend(logging_conf_tmp_path_incorrect_type)
-        monkeypatch.setenv("LOGGING_CONF", "incorrect_type")
-        logger_error_msg = "Error when setting logging module"
-        type_error_msg = "LOGGING_CONFIG is not a dictionary instance"
-        assert os.getenv("LOGGING_CONF") == "incorrect_type"
-        with pytest.raises(TypeError):
-            start.configure_logging(logger=mock_logger, logging_conf="incorrect_type")
-        mock_logger.error.assert_called_once_with(
-            f"{logger_error_msg}: TypeError {type_error_msg}."
-        )
-
-    def test_configure_logging_tmp_module_no_dict(
-        self,
-        logging_conf_tmp_path_no_dict: Path,
-        mocker: MockerFixture,
-        monkeypatch: pytest.MonkeyPatch,
-    ) -> None:
-        """Test `start.configure_logging` with temporary logging config path.
-        - Correct module name
-        - No `LOGGING_CONFIG` object
-        """
-        mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
-        monkeypatch.syspath_prepend(logging_conf_tmp_path_no_dict)
-        monkeypatch.setenv("LOGGING_CONF", "no_dict")
-        logger_error_msg = "Error when setting logging module"
-        attribute_error_msg = "No LOGGING_CONFIG in no_dict"
-        assert os.getenv("LOGGING_CONF") == "no_dict"
-        with pytest.raises(AttributeError):
-            start.configure_logging(logger=mock_logger, logging_conf="no_dict")
-        mock_logger.error.assert_called_once_with(
-            f"{logger_error_msg}: AttributeError {attribute_error_msg}."
-        )
+from inboard import start
 
 
 class TestRunPreStartScript:
@@ -338,8 +121,11 @@ class TestSetGunicornOptions:
         self, gunicorn_conf_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test default Gunicorn server options."""
+        app_module = "inboard.app.main_fastapi:app"
+        monkeypatch.setenv("APP_MODULE", app_module)
         monkeypatch.setenv("GUNICORN_CONF", str(gunicorn_conf_path))
-        result = start.set_gunicorn_options()
+        result = start.set_gunicorn_options(app_module)
+        assert os.getenv("APP_MODULE") == app_module
         assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_path)
         assert "/gunicorn_conf.py" in str(gunicorn_conf_path)
         assert "logging" not in str(gunicorn_conf_path)
@@ -350,6 +136,7 @@ class TestSetGunicornOptions:
             "uvicorn.workers.UvicornWorker",
             "-c",
             str(gunicorn_conf_path),
+            app_module,
         ]
 
     def test_set_gunicorn_options_custom(
@@ -359,8 +146,11 @@ class TestSetGunicornOptions:
         tmp_path: Path,
     ) -> None:
         """Test custom Gunicorn server options with temporary configuration file."""
+        app_module = "inboard.app.main_starlette:app"
+        monkeypatch.setenv("APP_MODULE", app_module)
         monkeypatch.setenv("GUNICORN_CONF", str(gunicorn_conf_tmp_file_path))
-        result = start.set_gunicorn_options()
+        result = start.set_gunicorn_options(app_module)
+        assert os.getenv("APP_MODULE") == app_module
         assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_tmp_file_path)
         assert "/gunicorn_conf.py" in str(gunicorn_conf_tmp_file_path)
         assert "logging" not in str(gunicorn_conf_tmp_file_path)
@@ -371,13 +161,14 @@ class TestSetGunicornOptions:
             "uvicorn.workers.UvicornWorker",
             "-c",
             str(gunicorn_conf_tmp_file_path),
+            app_module,
         ]
 
     def test_set_incorrect_conf_path(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Set path to non-existent file and raise an error."""
         monkeypatch.setenv("GUNICORN_CONF", "/no/file/here")
         with pytest.raises(FileNotFoundError):
-            start.set_gunicorn_options()
+            start.set_gunicorn_options("inboard.app.main_fastapi:app")
 
 
 class TestSetUvicornOptions:

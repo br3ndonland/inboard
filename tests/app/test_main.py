@@ -110,7 +110,7 @@ class TestEndpoints:
     ---
     See the [FastAPI testing docs](https://fastapi.tiangolo.com/tutorial/testing/),
     [Starlette TestClient docs](https://www.starlette.io/testclient/), and the
-    [pytest docs on parametrize](https://docs.pytest.org/en/latest/parametrize.html).
+    [pytest docs](https://docs.pytest.org/en/latest/how-to/parametrize.html).
     """
 
     def test_get_asgi_uvicorn(
