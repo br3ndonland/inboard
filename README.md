@@ -329,7 +329,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
     import logging
     import os
 
-    from inboard.logging_conf import LOGGING_CONFIG
+    from inboard import LOGGING_CONFIG
 
     # add a custom logging format: set with LOG_FORMAT=mycustomformat
     LOGGING_CONFIG["formatters"]["mycustomformat"] = {
