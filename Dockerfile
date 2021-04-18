@@ -1,7 +1,7 @@
 ARG PYTHON_VERSION=3.9
 FROM python:${PYTHON_VERSION} AS base
 LABEL org.opencontainers.image.authors="Brendon Smith <br3ndonland@protonmail.com>"
-LABEL org.opencontainers.image.description="Docker images to power your Python APIs and help you ship faster."
+LABEL org.opencontainers.image.description="Docker images and utilities to power your Python APIs and help you ship faster."
 LABEL org.opencontainers.image.licenses="MIT"
 LABEL org.opencontainers.image.source="https://github.com/br3ndonland/inboard"
 LABEL org.opencontainers.image.title="inboard"

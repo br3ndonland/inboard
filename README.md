@@ -2,7 +2,7 @@
 
 <img src="https://gist.githubusercontent.com/br3ndonland/d66ce3c8e98cf8bd4f3c24d006409e41/raw/9344741f28c6494c10b0ad142e9b88752e5a6c9a/inboard-logo.svg" alt="inboard logo" width="90%" />
 
-_Docker images to power your Python APIs and help you ship faster._
+_Docker images and utilities to power your Python APIs and help you ship faster._
 
 [![PyPI](https://img.shields.io/pypi/v/inboard?color=success)](https://pypi.org/project/inboard/)
 [![GitHub Container Registry](https://img.shields.io/badge/github%20container%20registry-inboard-success)](https://github.com/users/br3ndonland/packages/container/package/inboard)
