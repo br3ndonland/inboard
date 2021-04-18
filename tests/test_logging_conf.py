@@ -138,3 +138,42 @@ class TestConfigureLogging:
         logger.error.assert_called_once_with(
             f"{logger_error_msg}: AttributeError {attribute_error_msg}."
         )
+
+
+class TestLoggingOutput:
+    """Test logger output after configuring logging.
+    ---
+    """
+
+    def test_logging_output_default(self, capfd: pytest.CaptureFixture) -> None:
+        """Test logger output with default format."""
+        logger = logging_conf.logging.getLogger()
+        logging_conf.configure_logging()
+        logger.info("Hello, World!")
+        captured = capfd.readouterr()
+        assert "INFO" in captured.out
+        assert "Hello, World!" in captured.out
+
+    @pytest.mark.parametrize(
+        "log_format,log_level_output", (("gunicorn", "[DEBUG]"), ("verbose", "DEBUG"))
+    )
+    def test_logging_output_custom_format(
+        self,
+        capfd: pytest.CaptureFixture,
+        log_format: str,
+        log_level_output: str,
+        logging_conf_tmp_file_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Test logger output with custom format."""
+        logging_conf_file = f"{logging_conf_tmp_file_path}/tmp_log.py"
+        monkeypatch.setenv("LOG_FORMAT", "gunicorn")
+        monkeypatch.setenv("LOG_LEVEL", "debug")
+        logger = logging_conf.logging.getLogger()
+        logging_conf.configure_logging(logging_conf=logging_conf_file)
+        logger.debug("Hello, Customized World!")
+        captured = capfd.readouterr()
+        assert log_format not in captured.out
+        assert log_level_output in captured.out
+        assert f"Logging dict config loaded from {logging_conf_file}." in captured.out
+        assert "Hello, Customized World!" in captured.out
