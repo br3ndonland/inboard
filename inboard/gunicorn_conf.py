@@ -2,7 +2,7 @@ import multiprocessing
 import os
 from typing import Optional
 
-from inboard.start import configure_logging
+from inboard.logging_conf import configure_logging
 
 
 def calculate_workers(

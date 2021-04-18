@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import importlib.util
 import logging
-import logging.config
 import os
 import subprocess
 from pathlib import Path
@@ -9,34 +8,7 @@ from typing import Optional
 
 import uvicorn  # type: ignore
 
-
-def configure_logging(
-    logger: logging.Logger = logging.getLogger(),
-    logging_conf: str = os.getenv("LOGGING_CONF", "inboard.logging_conf"),
-) -> dict:
-    """Configure Python logging based on a path to a logging module or file."""
-    try:
-        logging_conf_path = Path(logging_conf)
-        spec = (
-            importlib.util.spec_from_file_location("confspec", logging_conf_path)
-            if logging_conf_path.is_file() and logging_conf_path.suffix == ".py"
-            else importlib.util.find_spec(logging_conf)
-        )
-        if not spec:
-            raise ImportError(f"Unable to import {logging_conf}")
-        logging_conf_module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(logging_conf_module)  # type: ignore[union-attr]
-        if not hasattr(logging_conf_module, "LOGGING_CONFIG"):
-            raise AttributeError(f"No LOGGING_CONFIG in {logging_conf_module.__name__}")
-        logging_conf_dict = getattr(logging_conf_module, "LOGGING_CONFIG")
-        if not isinstance(logging_conf_dict, dict):
-            raise TypeError("LOGGING_CONFIG is not a dictionary instance")
-        logging.config.dictConfig(logging_conf_dict)
-        logger.debug(f"Logging dict config loaded from {logging_conf_path}.")
-        return logging_conf_dict
-    except Exception as e:
-        logger.error(f"Error when setting logging module: {e.__class__.__name__} {e}.")
-        raise
+from inboard.logging_conf import configure_logging
 
 
 def run_pre_start_script(logger: logging.Logger = logging.getLogger()) -> str:
