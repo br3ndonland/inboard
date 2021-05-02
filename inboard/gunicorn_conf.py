@@ -12,11 +12,12 @@ def calculate_workers(
 ) -> int:
     """Calculate the number of Gunicorn worker processes."""
     cores = multiprocessing.cpu_count()
-    use_default = max(int(float(workers_per_core) * cores), 2)
+    default = max(int(float(workers_per_core) * cores), 2)
     use_max = m if max_workers and (m := int(max_workers)) > 0 else False
     use_total = t if total_workers and (t := int(total_workers)) > 0 else False
     use_least = min(use_max, use_total) if use_max and use_total else False
-    return use_least or use_max or use_total or use_default
+    use_default = min(use_max, default) if use_max else default
+    return use_least or use_total or use_default
 
 
 # Gunicorn settings
