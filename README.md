@@ -14,6 +14,8 @@ _Docker images and utilities to power your Python APIs and help you ship faster.
 [![tests](https://github.com/br3ndonland/inboard/workflows/tests/badge.svg)](https://github.com/br3ndonland/inboard/actions)
 [![codecov](https://codecov.io/gh/br3ndonland/inboard/branch/develop/graph/badge.svg)](https://codecov.io/gh/br3ndonland/inboard)
 
+[![Mentioned in Awesome FastAPI](https://awesome.re/mentioned-badge-flat.svg)](https://github.com/mjhea0/awesome-fastapi)
+
 ## Table of Contents <!-- omit in toc -->
 
 - [Description](#description)
