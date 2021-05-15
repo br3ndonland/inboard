@@ -31,6 +31,7 @@ python = "^3.8"
 gunicorn = "^20"
 uvicorn = {version = "^0.13", extras = ["standard"]}
 fastapi = {version = "^0.64", optional = true}
+mkdocs-material = {version = "^7", optional = true}
 starlette = {version = "^0.13", optional = true}
 toml = {version = ">=0.10", optional = true}
 
@@ -47,6 +48,8 @@ pytest-timeout = "^1.4"
 requests = "^2.24"
 
 [tool.poetry.extras]
+all = ["fastapi", "mkdocs-material", "toml"]
+docs = ["mkdocs-material"]
 fastapi = ["fastapi", "toml"]
 starlette = ["starlette"]
 
