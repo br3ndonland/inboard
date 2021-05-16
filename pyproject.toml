@@ -15,7 +15,7 @@ homepage = "https://github.com/br3ndonland/inboard"
 repository = "https://github.com/br3ndonland/inboard"
 documentation = "https://inboard.bws.bio"
 readme = "README.md"
-include = ["inboard/py.typed"]
+include = ["docs/assets/images/inboard-logo.svg", "inboard/py.typed"]
 keywords = ["asgi", "docker", "fastapi", "gunicorn", "uvicorn"]
 classifiers = [
   "Natural Language :: English",
