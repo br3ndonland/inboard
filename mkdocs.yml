@@ -9,6 +9,7 @@ repo_name: br3ndonland/inboard
 repo_url: https://github.com/br3ndonland/inboard
 site_name: inboard docs
 theme:
+  favicon: assets/images/favicon.png
   features:
     - header.autohide
     - navigation.instant
