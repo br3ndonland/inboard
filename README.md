@@ -16,12 +16,6 @@ _Docker images and utilities to power your Python APIs and help you ship faster.
 
 [![Mentioned in Awesome FastAPI](https://awesome.re/mentioned-badge-flat.svg)](https://github.com/mjhea0/awesome-fastapi)
 
-## Table of Contents <!-- omit in toc -->
-
-- [Description](#description)
-- [Quickstart](#quickstart)
-- [Documentation](#documentation)
-
 ## Description
 
 This repository provides [Docker images](https://github.com/users/br3ndonland/packages/container/package/inboard) and a [PyPI package](https://pypi.org/project/inboard/) with useful utilities for Python web servers. It runs [Uvicorn with Gunicorn](https://www.uvicorn.org/), and can be used to build applications with [Starlette](https://www.starlette.io/) and [FastAPI](https://fastapi.tiangolo.com/).
@@ -38,4 +32,11 @@ http :80  # HTTPie: https://httpie.io/
 
 ## Documentation
 
-Documentation is built with [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/).
+Documentation is built with [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/), deployed on [Vercel](https://vercel.com/), and available at [inboard.bws.bio](https://inboard.bws.bio) and [inboard.vercel.app](https://inboard.vercel.app).
+
+[Vercel build configuration](https://vercel.com/docs/build-step):
+
+- Build command: `python3 -m pip install 'mkdocs-material>=7.0.0,<=8.0.0' && mkdocs build --site-dir public`
+- Output directory: `public` (default)
+
+[Vercel site configuration](https://vercel.com/docs/configuration) is specified in _[vercel.json](vercel.json)_.

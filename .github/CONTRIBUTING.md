@@ -1,3 +1,3 @@
 # Guidelines for contributing
 
-See the documentation for contribution guidelines.
+See the [documentation](https://inboard.bws.bio/contributing) for contribution guidelines.
