@@ -56,7 +56,7 @@ fastapi = ["fastapi", "toml"]
 starlette = ["starlette"]
 
 [tool.poetry.urls]
-docker = "https://github.com/users/br3ndonland/packages/container/package/inboard"
+Docker = "https://github.com/users/br3ndonland/packages/container/package/inboard"
 
 [tool.pytest.ini_options]
 addopts = "--cov=inboard -q"
