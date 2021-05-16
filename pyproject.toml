@@ -12,6 +12,8 @@ description = "Docker images and utilities to power your Python APIs and help yo
 authors = ["Brendon Smith <br3ndonland@protonmail.com>"]
 license = "MIT"
 homepage = "https://github.com/br3ndonland/inboard"
+repository = "https://github.com/br3ndonland/inboard"
+documentation = "https://inboard.bws.bio"
 readme = "README.md"
 include = ["inboard/py.typed"]
 keywords = ["asgi", "docker", "fastapi", "gunicorn", "uvicorn"]
@@ -52,6 +54,9 @@ all = ["fastapi", "mkdocs-material", "toml"]
 docs = ["mkdocs-material"]
 fastapi = ["fastapi", "toml"]
 starlette = ["starlette"]
+
+[tool.poetry.urls]
+docker = "https://github.com/users/br3ndonland/packages/container/package/inboard"
 
 [tool.pytest.ini_options]
 addopts = "--cov=inboard -q"
