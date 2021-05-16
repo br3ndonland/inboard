@@ -7,7 +7,7 @@ src_paths = ["inboard", "tests"]
 
 [tool.poetry]
 name = "inboard"
-version = "0.9.4"
+version = "0.9.5"
 description = "Docker images and utilities to power your Python APIs and help you ship faster."
 authors = ["Brendon Smith <br3ndonland@protonmail.com>"]
 license = "MIT"
