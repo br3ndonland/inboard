@@ -274,3 +274,19 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
     -   `ERROR_LOG= ` (set to an empty value) to disable
 
 See the [logging reference](logging.md) for further info.
+
+## Authentication
+
+`BASIC_AUTH_USERNAME`
+
+-   Username for HTTP Basic auth.
+-   Default: not set
+-   Custom: `BASIC_AUTH_USERNAME=test_user`
+
+`BASIC_AUTH_PASSWORD`
+
+-   Password for HTTP Basic auth.
+-   Default: not set
+-   Custom: `BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable`
+
+See the [authentication reference](authentication.md) for further info.
