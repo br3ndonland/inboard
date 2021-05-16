@@ -1,0 +1,45 @@
+edit_uri: ""
+markdown_extensions:
+  - admonition
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - toc:
+      permalink: true
+      toc_depth: 3
+nav:
+  - "index.md"
+  - "docker.md"
+  - "environment.md"
+  - "logging.md"
+  - "authentication.md"
+  - "contributing.md"
+repo_name: br3ndonland/inboard
+repo_url: https://github.com/br3ndonland/inboard
+site_name: inboard docs
+theme:
+  favicon: assets/images/favicon.png
+  features:
+    - header.autohide
+    - navigation.instant
+    - navigation.top
+  font: false
+  icon:
+    logo: fontawesome/brands/docker
+    repo: fontawesome/brands/github
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      accent: blue
+      primary: blue
+      scheme: slate
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      accent: blue
+      primary: blue
+      scheme: default
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
