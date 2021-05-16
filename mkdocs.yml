@@ -1,10 +1,18 @@
 edit_uri: ""
 markdown_extensions:
+  - admonition
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
   - toc:
       permalink: true
+      toc_depth: 3
+nav:
+  - "index.md"
+  - "docker.md"
+  - "environment.md"
+  - "logging.md"
+  - "contributing.md"
 repo_name: br3ndonland/inboard
 repo_url: https://github.com/br3ndonland/inboard
 site_name: inboard docs
