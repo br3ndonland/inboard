@@ -1,6 +1,6 @@
 # 🚢 inboard 🐳
 
-<img src="docs/assets/images/inboard-logo.svg" alt="inboard logo" width="90%" />
+<img src="https://raw.githubusercontent.com/br3ndonland/inboard/develop/docs/assets/images/inboard-logo.svg" alt="inboard logo" width="90%" />
 
 _Docker images and utilities to power your Python APIs and help you ship faster._
 
