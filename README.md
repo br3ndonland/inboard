@@ -39,4 +39,4 @@ Documentation is built with [Material for MkDocs](https://squidfunk.github.io/mk
 - Build command: `python3 -m pip install 'mkdocs-material>=7.0.0,<=8.0.0' && mkdocs build --site-dir public`
 - Output directory: `public` (default)
 
-[Vercel site configuration](https://vercel.com/docs/configuration) is specified in _[vercel.json](vercel.json)_.
+[Vercel site configuration](https://vercel.com/docs/configuration) is specified in _vercel.json_.
