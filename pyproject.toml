@@ -32,9 +32,9 @@ classifiers = [
 python = "^3.8"
 gunicorn = "^20"
 uvicorn = {version = "^0.13", extras = ["standard"]}
-fastapi = {version = "^0.64", optional = true}
+fastapi = {version = "^0.65", optional = true}
 mkdocs-material = {version = "^7", optional = true}
-starlette = {version = "^0.13", optional = true}
+starlette = {version = "^0.14", optional = true}
 toml = {version = ">=0.10", optional = true}
 
 [tool.poetry.dev-dependencies]
