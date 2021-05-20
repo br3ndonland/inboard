@@ -14,7 +14,6 @@ def test_set_fields_from_pyproject(settings: Settings) -> None:
     assert str(pyproject["version"]) == settings.version
     assert str(pyproject["description"]) == settings.description
     assert list(pyproject["authors"]) == settings.authors
-    assert "Brendon Smith <br3ndonland@protonmail.com>" in settings.authors
     assert str(pyproject["license"]) == settings.license == "MIT"
     assert str(pyproject["homepage"]) == settings.homepage
     assert str(pyproject["readme"]) == settings.readme
