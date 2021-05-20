@@ -38,7 +38,7 @@ starlette = {version = "^0.14", optional = true}
 toml = {version = ">=0.10", optional = true}
 
 [tool.poetry.dev-dependencies]
-black = {version = "21.5b0", allow-prereleases = true}
+black = {version = "21.5b1", allow-prereleases = true}
 flake8 = "^3.8"
 isort = "^5.6"
 mypy = "0.812"
