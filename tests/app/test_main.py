@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import sys
-from typing import Dict, List
 
 import pytest
 from fastapi import FastAPI
@@ -14,7 +15,7 @@ class TestCors:
     [Starlette CORS docs](https://www.starlette.io/middleware/#corsmiddleware).
     """
 
-    origins: Dict[str, List[str]] = {
+    origins: dict[str, list[str]] = {
         "allowed": [
             "http://br3ndon.land",
             "https://br3ndon.land",
@@ -38,7 +39,7 @@ class TestCors:
         self, allowed_origin: str, client: TestClient
     ) -> None:
         """Test pre-flight response to cross-origin request from allowed origin."""
-        headers: Dict[str, str] = {
+        headers: dict[str, str] = {
             "Origin": allowed_origin,
             "Access-Control-Request-Method": "GET",
             "Access-Control-Request-Headers": "X-Example",
@@ -54,7 +55,7 @@ class TestCors:
         self, disallowed_origin: str, client: TestClient
     ) -> None:
         """Test pre-flight response to cross-origin request from disallowed origin."""
-        headers: Dict[str, str] = {
+        headers: dict[str, str] = {
             "Origin": disallowed_origin,
             "Access-Control-Request-Method": "GET",
             "Access-Control-Request-Headers": "X-Example",

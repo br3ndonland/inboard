@@ -1,10 +1,11 @@
+from __future__ import annotations
+
 import importlib.util
 import logging
 import logging.config
 import os
 import sys
 from pathlib import Path
-from typing import Optional, Set
 
 
 def find_and_load_logging_conf(logging_conf: str) -> dict:
@@ -30,7 +31,7 @@ def find_and_load_logging_conf(logging_conf: str) -> dict:
 
 def configure_logging(
     logger: logging.Logger = logging.getLogger(),
-    logging_conf: Optional[str] = os.getenv("LOGGING_CONF"),
+    logging_conf: str | None = os.getenv("LOGGING_CONF"),
 ) -> dict:
     """Configure Python logging given the name of a logging module or file."""
     try:
@@ -67,7 +68,7 @@ class LogFilter(logging.Filter):
     def __init__(
         self,
         name: str = "",
-        filters: Optional[Set[str]] = None,
+        filters: set[str] | None = None,
     ) -> None:
         """Initialize a filter."""
         self.name = name
@@ -85,7 +86,7 @@ class LogFilter(logging.Filter):
         return all(match not in message for match in self.filters)
 
     @staticmethod
-    def set_filters(input_filters: Optional[str] = None) -> Optional[Set[str]]:
+    def set_filters(input_filters: str | None = None) -> set[str] | None:
         """Set log message filters.
 
         Filters identify log messages to filter out, so that the logger does not

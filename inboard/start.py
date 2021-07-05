@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
+from __future__ import annotations
+
 import importlib.util
 import json
 import logging
 import os
 import subprocess
 from pathlib import Path
-from typing import Optional
 
 import uvicorn  # type: ignore
 
@@ -52,7 +53,7 @@ def set_gunicorn_options(app_module: str) -> list:
     return ["gunicorn", "-k", worker_class, "-c", gunicorn_conf_path, app_module]
 
 
-def _split_uvicorn_option(option: str) -> Optional[list]:
+def _split_uvicorn_option(option: str) -> list | None:
     return (
         [option_item.strip() for option_item in str(option_value).split(sep=",")]
         if (option_value := os.getenv(option.upper()))
@@ -77,7 +78,7 @@ def _update_uvicorn_config_options(uvicorn_config_options: dict) -> dict:
     return uvicorn_config_options
 
 
-def set_uvicorn_options(log_config: Optional[dict] = None) -> dict:
+def set_uvicorn_options(log_config: dict | None = None) -> dict:
     """Set options for running the Uvicorn server."""
     host = os.getenv("HOST", "0.0.0.0")
     port = int(os.getenv("PORT", "80"))
@@ -99,7 +100,7 @@ def start_server(
     process_manager: str,
     app_module: str,
     logger: logging.Logger = logging.getLogger(),
-    logging_conf_dict: Optional[dict] = None,
+    logging_conf_dict: dict | None = None,
 ) -> None:
     """Start the Uvicorn or Gunicorn server."""
     try:

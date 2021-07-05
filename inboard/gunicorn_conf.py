@@ -1,13 +1,14 @@
+from __future__ import annotations
+
 import multiprocessing
 import os
-from typing import Optional
 
 from inboard.logging_conf import configure_logging
 
 
 def calculate_workers(
-    max_workers: Optional[str] = None,
-    total_workers: Optional[str] = None,
+    max_workers: str | None = None,
+    total_workers: str | None = None,
     workers_per_core: str = "1",
 ) -> int:
     """Calculate the number of Gunicorn worker processes."""
