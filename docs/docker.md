@@ -46,7 +46,7 @@ For a [Poetry](https://github.com/python-poetry/poetry) project with the followi
 The _Dockerfile_ could look like this:
 
 <!-- prettier-ignore -->
-!!!example
+!!!example "Example Dockerfile for Poetry project"
     ```dockerfile
     FROM ghcr.io/br3ndonland/inboard:fastapi
 
@@ -73,7 +73,7 @@ For a standard `pip` install:
     -   `requirements.txt`
 
 <!-- prettier-ignore -->
-!!!example
+!!!example "Example Dockerfile for project with pip and requirements.txt"
     ```dockerfile
     FROM ghcr.io/br3ndonland/inboard:fastapi
 

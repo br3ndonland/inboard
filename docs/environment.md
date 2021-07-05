@@ -26,16 +26,18 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 -   Default: The appropriate app module from inboard.
 -   Custom: For a module at `/app/package/custom/module.py` and app instance object `api`, `APP_MODULE="package.custom.module:api"`
 
-    ```py
-    # /app/package/custom/module.py
-    from fastapi import FastAPI
+    <!-- prettier-ignore -->
+    !!!example "Example of a custom FastAPI app module"
+        ```py
+        # /app/package/custom/module.py
+        from fastapi import FastAPI
 
-    api = FastAPI()
+        api = FastAPI()
 
-    @api.get("/")
-    def read_root():
-        return {"message": "Hello World!"}
-    ```
+        @api.get("/")
+        def read_root():
+            return {"message": "Hello World!"}
+        ```
 
     <!-- prettier-ignore -->
     !!! note
@@ -169,6 +171,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 -   Additional [command-line arguments for Gunicorn](https://docs.gunicorn.org/en/stable/settings.html). Gunicorn looks for the `GUNICORN_CMD_ARGS` environment variable automatically, and gives these settings precedence over other environment variables and Gunicorn config files.
 -   Custom: To use a custom TLS certificate, copy or mount the certificate and private key into the Docker image, and set [`--keyfile` and `--certfile`](http://docs.gunicorn.org/en/latest/settings.html#ssl) to the location of the files.
+
     ```sh
     CERTS="--keyfile=/secrets/key.pem --certfile=/secrets/cert.pem"
     docker run -d -p 443:443 \
@@ -231,20 +234,26 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 -   Default:
     -   `"simple"`: Simply the log level and message.
 -   Custom:
+
     -   `"verbose"`: The most informative format, with the first 80 characters providing metadata, and the remainder supplying the log message.
     -   `"gunicorn"`: Gunicorn's default format.
     -   `"uvicorn"`: Uvicorn's default format, similar to `simple`, with support for `LOG_COLORS`. Note that Uvicorn's `access` formatter is not supported here, because it frequently throws errors related to [ASGI scope](https://asgi.readthedocs.io/en/latest/specs/lifespan.html).
--   Examples:
-    ```sh
-    # simple
-    INFO       Started server process [19012]
-    # verbose
-    2020-08-19 21:07:31 -0400      19012      uvicorn.error   main            INFO       Started server process [19012]
-    # gunicorn
-    [2020-08-19 21:07:31 -0400] [19012] [INFO] Started server process [19012]
-    # uvicorn (can also be colored)
-    INFO:     Started server process [19012]
-    ```
+
+    <!-- prettier-ignore -->
+    !!!example "Example log message in different formats"
+        ```log
+        # simple
+        INFO       Started server process [19012]
+
+        # verbose
+        2020-08-19 21:07:31 -0400      19012      uvicorn.error   main            INFO       Started server process [19012]
+
+        # gunicorn
+        [2020-08-19 21:07:31 -0400] [19012] [INFO] Started server process [19012]
+
+        # uvicorn (can also be colored)
+        INFO:     Started server process [19012]
+        ```
 
 `LOG_LEVEL`
 

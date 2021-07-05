@@ -11,7 +11,7 @@ inboard provides utilities for configuring HTTP Basic auth.
 For Starlette applications, inboard provides [middleware](https://www.starlette.io/middleware/) for HTTP Basic auth. Starlette middleware are applied to every request.
 
 <!-- prettier-ignore -->
-!!!example
+!!!example "Example of HTTP Basic auth with Starlette middleware"
     ```py
     from inboard import StarletteBasicAuth
     from starlette.applications import Starlette
@@ -24,7 +24,7 @@ For Starlette applications, inboard provides [middleware](https://www.starlette.
 FastAPI is built on Starlette, so a FastAPI app can be configured with middleware as above, substituting `FastAPI()` for `Starlette()`. inboard also provides a [FastAPI dependency](https://fastapi.tiangolo.com/tutorial/dependencies/), which can be applied to specific API endpoints or [`APIRouter` objects](https://fastapi.tiangolo.com/tutorial/bigger-applications/).
 
 <!-- prettier-ignore -->
-!!!example
+!!!example "Example of HTTP Basic auth with a FastAPI dependency"
     ```py
     from typing import Optional
 
@@ -51,19 +51,17 @@ FastAPI is built on Starlette, so a FastAPI app can be configured with middlewar
 
 As described in the [environment variable reference](environment.md) and [contribution guide](contributing.md), when starting the inboard server, the environment variables `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` can be set. The values of these variables can then be passed in with client requests to authenticate.
 
-<!-- prettier-ignore -->
-!!!example
-    ```sh
-    # server
-    docker pull ghcr.io/br3ndonland/inboard
-    docker run -d -p 80:80 \
-      -e "BASIC_AUTH_USERNAME=test_user" \
-      -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
-      ghcr.io/br3ndonland/inboard
+```sh
+# server
+docker pull ghcr.io/br3ndonland/inboard
+docker run -d -p 80:80 \
+  -e "BASIC_AUTH_USERNAME=test_user" \
+  -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
+  ghcr.io/br3ndonland/inboard
 
-    # client: https://httpie.io/
-    http :80/health -a "test_user":"r4ndom_bUt_memorable"
-    ```
+# client: https://httpie.io/
+http :80/health -a "test_user":"r4ndom_bUt_memorable"
+```
 
 HTTP clients, such as [Hoppscotch](https://hoppscotch.io/) (formerly known as Postwoman), [HTTPie](https://httpie.io/docs#authentication), [Insomnia](https://support.insomnia.rest/article/174-authentication), and [Postman](https://learning.postman.com/docs/sending-requests/authorization/) provide support for HTTP Basic auth.
 

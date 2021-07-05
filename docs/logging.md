@@ -12,45 +12,47 @@ See [environment variable reference](environment.md).
 
 ## Extending the logging config
 
-If inboard is installed from PyPI with `poetry add inboard` or `pip install inboard`, the logging configuration can be easily extended or overridden. For example:
+If inboard is installed from PyPI with `poetry add inboard` or `pip install inboard`, the logging configuration can be easily customized as explained in the [Python logging configuration docs](https://docs.python.org/3/library/logging.config.html).
 
-```py
-# /app/package/custom_logging.py: set with LOGGING_CONF=package.custom_logging
-import logging
-import os
+<!-- prettier-ignore -->
+!!!example "Example of a custom logging module"
+    ```py
+    # /app/package/custom_logging.py: set with LOGGING_CONF=package.custom_logging
+    import logging
+    import os
 
-from inboard import LOGGING_CONFIG
+    from inboard import LOGGING_CONFIG
 
-# add a custom logging format: set with LOG_FORMAT=mycustomformat
-LOGGING_CONFIG["formatters"]["mycustomformat"] = {
-    "format": "[%(name)s] %(levelname)s %(message)s"
-}
-
-
-class MyFormatterClass(logging.Formatter):
-    """Define a custom logging format class."""
-
-    def __init__(self) -> None:
-        super().__init__(fmt="[%(name)s] %(levelname)s %(message)s")
+    # add a custom logging format: set with LOG_FORMAT=mycustomformat
+    LOGGING_CONFIG["formatters"]["mycustomformat"] = {
+        "format": "[%(name)s] %(levelname)s %(message)s"
+    }
 
 
-# use a custom logging format class: set with LOG_FORMAT=mycustomclass
-LOGGING_CONFIG["formatters"]["mycustomclass"] = {
-    "()": "package.custom_logging.MyFormatterClass",
-}
+    class MyFormatterClass(logging.Formatter):
+        """Define a custom logging format class."""
 
-# only show access logs when running Uvicorn with LOG_LEVEL=debug
-LOGGING_CONFIG["loggers"]["gunicorn.access"] = {"propagate": False}
-LOGGING_CONFIG["loggers"]["uvicorn.access"] = {
-    "propagate": str(os.getenv("LOG_LEVEL")) == "debug"
-}
+        def __init__(self) -> None:
+            super().__init__(fmt="[%(name)s] %(levelname)s %(message)s")
 
-# don't propagate boto3 logs
-LOGGING_CONFIG["loggers"]["boto3"] = {"propagate": False}
-LOGGING_CONFIG["loggers"]["botocore"] = {"propagate": False}
-LOGGING_CONFIG["loggers"]["s3transfer"] = {"propagate": False}
 
-```
+    # use a custom logging format class: set with LOG_FORMAT=mycustomclass
+    LOGGING_CONFIG["formatters"]["mycustomclass"] = {
+        "()": "package.custom_logging.MyFormatterClass",
+    }
+
+    # only show access logs when running Uvicorn with LOG_LEVEL=debug
+    LOGGING_CONFIG["loggers"]["gunicorn.access"] = {"propagate": False}
+    LOGGING_CONFIG["loggers"]["uvicorn.access"] = {
+        "propagate": str(os.getenv("LOG_LEVEL")) == "debug"
+    }
+
+    # don't propagate boto logs
+    LOGGING_CONFIG["loggers"]["boto3"] = {"propagate": False}
+    LOGGING_CONFIG["loggers"]["botocore"] = {"propagate": False}
+    LOGGING_CONFIG["loggers"]["s3transfer"] = {"propagate": False}
+
+    ```
 
 ## Design decisions
 
