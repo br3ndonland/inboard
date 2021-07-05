@@ -17,6 +17,7 @@ nav:
 repo_name: br3ndonland/inboard
 repo_url: https://github.com/br3ndonland/inboard
 site_name: inboard docs
+site_url: https://inboard.bws.bio
 theme:
   favicon: assets/images/favicon.png
   features:
