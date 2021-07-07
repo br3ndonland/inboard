@@ -28,6 +28,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
     <!-- prettier-ignore -->
     !!!example "Example of a custom FastAPI app module"
+
         ```py
         # /app/package/custom/module.py
         from fastapi import FastAPI

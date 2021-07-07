@@ -12,6 +12,7 @@ For Starlette applications, inboard provides [middleware](https://www.starlette.
 
 <!-- prettier-ignore -->
 !!!example "Example of HTTP Basic auth with Starlette middleware"
+
     ```py
     from inboard import StarletteBasicAuth
     from starlette.applications import Starlette
@@ -25,6 +26,7 @@ FastAPI is built on Starlette, so a FastAPI app can be configured with middlewar
 
 <!-- prettier-ignore -->
 !!!example "Example of HTTP Basic auth with a FastAPI dependency"
+
     ```py
     from typing import Optional
 

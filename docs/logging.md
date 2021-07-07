@@ -16,6 +16,7 @@ If inboard is installed from PyPI with `poetry add inboard` or `pip install inbo
 
 <!-- prettier-ignore -->
 !!!example "Example of a custom logging module"
+
     ```py
     # /app/package/custom_logging.py: set with LOGGING_CONF=package.custom_logging
     import logging
