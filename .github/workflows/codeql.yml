@@ -1,10 +1,7 @@
 name: codeql
 
 on:
-  push:
-    branches: [develop, main]
   pull_request:
-    branches: [develop, main]
   schedule:
     - cron: "0 13 * * 1"
   workflow_dispatch:
@@ -13,15 +10,8 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 2
-      - run: git checkout HEAD^2
-        if: ${{ github.event_name == 'pull_request' }}
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v1
+      - uses: actions/checkout@v2
+      - uses: github/codeql-action/init@v1
         with:
           languages: python
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v1
+      - uses: github/codeql-action/analyze@v1
