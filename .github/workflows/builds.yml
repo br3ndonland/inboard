@@ -134,7 +134,7 @@ jobs:
           smoke_test_xfail -a test_user:incorrect_password :82/status
           smoke_test_xfail :81/status
           smoke_test_xfail :82/status
-      - name: Push Docker images with latest Python version to registry
+      - name: Tag and push Docker images with latest tags
         if: >
           matrix.python-version == 3.9 &&
           (
@@ -146,11 +146,12 @@ jobs:
           docker push ghcr.io/br3ndonland/inboard:base
           docker push ghcr.io/br3ndonland/inboard:starlette
           docker push ghcr.io/br3ndonland/inboard:fastapi
-      - name: Add Python version tag to Docker images
-        if: >
-          startsWith(github.ref, 'refs/tags/') ||
-          github.ref == 'refs/heads/develop' ||
-          github.ref == 'refs/heads/main'
+          docker tag \
+            ghcr.io/br3ndonland/inboard:fastapi \
+            ghcr.io/br3ndonland/inboard:latest
+          docker push ghcr.io/br3ndonland/inboard:latest
+      - name: Tag and push Docker images with Python version
+        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         run: |
           PY_TAG=python${{ matrix.python-version }}
           docker tag \
@@ -165,7 +166,7 @@ jobs:
           docker push ghcr.io/br3ndonland/inboard:base-"$PY_TAG"
           docker push ghcr.io/br3ndonland/inboard:starlette-"$PY_TAG"
           docker push ghcr.io/br3ndonland/inboard:fastapi-"$PY_TAG"
-      - name: Add Git tag to Docker images
+      - name: Tag and push Docker images with Git tag
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           GIT_TAG=$(echo ${{ github.ref }} | cut -d / -f 3)
@@ -194,16 +195,3 @@ jobs:
           docker push ghcr.io/br3ndonland/inboard:base-"$GIT_TAG"-"$PY_TAG"
           docker push ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG"-"$PY_TAG"
           docker push ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG"-"$PY_TAG"
-      - name: Tag and push latest Docker image
-        if: >
-          matrix.python-version == 3.9 &&
-          (
-            startsWith(github.ref, 'refs/tags/') ||
-            github.ref == 'refs/heads/develop' ||
-            github.ref == 'refs/heads/main'
-          )
-        run: |
-          docker tag \
-            ghcr.io/br3ndonland/inboard:fastapi \
-            ghcr.io/br3ndonland/inboard:latest
-          docker push ghcr.io/br3ndonland/inboard:latest
