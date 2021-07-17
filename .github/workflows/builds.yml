@@ -68,7 +68,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: python3 -m pip install httpie
       - name: Log in to Docker registry
-        run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.PAT_GHCR }}
+        run: |
+          echo ${{ secrets.PAT_GHCR }} | docker login ghcr.io \
+            -u ${{ github.actor }} --password-stdin
       - name: Build Docker images
         run: |
           PY=${{ matrix.python-version }}
