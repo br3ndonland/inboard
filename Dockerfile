@@ -5,7 +5,7 @@ LABEL org.opencontainers.image.description="Docker images and utilities to power
 LABEL org.opencontainers.image.licenses="MIT"
 LABEL org.opencontainers.image.source="https://github.com/br3ndonland/inboard"
 LABEL org.opencontainers.image.title="inboard"
-LABEL org.opencontainers.image.url="https://github.com/users/br3ndonland/packages/container/package/inboard"
+LABEL org.opencontainers.image.url="https://github.com/br3ndonland/inboard/pkgs/container/inboard"
 ENV APP_MODULE=inboard.app.main_base:app POETRY_HOME=/opt/poetry POETRY_VIRTUALENVS_CREATE=false PYTHONPATH=/app
 COPY poetry.lock pyproject.toml /app/
 WORKDIR /app/
