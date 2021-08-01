@@ -32,7 +32,7 @@ classifiers = [
 python = "^3.8"
 gunicorn = "^20"
 uvicorn = {version = "^0.14", extras = ["standard"]}
-fastapi = {version = "^0.67", optional = true}
+fastapi = {version = "^0.68", optional = true}
 starlette = {version = "^0.14", optional = true}
 toml = {version = ">=0.10", optional = true}
 
