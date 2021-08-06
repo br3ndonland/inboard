@@ -2,34 +2,43 @@
 
 ## Pull images
 
-Docker images are stored in [GitHub Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) (GHCR), which is a Docker registry like Docker Hub. Public Docker images can be pulled anonymously from `ghcr.io`.
+Docker images are stored in [GitHub Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) (GHCR), which is a Docker registry like Docker Hub. Public Docker images can be pulled anonymously from `ghcr.io`. The inboard images are based on the [official Python Docker images](https://hub.docker.com/_/python).
 
-Simply running `docker pull ghcr.io/br3ndonland/inboard` will pull the latest FastAPI image (Docker uses the `latest` tag by default). If specific versions of inboard or Python are desired, append the version numbers to the specified Docker tags as shown below _(new in inboard version 0.6.0)_.
+Simply running `docker pull ghcr.io/br3ndonland/inboard` will pull the latest FastAPI image (Docker uses the `latest` tag by default). If specific versions of inboard or Python are desired, append the version numbers to the specified Docker tags as shown below _(new in inboard version 0.6.0)_. All the available images are also provided with [Alpine Linux](https://alpinelinux.org/) builds, which are available by appending `-alpine` _(new in inboard version 0.11.0)_.
 
-```sh
-# Pull latest FastAPI image
-docker pull ghcr.io/br3ndonland/inboard
+!!! info "Available Docker tags"
 
-# Pull latest version of each image
-docker pull ghcr.io/br3ndonland/inboard:base
-docker pull ghcr.io/br3ndonland/inboard:fastapi
-docker pull ghcr.io/br3ndonland/inboard:starlette
+    ```sh
+    # Pull latest FastAPI image (Docker automatically appends the `latest` tag)
+    docker pull ghcr.io/br3ndonland/inboard
 
-# Pull image from specific release
-docker pull ghcr.io/br3ndonland/inboard:base-0.6.0
-docker pull ghcr.io/br3ndonland/inboard:fastapi-0.6.0
-docker pull ghcr.io/br3ndonland/inboard:starlette-0.6.0
+    # Pull latest version of each image
+    docker pull ghcr.io/br3ndonland/inboard:base
+    docker pull ghcr.io/br3ndonland/inboard:fastapi
+    docker pull ghcr.io/br3ndonland/inboard:starlette
 
-# Pull image with specific Python version
-docker pull ghcr.io/br3ndonland/inboard:base-python3.8
-docker pull ghcr.io/br3ndonland/inboard:fastapi-python3.8
-docker pull ghcr.io/br3ndonland/inboard:starlette-python3.8
+    # Pull image from specific release (new in inboard 0.6.0)
+    docker pull ghcr.io/br3ndonland/inboard:base-0.6.0
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.6.0
+    docker pull ghcr.io/br3ndonland/inboard:starlette-0.6.0
 
-# Pull image from specific release and with specific Python version
-docker pull ghcr.io/br3ndonland/inboard:base-0.6.0-python3.8
-docker pull ghcr.io/br3ndonland/inboard:fastapi-0.6.0-python3.8
-docker pull ghcr.io/br3ndonland/inboard:starlette-0.6.0-python3.8
-```
+    # Pull image with specific Python version
+    docker pull ghcr.io/br3ndonland/inboard:base-python3.8
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-python3.8
+    docker pull ghcr.io/br3ndonland/inboard:starlette-python3.8
+
+    # Pull image from specific release and with specific Python version
+    docker pull ghcr.io/br3ndonland/inboard:base-0.6.0-python3.8
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.6.0-python3.8
+    docker pull ghcr.io/br3ndonland/inboard:starlette-0.6.0-python3.8
+
+    # Append `-alpine` to any of the above for Alpine Linux (new in inboard 0.11.0)
+    docker pull ghcr.io/br3ndonland/inboard:latest-alpine
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-alpine
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.11.0-alpine
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-python3.8-alpine
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.11.0-python3.8-alpine
+    ```
 
 ## Use images in a _Dockerfile_
 
