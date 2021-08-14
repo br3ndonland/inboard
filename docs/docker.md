@@ -4,7 +4,7 @@
 
 Docker images are stored in [GitHub Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) (GHCR), which is a Docker registry like Docker Hub. Public Docker images can be pulled anonymously from `ghcr.io`. The inboard images are based on the [official Python Docker images](https://hub.docker.com/_/python).
 
-Simply running `docker pull ghcr.io/br3ndonland/inboard` will pull the latest FastAPI image (Docker uses the `latest` tag by default). If specific versions of inboard or Python are desired, append the version numbers to the specified Docker tags as shown below _(new in inboard version 0.6.0)_. All the available images are also provided with [Alpine Linux](https://alpinelinux.org/) builds, which are available by appending `-alpine` _(new in inboard version 0.11.0)_.
+Simply running `docker pull ghcr.io/br3ndonland/inboard` will pull the latest FastAPI image (Docker uses the `latest` tag by default). If specific versions of inboard or Python are desired, append the version numbers to the specified Docker tags as shown below _(new in inboard version 0.6.0)_. All the available images are also provided with [Alpine Linux](https://alpinelinux.org/) builds, which are available by appending `-alpine` _(new in inboard version 0.11.0)_. Alpine users should be aware of its [limitations](#alpine).
 
 !!! info "Available Docker tags"
 
@@ -137,3 +137,43 @@ Details on the `docker run` command:
     -   `RELOAD_DIRS`
     -   `WITH_RELOAD`
 -   `-v $(pwd)/package:/app/package`: the specified directory (`/path/to/repo/package` in this example) will be [mounted as a volume](https://docs.docker.com/engine/reference/run/#volume-shared-filesystems) inside of the container at `/app/package`. When files in the working directory change, Docker and Uvicorn will sync the files to the running Docker container.
+
+## Linux distributions
+
+### Alpine
+
+The [official Python Docker image](https://hub.docker.com/_/python) is built on [Debian Linux](https://www.debian.org/) by default, with [Alpine Linux](https://alpinelinux.org/) builds also provided. Alpine is known for its security and small Docker image sizes.
+
+!!! info "Runtime determination of the Linux distribution"
+
+    To determine the Linux distribution at runtime, it can be helpful to source `/etc/os-release`, which contains an `ID` variable specifying the distribution (`alpine`, `debian`, etc).
+
+Alpine differs from Debian in some important ways, including:
+
+-   Shell (Alpine does not use Bash by default)
+-   Packages (Alpine uses [`apk`](https://docs.alpinelinux.org/user-handbook/0.1a/Working/apk.html) as its package manager, and does not include some common packages like `curl` by default)
+-   C standard library (Alpine uses [`musl`](https://musl.libc.org/) instead of [`gcc`](https://gcc.gnu.org/))
+
+The different C standard library is of particular note for Python packages, because [binary package distributions](https://packaging.python.org/guides/packaging-binary-extensions/) may not be available for Alpine Linux. To work with these packages, their build dependencies must be installed, then the packages must be built from source. Users will typically then delete the build dependencies to keep the final Docker image size small.
+
+The basic build dependencies used by inboard include `gcc`, `libc-dev`, and `make`. These may not be adequate to build all packages. For example, to [install `psycopg`](https://www.psycopg.org/docs/install.html), it may be necessary to add more build dependencies, build the package, (optionally delete the build dependencies) and then include its `libpq` runtime dependency in the final image. A set of build dependencies for this scenario might look like the following:
+
+!!! example "Example Alpine Linux _Dockerfile_ for PostgreSQL project"
+
+    ```dockerfile
+    ARG INBOARD_DOCKER_TAG=fastapi-alpine
+    FROM ghcr.io/br3ndonland/inboard:${INBOARD_DOCKER_TAG}
+    ENV APP_MODULE=mypackage.main:app
+    COPY poetry.lock pyproject.toml /app/
+    WORKDIR /app/
+    RUN sh -c '. /etc/os-release; if [ "$ID" = "alpine" ]; then apk add --no-cache --virtual .build-project build-base freetype-dev gcc libc-dev libpng-dev make openblas-dev postgresql-dev; fi' && \
+      poetry install --no-dev --no-interaction --no-root && \
+      sh -c '. /etc/os-release; if [ "$ID" = "alpine" ]; then apk del .build-project && apk add --no-cache libpq; fi'
+    COPY mypackage /app/mypackage
+    ```
+
+!!! info "Alpine Linux virtual packages"
+
+    Adding `--virtual .build-project` creates a "virtual package" named `.build-project` that groups the rest of the dependencies listed. All of the dependencies can then be deleted as a set by simply referencing the name of the virtual package, like `apk del .build-project`.
+
+The good news - Python is planning to support binary package distributions built for Alpine Linux. See [PEP 656](https://www.python.org/dev/peps/pep-0656/) for details.
