@@ -4,7 +4,7 @@
 
 Docker images are stored in [GitHub Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) (GHCR), which is a Docker registry like Docker Hub. Public Docker images can be pulled anonymously from `ghcr.io`. The inboard images are based on the [official Python Docker images](https://hub.docker.com/_/python).
 
-Simply running `docker pull ghcr.io/br3ndonland/inboard` will pull the latest FastAPI image (Docker uses the `latest` tag by default). If specific versions of inboard or Python are desired, append the version numbers to the specified Docker tags as shown below _(new in inboard version 0.6.0)_. All the available images are also provided with [Alpine Linux](https://alpinelinux.org/) builds, which are available by appending `-alpine` _(new in inboard version 0.11.0)_. Alpine users should be aware of its [limitations](#alpine).
+Simply running `docker pull ghcr.io/br3ndonland/inboard` will pull the latest FastAPI image (Docker uses the `latest` tag by default). If specific versions of inboard or Python are desired, append the version numbers to the specified Docker tags as shown below _(new in inboard version 0.6.0)_. All the available images are also provided with [Alpine Linux](https://alpinelinux.org/) builds, which are available by appending `-alpine`, and Debian "slim" builds, which are available by appending `-slim` _(new in inboard version 0.11.0)_. Alpine and Debian slim users should be aware of their [limitations](#linux-distributions).
 
 !!! info "Available Docker tags"
 
@@ -38,6 +38,13 @@ Simply running `docker pull ghcr.io/br3ndonland/inboard` will pull the latest Fa
     docker pull ghcr.io/br3ndonland/inboard:fastapi-0.11.0-alpine
     docker pull ghcr.io/br3ndonland/inboard:fastapi-python3.8-alpine
     docker pull ghcr.io/br3ndonland/inboard:fastapi-0.11.0-python3.8-alpine
+
+    # Append `-slim` to any of the above for Debian slim (new in inboard 0.11.0)
+    docker pull ghcr.io/br3ndonland/inboard:latest-slim
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-slim
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.11.0-slim
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-python3.8-slim
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.11.0-python3.8-slim
     ```
 
 ## Use images in a _Dockerfile_
@@ -177,3 +184,27 @@ The basic build dependencies used by inboard include `gcc`, `libc-dev`, and `mak
     Adding `--virtual .build-project` creates a "virtual package" named `.build-project` that groups the rest of the dependencies listed. All of the dependencies can then be deleted as a set by simply referencing the name of the virtual package, like `apk del .build-project`.
 
 The good news - Python is planning to support binary package distributions built for Alpine Linux. See [PEP 656](https://www.python.org/dev/peps/pep-0656/) for details.
+
+### Debian slim
+
+The [official Python Docker image](https://hub.docker.com/_/python) provides "slim" variants of the Debian base images. These images are built on Debian, but then have the build dependencies removed after Python is installed. As with Alpine Linux, there are some caveats:
+
+-   Commonly-used packages are removed, requiring reinstallation in downstream images.
+-   The overall number of security vulnerabilities will be reduced as compared to the Debian base images, but vulnerabilities inherent to Debian will still remain.
+-   If `/etc/os-release` is sourced, the `$ID` will still be `debian`, so custom environment variables or other methods must be used to identify images as "slim" variants.
+
+A _Dockerfile_ equivalent to the Alpine Linux example might look like the following:
+
+!!! example "Example Debian Linux slim _Dockerfile_ for PostgreSQL project"
+
+    ```dockerfile
+    ARG INBOARD_DOCKER_TAG=fastapi-slim
+    FROM ghcr.io/br3ndonland/inboard:${INBOARD_DOCKER_TAG}
+    ENV APP_MODULE=mypackage.main:app INBOARD_DOCKER_TAG=${INBOARD_DOCKER_TAG}
+    COPY poetry.lock pyproject.toml /app/
+    WORKDIR /app/
+    RUN sh -c 'if [[ $INBOARD_DOCKER_TAG == *slim* ]]; then apt-get update -qy && apt-get install -qy --no-install-recommends gcc libc-dev libpq-dev make wget; fi' && \
+      poetry install --no-dev --no-interaction --no-root && \
+      sh -c 'if [[ $INBOARD_DOCKER_TAG == *slim* ]]; then apt-get purge --auto-remove -qy gcc libc-dev make wget; fi'
+    COPY mypackage /app/mypackage
+    ```
