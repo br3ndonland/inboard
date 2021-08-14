@@ -60,7 +60,7 @@ jobs:
     needs: [python]
     strategy:
       matrix:
-        alpine-version: ["", "alpine"]
+        linux-version: ["", "alpine", "slim"]
         python-version: [3.8, 3.9]
     steps:
       - uses: actions/checkout@v2
@@ -71,12 +71,12 @@ jobs:
       - name: Set up versions and Docker tags for Python and Alpine Linux
         id: setup
         run: |
-          ALPINE_VERSION=${{ matrix.alpine-version }}
-          ALPINE_TAG=${ALPINE_VERSION:+-$ALPINE_VERSION}
+          LINUX_VERSION=${{ matrix.linux-version }}
+          LINUX_TAG=${LINUX_VERSION:+-$LINUX_VERSION}
           PYTHON_VERSION=${{ matrix.python-version }}
           PYTHON_TAG="-python$PYTHON_VERSION"
-          echo "ALPINE_VERSION=$ALPINE_VERSION" >> $GITHUB_ENV
-          echo "ALPINE_TAG=$ALPINE_TAG" >> $GITHUB_ENV
+          echo "LINUX_VERSION=$LINUX_VERSION" >> $GITHUB_ENV
+          echo "LINUX_TAG=$LINUX_TAG" >> $GITHUB_ENV
           echo "PYTHON_VERSION=$PYTHON_VERSION" >> $GITHUB_ENV
           echo "PYTHON_TAG=$PYTHON_TAG" >> $GITHUB_ENV
       - name: Log in to Docker registry
@@ -86,32 +86,32 @@ jobs:
       - name: Build Docker images
         run: |
           docker build . --rm --target base \
-            --build-arg ALPINE_VERSION="$ALPINE_VERSION" \
+            --build-arg LINUX_VERSION="$LINUX_VERSION" \
             --build-arg PYTHON_VERSION="$PYTHON_VERSION" \
-            --cache-from python:"$PYTHON_VERSION$ALPINE_TAG" \
-            -t ghcr.io/br3ndonland/inboard:base"$ALPINE_TAG"
+            --cache-from python:"$PYTHON_VERSION$LINUX_TAG" \
+            -t ghcr.io/br3ndonland/inboard:base"$LINUX_TAG"
           docker build . --rm --target starlette \
-            --build-arg ALPINE_VERSION="$ALPINE_VERSION" \
+            --build-arg LINUX_VERSION="$LINUX_VERSION" \
             --build-arg PYTHON_VERSION="$PYTHON_VERSION" \
-            -t ghcr.io/br3ndonland/inboard:starlette"$ALPINE_TAG"
+            -t ghcr.io/br3ndonland/inboard:starlette"$LINUX_TAG"
           docker build . --rm --target fastapi \
-            --build-arg ALPINE_VERSION="$ALPINE_VERSION" \
+            --build-arg LINUX_VERSION="$LINUX_VERSION" \
             --build-arg PYTHON_VERSION="$PYTHON_VERSION" \
-            -t ghcr.io/br3ndonland/inboard:fastapi"$ALPINE_TAG"
+            -t ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG"
       - name: Run Docker containers for testing
         run: |
           docker run -d -p 80:80 \
             -e "BASIC_AUTH_USERNAME=test_user" \
             -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
-            ghcr.io/br3ndonland/inboard:base"$ALPINE_TAG"
+            ghcr.io/br3ndonland/inboard:base"$LINUX_TAG"
           docker run -d -p 81:80 \
             -e "BASIC_AUTH_USERNAME=test_user" \
             -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
-            ghcr.io/br3ndonland/inboard:starlette"$ALPINE_TAG"
+            ghcr.io/br3ndonland/inboard:starlette"$LINUX_TAG"
           docker run -d -p 82:80 \
             -e "BASIC_AUTH_USERNAME=test_user" \
             -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
-            ghcr.io/br3ndonland/inboard:fastapi"$ALPINE_TAG"
+            ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG"
       - name: Smoke test Docker containers
         run: |
           handle_error_code() {
@@ -159,53 +159,53 @@ jobs:
             github.ref == 'refs/heads/main'
           )
         run: |
-          docker push ghcr.io/br3ndonland/inboard:base"$ALPINE_TAG"
-          docker push ghcr.io/br3ndonland/inboard:starlette"$ALPINE_TAG"
-          docker push ghcr.io/br3ndonland/inboard:fastapi"$ALPINE_TAG"
+          docker push ghcr.io/br3ndonland/inboard:base"$LINUX_TAG"
+          docker push ghcr.io/br3ndonland/inboard:starlette"$LINUX_TAG"
+          docker push ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG"
           docker tag \
-            ghcr.io/br3ndonland/inboard:fastapi"$ALPINE_TAG" \
-            ghcr.io/br3ndonland/inboard:latest"$ALPINE_TAG"
-          docker push ghcr.io/br3ndonland/inboard:latest"$ALPINE_TAG"
+            ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG" \
+            ghcr.io/br3ndonland/inboard:latest"$LINUX_TAG"
+          docker push ghcr.io/br3ndonland/inboard:latest"$LINUX_TAG"
       - name: Tag and push Docker images with Python version
         if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
         run: |
           docker tag \
-            ghcr.io/br3ndonland/inboard:base"$ALPINE_TAG" \
-            ghcr.io/br3ndonland/inboard:base"$PYTHON_TAG$ALPINE_TAG"
+            ghcr.io/br3ndonland/inboard:base"$LINUX_TAG" \
+            ghcr.io/br3ndonland/inboard:base"$PYTHON_TAG$LINUX_TAG"
           docker tag \
-            ghcr.io/br3ndonland/inboard:starlette"$ALPINE_TAG" \
-            ghcr.io/br3ndonland/inboard:starlette"$PYTHON_TAG$ALPINE_TAG"
+            ghcr.io/br3ndonland/inboard:starlette"$LINUX_TAG" \
+            ghcr.io/br3ndonland/inboard:starlette"$PYTHON_TAG$LINUX_TAG"
           docker tag \
-            ghcr.io/br3ndonland/inboard:fastapi"$ALPINE_TAG" \
-            ghcr.io/br3ndonland/inboard:fastapi"$PYTHON_TAG$ALPINE_TAG"
-          docker push ghcr.io/br3ndonland/inboard:base"$PYTHON_TAG$ALPINE_TAG"
-          docker push ghcr.io/br3ndonland/inboard:starlette"$PYTHON_TAG$ALPINE_TAG"
-          docker push ghcr.io/br3ndonland/inboard:fastapi"$PYTHON_TAG$ALPINE_TAG"
+            ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG" \
+            ghcr.io/br3ndonland/inboard:fastapi"$PYTHON_TAG$LINUX_TAG"
+          docker push ghcr.io/br3ndonland/inboard:base"$PYTHON_TAG$LINUX_TAG"
+          docker push ghcr.io/br3ndonland/inboard:starlette"$PYTHON_TAG$LINUX_TAG"
+          docker push ghcr.io/br3ndonland/inboard:fastapi"$PYTHON_TAG$LINUX_TAG"
       - name: Tag and push Docker images with Git tag
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           GIT_TAG=$(echo ${{ github.ref }} | cut -d / -f 3)
           docker tag \
-            ghcr.io/br3ndonland/inboard:base"$ALPINE_TAG" \
-            ghcr.io/br3ndonland/inboard:base-"$GIT_TAG$ALPINE_TAG"
+            ghcr.io/br3ndonland/inboard:base"$LINUX_TAG" \
+            ghcr.io/br3ndonland/inboard:base-"$GIT_TAG$LINUX_TAG"
           docker tag \
-            ghcr.io/br3ndonland/inboard:starlette"$ALPINE_TAG" \
-            ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG$ALPINE_TAG"
+            ghcr.io/br3ndonland/inboard:starlette"$LINUX_TAG" \
+            ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG$LINUX_TAG"
           docker tag \
-            ghcr.io/br3ndonland/inboard:fastapi"$ALPINE_TAG" \
-            ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG$ALPINE_TAG"
+            ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG" \
+            ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG$LINUX_TAG"
           docker tag \
-            ghcr.io/br3ndonland/inboard:base"$ALPINE_TAG" \
-            ghcr.io/br3ndonland/inboard:base"-$GIT_TAG$PYTHON_TAG$ALPINE_TAG"
+            ghcr.io/br3ndonland/inboard:base"$LINUX_TAG" \
+            ghcr.io/br3ndonland/inboard:base"-$GIT_TAG$PYTHON_TAG$LINUX_TAG"
           docker tag \
-            ghcr.io/br3ndonland/inboard:starlette"$ALPINE_TAG" \
-            ghcr.io/br3ndonland/inboard:starlette"-$GIT_TAG$PYTHON_TAG$ALPINE_TAG"
+            ghcr.io/br3ndonland/inboard:starlette"$LINUX_TAG" \
+            ghcr.io/br3ndonland/inboard:starlette"-$GIT_TAG$PYTHON_TAG$LINUX_TAG"
           docker tag \
-            ghcr.io/br3ndonland/inboard:fastapi"$ALPINE_TAG" \
-            ghcr.io/br3ndonland/inboard:fastapi"-$GIT_TAG$PYTHON_TAG$ALPINE_TAG"
-          docker push ghcr.io/br3ndonland/inboard:base-"$GIT_TAG$ALPINE_TAG"
-          docker push ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG$ALPINE_TAG"
-          docker push ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG$ALPINE_TAG"
-          docker push ghcr.io/br3ndonland/inboard:base-"$GIT_TAG$PYTHON_TAG$ALPINE_TAG"
-          docker push ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG$PYTHON_TAG$ALPINE_TAG"
-          docker push ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG$PYTHON_TAG$ALPINE_TAG"
+            ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG" \
+            ghcr.io/br3ndonland/inboard:fastapi"-$GIT_TAG$PYTHON_TAG$LINUX_TAG"
+          docker push ghcr.io/br3ndonland/inboard:base-"$GIT_TAG$LINUX_TAG"
+          docker push ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG$LINUX_TAG"
+          docker push ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG$LINUX_TAG"
+          docker push ghcr.io/br3ndonland/inboard:base-"$GIT_TAG$PYTHON_TAG$LINUX_TAG"
+          docker push ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG$PYTHON_TAG$LINUX_TAG"
+          docker push ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG$PYTHON_TAG$LINUX_TAG"
