@@ -11,7 +11,8 @@ COPY poetry.lock pyproject.toml /app/
 WORKDIR /app/
 RUN wget -qO get-poetry.py https://raw.githubusercontent.com/python-poetry/poetry/HEAD/get-poetry.py && \
   sh -c '. /etc/os-release; if [ "$ID" = "alpine" ]; then apk add --no-cache --virtual .build-deps gcc libc-dev make; fi' && \
-  python get-poetry.py -y && poetry install --no-dev --no-interaction --no-root
+  python get-poetry.py -y && poetry install --no-dev --no-interaction --no-root && \
+  sh -c '. /etc/os-release; if [ "$ID" = "alpine" ]; then apk del .build-deps; fi'
 COPY inboard /app/inboard
 ENTRYPOINT ["python"]
 CMD ["-m", "inboard.start"]
