@@ -200,11 +200,16 @@ A _Dockerfile_ equivalent to the Alpine Linux example might look like the follow
     ```dockerfile
     ARG INBOARD_DOCKER_TAG=fastapi-slim
     FROM ghcr.io/br3ndonland/inboard:${INBOARD_DOCKER_TAG}
-    ENV APP_MODULE=mypackage.main:app INBOARD_DOCKER_TAG=${INBOARD_DOCKER_TAG}
+    ENV APP_MODULE=mypackage.main:app
     COPY poetry.lock pyproject.toml /app/
     WORKDIR /app/
-    RUN sh -c 'if [[ $INBOARD_DOCKER_TAG == *slim* ]]; then apt-get update -qy && apt-get install -qy --no-install-recommends gcc libc-dev libpq-dev make wget; fi' && \
+    ARG INBOARD_DOCKER_TAG
+    RUN sh -c '. /etc/os-release; if [ "$ID" = "debian" ] && echo "$INBOARD_DOCKER_TAG" | grep -q "slim"; then apt-get update -qy && apt-get install -qy --no-install-recommends gcc libc-dev libpq-dev make wget; fi' && \
       poetry install --no-dev --no-interaction --no-root && \
-      sh -c 'if [[ $INBOARD_DOCKER_TAG == *slim* ]]; then apt-get purge --auto-remove -qy gcc libc-dev make wget; fi'
+      sh -c '. /etc/os-release; if [ "$ID" = "debian" ] && echo "$INBOARD_DOCKER_TAG" | grep -q "slim"; then apt-get purge --auto-remove -qy gcc libc-dev make wget; fi'
     COPY mypackage /app/mypackage
     ```
+
+!!! info "Redeclaring Docker build arguments"
+
+    Why is `ARG INBOARD_DOCKER_TAG` repeated in the example above? To understand this, it is necessary to [understand how `ARG` and `FROM` interact](https://docs.docker.com/engine/reference/builder/#understand-how-arg-and-from-interact). Any `ARG`s before `FROM` are outside the Docker build context. In order to use them again inside the build context, they must be redeclared.
