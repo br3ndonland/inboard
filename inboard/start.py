@@ -66,11 +66,10 @@ def set_uvicorn_options(log_config: Optional[dict] = None) -> dict:
     reload_dirs = _split_uvicorn_option("RELOAD_DIRS")
     reload_excludes = _split_uvicorn_option("RELOAD_EXCLUDES")
     reload_includes = _split_uvicorn_option("RELOAD_INCLUDES")
-    use_reload = (
-        True
-        if (value := os.getenv("WITH_RELOAD")) and value.lower() == "true"
-        else False
+    use_reload = bool(
+        (value := os.getenv("WITH_RELOAD")) and value.lower() == "true"
     )
+
     return dict(
         host=host,
         port=port,
