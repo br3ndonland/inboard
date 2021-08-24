@@ -49,28 +49,35 @@ def set_gunicorn_options(app_module: str) -> list:
     return ["gunicorn", "-k", worker_class, "-c", gunicorn_conf_path, app_module]
 
 
+def _split_uvicorn_option(option: str) -> Optional[list]:
+    return (
+        [d.lstrip() for d in str(os.getenv(option.upper())).split(sep=",")]
+        if os.getenv(option.upper())
+        else None
+    )
+
+
 def set_uvicorn_options(log_config: Optional[dict] = None) -> dict:
     """Set options for running the Uvicorn server."""
     host = os.getenv("HOST", "0.0.0.0")
     port = int(os.getenv("PORT", "80"))
     log_level = os.getenv("LOG_LEVEL", "info")
-    reload_dirs = (
-        [d.lstrip() for d in str(os.getenv("RELOAD_DIRS")).split(sep=",")]
-        if os.getenv("RELOAD_DIRS")
-        else None
-    )
-    use_reload = (
-        True
-        if (value := os.getenv("WITH_RELOAD")) and value.lower() == "true"
-        else False
-    )
+    reload_delay = float(value) if (value := os.getenv("RELOAD_DELAY")) else None
+    reload_dirs = _split_uvicorn_option("RELOAD_DIRS")
+    reload_excludes = _split_uvicorn_option("RELOAD_EXCLUDES")
+    reload_includes = _split_uvicorn_option("RELOAD_INCLUDES")
+    use_reload = bool((value := os.getenv("WITH_RELOAD")) and value.lower() == "true")
+
     return dict(
         host=host,
         port=port,
         log_config=log_config,
         log_level=log_level,
-        reload_dirs=reload_dirs,
         reload=use_reload,
+        reload_delay=reload_delay,
+        reload_dirs=reload_dirs,
+        reload_excludes=reload_excludes,
+        reload_includes=reload_includes,
     )
 
 

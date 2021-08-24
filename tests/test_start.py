@@ -176,11 +176,19 @@ class TestSetUvicornOptions:
     ---
     """
 
+    uvicorn_options_custom = (
+        ("LOG_LEVEL", "debug"),
+        ("WITH_RELOAD", "true"),
+        ("RELOAD_DELAY", "0.5"),
+        ("RELOAD_DIRS", "inboard, tests"),
+        ("RELOAD_EXCLUDES", "*[Dd]ockerfile"),
+        ("RELOAD_INCLUDES", "*.py, *.md"),
+    )
+
     def test_set_uvicorn_options_default(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test default Uvicorn server options."""
         monkeypatch.setenv("WITH_RELOAD", "false")
         result = start.set_uvicorn_options()
-        assert isinstance(result, dict)
         assert result == dict(
             host="0.0.0.0",
             port=80,
@@ -188,24 +196,29 @@ class TestSetUvicornOptions:
             log_level="info",
             reload=False,
             reload_dirs=None,
+            reload_delay=None,
+            reload_excludes=None,
+            reload_includes=None,
         )
 
     def test_set_uvicorn_options_custom(
         self, logging_conf_dict: dict, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test custom Uvicorn server options."""
-        monkeypatch.setenv("LOG_LEVEL", "debug")
-        monkeypatch.setenv("WITH_RELOAD", "true")
-        monkeypatch.setenv("RELOAD_DIRS", "inboard, tests")
+        for option in self.uvicorn_options_custom:
+            key, value = option
+            monkeypatch.setenv(key, value)
         result = start.set_uvicorn_options(log_config=logging_conf_dict)
-        assert isinstance(result, dict)
         assert result == dict(
             host="0.0.0.0",
             port=80,
             log_config=logging_conf_dict,
             log_level="debug",
             reload=True,
+            reload_delay=0.5,
             reload_dirs=["inboard", "tests"],
+            reload_excludes=["*[Dd]ockerfile"],
+            reload_includes=["*.py", "*.md"],
         )
 
 
@@ -216,11 +229,11 @@ class TestStartServer:
 
     @pytest.mark.parametrize(
         "app_module",
-        [
+        (
             "inboard.app.main_base:app",
             "inboard.app.main_fastapi:app",
             "inboard.app.main_starlette:app",
-        ],
+        ),
     )
     @pytest.mark.timeout(2)
     def test_start_server_uvicorn(
@@ -234,15 +247,12 @@ class TestStartServer:
         mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
         mock_run = mocker.patch("inboard.start.uvicorn.run", autospec=True)
         monkeypatch.setenv("PROCESS_MANAGER", "uvicorn")
-        monkeypatch.setenv("WITH_RELOAD", "false")
         start.start_server(
             str(os.getenv("PROCESS_MANAGER")),
             app_module=app_module,
             logger=mock_logger,
             logging_conf_dict=logging_conf_dict,
         )
-        assert os.getenv("PROCESS_MANAGER") == "uvicorn"
-        assert os.getenv("WITH_RELOAD") == "false"
         mock_logger.debug.assert_called_once_with("Running Uvicorn without Gunicorn.")
         mock_run.assert_called_once_with(
             app_module,
@@ -251,16 +261,19 @@ class TestStartServer:
             log_config=logging_conf_dict,
             log_level="info",
             reload=False,
+            reload_delay=None,
             reload_dirs=None,
+            reload_excludes=None,
+            reload_includes=None,
         )
 
     @pytest.mark.parametrize(
         "app_module",
-        [
+        (
             "inboard.app.main_base:app",
             "inboard.app.main_fastapi:app",
             "inboard.app.main_starlette:app",
-        ],
+        ),
     )
     @pytest.mark.parametrize(
         "reload_dirs", ["inboard", "inboard,tests", "inboard, tests"]
@@ -278,11 +291,9 @@ class TestStartServer:
         mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
         monkeypatch.setenv("PROCESS_MANAGER", "uvicorn")
         monkeypatch.setenv("WITH_RELOAD", "true")
+        monkeypatch.setenv("RELOAD_DELAY", "0.5")
         monkeypatch.setenv("RELOAD_DIRS", reload_dirs)
         split_dirs = [d.lstrip() for d in str(os.getenv("RELOAD_DIRS")).split(sep=",")]
-        assert os.getenv("PROCESS_MANAGER") == "uvicorn"
-        assert os.getenv("WITH_RELOAD") == "true"
-        assert os.getenv("RELOAD_DIRS") == reload_dirs
         if reload_dirs == "inboard":
             assert len(split_dirs) == 1
         else:
@@ -302,16 +313,19 @@ class TestStartServer:
             log_config=logging_conf_dict,
             log_level="info",
             reload=True,
+            reload_delay=0.5,
             reload_dirs=split_dirs,
+            reload_includes=None,
+            reload_excludes=None,
         )
 
     @pytest.mark.parametrize(
         "app_module",
-        [
+        (
             "inboard.app.main_base:app",
             "inboard.app.main_fastapi:app",
             "inboard.app.main_starlette:app",
-        ],
+        ),
     )
     @pytest.mark.timeout(2)
     def test_start_server_uvicorn_gunicorn(
@@ -339,7 +353,6 @@ class TestStartServer:
         )
         assert gunicorn_conf_path.parent.exists()
         assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_path)
-        assert os.getenv("PROCESS_MANAGER") == "gunicorn"
         mock_logger.debug.assert_called_once_with("Running Uvicorn with Gunicorn.")
         mock_run.assert_called_once_with(
             [
@@ -354,11 +367,11 @@ class TestStartServer:
 
     @pytest.mark.parametrize(
         "app_module",
-        [
+        (
             "inboard.app.main_base:app",
             "inboard.app.main_fastapi:app",
             "inboard.app.main_starlette:app",
-        ],
+        ),
     )
     @pytest.mark.timeout(2)
     def test_start_server_uvicorn_gunicorn_custom_config(
@@ -380,9 +393,6 @@ class TestStartServer:
         monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
         assert gunicorn_conf_tmp_file_path.parent.exists()
         assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_tmp_file_path)
-        assert os.getenv("LOG_FORMAT") == "gunicorn"
-        assert os.getenv("LOG_LEVEL") == "debug"
-        assert os.getenv("PROCESS_MANAGER") == "gunicorn"
         mock_run = mocker.patch("inboard.start.subprocess.run", autospec=True)
         start.start_server(
             str(os.getenv("PROCESS_MANAGER")),
@@ -404,11 +414,11 @@ class TestStartServer:
 
     @pytest.mark.parametrize(
         "app_module",
-        [
+        (
             "inboard.app.main_base:app",
             "inboard.app.main_fastapi:app",
             "inboard.app.main_starlette:app",
-        ],
+        ),
     )
     @pytest.mark.timeout(2)
     def test_start_server_uvicorn_incorrect_process_manager(
@@ -417,12 +427,9 @@ class TestStartServer:
         gunicorn_conf_path: Path,
         logging_conf_dict: dict,
         mocker: MockerFixture,
-        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.start_server` with Uvicorn and an incorrect process manager."""
         mock_logger = mocker.patch.object(start.logging, "root", autospec=True)
-        monkeypatch.setenv("LOG_LEVEL", "debug")
-        monkeypatch.setenv("WITH_RELOAD", "false")
         logger_error_msg = "Error when starting server"
         process_error_msg = "Process manager needs to be either uvicorn or gunicorn"
         with pytest.raises(NameError) as e:
