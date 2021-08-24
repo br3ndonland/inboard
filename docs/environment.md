@@ -196,7 +196,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
     !!! note
         Auto-reloading is useful for local development. [Watchgod](https://github.com/samuelcolvin/watchgod) was added as an optional dependency in [Uvicorn 0.11.4](https://github.com/encode/uvicorn/releases/tag/0.11.4), and is included with inboard.
 
-`RELOAD_DIRS`
+`RELOAD_DIRS` _(new in inboard 0.7)_
 
 -   Directories and files to watch for changes with [watchgod](https://github.com/samuelcolvin/watchgod), formatted as comma-separated string.
 -   Default: watch all directories under project root.
@@ -211,6 +211,44 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
         On the command-line, this [Uvicorn setting](https://www.uvicorn.org/settings/) is configured by passing `--reload-dir`, and can be passed multiple times, with one directory each.
 
         However, when running Uvicorn programmatically, `uvicorn.run` accepts a list of strings (`uvicorn.run(reload_dirs=["dir1", "dir2"])`), so inboard will parse the environment variable, send the list to Uvicorn, and watchgod will watch each directory or file specified.
+
+`RELOAD_DELAY` _(new in inboard 0.11)_
+
+-   Floating point value specifying the time, in seconds, to wait before reloading files.
+-   Default: not set (the value is set by `uvicorn.config.Config`)
+-   Custom: `"0.5"`
+
+    <!-- prettier-ignore -->
+    !!! note
+
+        - `uvicorn.run` equivalent: `reload_delay`
+        - Uvicorn CLI equivalent: `--reload-delay`
+
+`RELOAD_EXCLUDES` _(new in inboard 0.11)_
+
+-   Glob pattern indicating files to exclude when watching for changes with watchgod, formatted as comma-separated string.
+-   Default: not set (the value is set by `uvicorn.config.Config`)
+-   Custom: `"*[Dd]ockerfile"`
+
+    <!-- prettier-ignore -->
+    !!! note
+
+        - Parsed into a list of strings in the same manner as for `RELOAD_DIRS`.
+        - `uvicorn.run` equivalent: `reload_excludes`
+        - Uvicorn CLI equivalent: `--reload-exclude`
+
+`RELOAD_INCLUDES` _(new in inboard 0.11)_
+
+-   Glob pattern indicating files to include when watching for changes with watchgod, formatted as comma-separated string.
+-   Default: not set (the value is set by `uvicorn.config.Config`)
+-   Custom: `"*.py, *.md"`
+
+    <!-- prettier-ignore -->
+    !!! note
+
+        - Parsed into a list of strings in the same manner as for `RELOAD_DIRS`.
+        - `uvicorn.run` equivalent: `reload_includes`
+        - Uvicorn CLI equivalent: `--reload-include`
 
 ## Logging
 
