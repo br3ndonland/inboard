@@ -51,7 +51,7 @@ def set_gunicorn_options(app_module: str) -> list:
 
 def _split_uvicorn_option(option: str) -> Optional[list]:
     return (
-        [d.lstrip() for d in str(os.getenv(option.upper())).split(sep=",")]
+        [d.strip() for d in str(os.getenv(option.upper())).split(sep=",")]
         if os.getenv(option.upper())
         else None
     )
@@ -67,7 +67,6 @@ def set_uvicorn_options(log_config: Optional[dict] = None) -> dict:
     reload_excludes = _split_uvicorn_option("RELOAD_EXCLUDES")
     reload_includes = _split_uvicorn_option("RELOAD_INCLUDES")
     use_reload = bool((value := os.getenv("WITH_RELOAD")) and value.lower() == "true")
-
     return dict(
         host=host,
         port=port,

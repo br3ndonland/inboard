@@ -276,7 +276,7 @@ class TestStartServer:
         ),
     )
     @pytest.mark.parametrize(
-        "reload_dirs", ["inboard", "inboard,tests", "inboard, tests"]
+        "reload_dirs", ("inboard", "inboard,tests", "inboard, tests ")
     )
     @pytest.mark.timeout(2)
     def test_start_server_uvicorn_reload_dirs(
@@ -293,11 +293,11 @@ class TestStartServer:
         monkeypatch.setenv("WITH_RELOAD", "true")
         monkeypatch.setenv("RELOAD_DELAY", "0.5")
         monkeypatch.setenv("RELOAD_DIRS", reload_dirs)
-        split_dirs = [d.lstrip() for d in str(os.getenv("RELOAD_DIRS")).split(sep=",")]
+        split_dirs = [d.strip() for d in str(os.getenv("RELOAD_DIRS")).split(sep=",")]
         if reload_dirs == "inboard":
-            assert len(split_dirs) == 1
+            assert split_dirs == [reload_dirs]
         else:
-            assert len(split_dirs) == 2
+            assert split_dirs == ["inboard", "tests"]
         mock_run = mocker.patch("inboard.start.uvicorn.run", autospec=True)
         start.start_server(
             str(os.getenv("PROCESS_MANAGER")),
