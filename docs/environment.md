@@ -250,6 +250,45 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
         - `uvicorn.run` equivalent: `reload_includes`
         - Uvicorn CLI equivalent: `--reload-include`
 
+`UVICORN_CONFIG_OPTIONS` _(advanced usage, new in inboard 0.11)_
+
+-   JSON-formatted string containing additional keyword arguments ("kwargs") to pass directly to Uvicorn.
+-   Default: not set
+-   Custom: `UVICORN_CONFIG_OPTIONS='{"reload": true, "reload_delay": null}'`
+
+The idea here is to allow a catch-all Uvicorn config variable in the spirit of `GUNICORN_CMD_ARGS`, so that advanced users can specify the full range of Uvicorn options even if inboard has not directly implemented them. The `inboard.start` module will run the `UVICORN_CONFIG_OPTIONS` environment variable value through `json.loads()`, and then pass the resultant dictionary through to Uvicorn. If the same option is set with an individual environment variable (such as `WITH_RELOAD`) and with a JSON value in `UVICORN_CONFIG_OPTIONS`, the JSON value will take precedence.
+
+`json.loads()` converts data types from JSON to Python, and returns a Python dictionary. See the guide to [understanding JSON schema](https://json-schema.org/understanding-json-schema/index.html) for many helpful examples of how JSON data types correspond to Python data types. If the Uvicorn options are already available as a Python dictionary, dump them to a JSON-formatted string with `json.dumps()`, and set that as an environment variable.
+
+<!-- prettier-ignore -->
+!!! example "Example of how to format `UVICORN_CONFIG_OPTIONS` as valid JSON"
+
+    ```py
+    >>> import json
+    >>> import os
+    >>> uvicorn_config_dict = dict(host="0.0.0.0", port=80, log_config=None, log_level="info", reload=False)
+    >>> json.dumps(uvicorn_config_dict)
+    '{"host": "0.0.0.0", "port": 80, "log_config": null, "log_level": "info", "reload": false}'
+    >>> os.environ["UVICORN_CONFIG_OPTIONS"] = json.dumps(uvicorn_config_dict)
+    >>> json.loads(os.environ["UVICORN_CONFIG_OPTIONS"]) == uvicorn_config_dict
+    True
+    ```
+
+<!-- prettier-ignore -->
+!!! warning
+
+    The `UVICORN_CONFIG_OPTIONS` environment variable is suggested for advanced usage because it requires some knowledge of `uvicorn.config.Config`. Other than the JSON -> Python dictionary conversion, no additional type conversions or validations are performed on `UVICORN_CONFIG_OPTIONS`. All options should be able to be passed directly to `uvicorn.config.Config`.
+
+    In the example below, `reload` will be passed through with the correct type (because it was formatted with the correct JSON type initially), but `access_log` will have an incorrect type (because it was formatted as a string instead of as a Boolean).
+
+    ```py
+    >>> import json
+    >>> import os
+    >>> os.environ["UVICORN_CONFIG_OPTIONS_INCORRECT"] = '{"access_log": "false", "reload": true}'
+    >>> json.loads(os.environ["UVICORN_CONFIG_OPTIONS_INCORRECT"])
+    {'access_log': "false", 'reload': True}
+    ```
+
 ## Logging
 
 `LOGGING_CONF`

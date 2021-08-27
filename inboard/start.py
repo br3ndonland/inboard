@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import importlib.util
+import json
 import logging
 import os
 import subprocess
@@ -67,7 +68,7 @@ def set_uvicorn_options(log_config: Optional[dict] = None) -> dict:
     reload_excludes = _split_uvicorn_option("RELOAD_EXCLUDES")
     reload_includes = _split_uvicorn_option("RELOAD_INCLUDES")
     use_reload = bool((value := os.getenv("WITH_RELOAD")) and value.lower() == "true")
-    return dict(
+    uvicorn_config_options = dict(
         host=host,
         port=port,
         log_config=log_config,
@@ -78,6 +79,10 @@ def set_uvicorn_options(log_config: Optional[dict] = None) -> dict:
         reload_excludes=reload_excludes,
         reload_includes=reload_includes,
     )
+    if value := os.getenv("UVICORN_CONFIG_OPTIONS"):
+        uvicorn_config_options_json = json.loads(value)
+        return {**uvicorn_config_options, **uvicorn_config_options_json}
+    return uvicorn_config_options
 
 
 def start_server(
