@@ -165,3 +165,35 @@ def pre_start_script_tmp_sh(tmp_path: Path) -> Path:
 def settings() -> Settings:
     """Instantiate a _pydantic_ Settings model for testing."""
     return Settings()
+
+
+@pytest.fixture(scope="session")
+def uvicorn_options_default() -> dict:
+    """Return default options used by `uvicorn.run()` for use in test assertions."""
+    return dict(
+        host="0.0.0.0",
+        port=80,
+        log_config=None,
+        log_level="info",
+        reload=False,
+        reload_delay=None,
+        reload_dirs=None,
+        reload_excludes=None,
+        reload_includes=None,
+    )
+
+
+@pytest.fixture
+def uvicorn_options_custom(logging_conf_dict: dict) -> dict:
+    """Return custom options used by `uvicorn.run()` for use in test assertions."""
+    return dict(
+        host="0.0.0.0",
+        port=80,
+        log_config=logging_conf_dict,
+        log_level="debug",
+        reload=True,
+        reload_delay=0.5,
+        reload_dirs=["inboard", "tests"],
+        reload_excludes=["*[Dd]ockerfile"],
+        reload_includes=["*.py", "*.md"],
+    )

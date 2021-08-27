@@ -176,7 +176,7 @@ class TestSetUvicornOptions:
     ---
     """
 
-    uvicorn_options_custom = (
+    uvicorn_options_custom_environment_variables = (
         ("LOG_LEVEL", "debug"),
         ("WITH_RELOAD", "true"),
         ("RELOAD_DELAY", "0.5"),
@@ -185,41 +185,28 @@ class TestSetUvicornOptions:
         ("RELOAD_INCLUDES", "*.py, *.md"),
     )
 
-    def test_set_uvicorn_options_default(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_set_uvicorn_options_default(
+        self,
+        uvicorn_options_default: dict,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
         """Test default Uvicorn server options."""
         monkeypatch.setenv("WITH_RELOAD", "false")
         result = start.set_uvicorn_options()
-        assert result == dict(
-            host="0.0.0.0",
-            port=80,
-            log_config=None,
-            log_level="info",
-            reload=False,
-            reload_dirs=None,
-            reload_delay=None,
-            reload_excludes=None,
-            reload_includes=None,
-        )
+        assert result == uvicorn_options_default
 
     def test_set_uvicorn_options_custom(
-        self, logging_conf_dict: dict, monkeypatch: pytest.MonkeyPatch
+        self,
+        logging_conf_dict: dict,
+        uvicorn_options_custom: dict,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test custom Uvicorn server options."""
-        for option in self.uvicorn_options_custom:
-            key, value = option
+        for environment_variable in self.uvicorn_options_custom_environment_variables:
+            key, value = environment_variable
             monkeypatch.setenv(key, value)
         result = start.set_uvicorn_options(log_config=logging_conf_dict)
-        assert result == dict(
-            host="0.0.0.0",
-            port=80,
-            log_config=logging_conf_dict,
-            log_level="debug",
-            reload=True,
-            reload_delay=0.5,
-            reload_dirs=["inboard", "tests"],
-            reload_excludes=["*[Dd]ockerfile"],
-            reload_includes=["*.py", "*.md"],
-        )
+        assert result == uvicorn_options_custom
 
 
 class TestStartServer:
