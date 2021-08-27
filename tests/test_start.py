@@ -208,6 +208,37 @@ class TestSetUvicornOptions:
         result = start.set_uvicorn_options(log_config=logging_conf_dict)
         assert result == uvicorn_options_custom
 
+    def test_set_uvicorn_options_default_from_json(
+        self,
+        uvicorn_options_default: dict,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Assert that the correct Uvicorn server options are set, in the correct order,
+        when the `UVICORN_CONFIG_OPTIONS` environment variable is also set.
+        """
+        uvicorn_options_json = (
+            '{"host": "0.0.0.0", "port": 80, "log_config": null, '
+            '"log_level": "info", "reload": false}'
+        )
+        monkeypatch.setenv("UVICORN_CONFIG_OPTIONS", uvicorn_options_json)
+        monkeypatch.setenv("WITH_RELOAD", "true")
+        result = start.set_uvicorn_options()
+        assert result == uvicorn_options_default
+
+    def test_set_uvicorn_options_custom_from_json(
+        self,
+        uvicorn_options_custom: dict,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Assert that the correct Uvicorn server options are set, in the correct order,
+        when the `UVICORN_CONFIG_OPTIONS` environment variable is also set.
+        """
+        uvicorn_options_json = start.json.dumps(uvicorn_options_custom)
+        monkeypatch.setenv("UVICORN_CONFIG_OPTIONS", uvicorn_options_json)
+        monkeypatch.setenv("WITH_RELOAD", "false")
+        result = start.set_uvicorn_options()
+        assert result == uvicorn_options_custom
+
 
 class TestStartServer:
     """Start Uvicorn and Gunicorn servers using the method in `start.py`.
