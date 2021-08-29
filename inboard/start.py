@@ -52,8 +52,8 @@ def set_gunicorn_options(app_module: str) -> list:
 
 def _split_uvicorn_option(option: str) -> Optional[list]:
     return (
-        [d.strip() for d in str(os.getenv(option.upper())).split(sep=",")]
-        if os.getenv(option.upper())
+        [option_item.strip() for option_item in str(option_value).split(sep=",")]
+        if (option_value := os.getenv(option.upper()))
         else None
     )
 
