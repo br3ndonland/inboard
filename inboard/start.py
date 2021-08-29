@@ -58,15 +58,29 @@ def _split_uvicorn_option(option: str) -> Optional[list]:
     )
 
 
+def _update_uvicorn_config_options(uvicorn_config_options: dict) -> dict:
+    if uvicorn.__version__ >= "0.15.0":
+        reload_delay = float(value) if (value := os.getenv("RELOAD_DELAY")) else None
+        reload_excludes = _split_uvicorn_option("RELOAD_EXCLUDES")
+        reload_includes = _split_uvicorn_option("RELOAD_INCLUDES")
+        uvicorn_config_options_015 = dict(
+            reload_delay=reload_delay,
+            reload_excludes=reload_excludes,
+            reload_includes=reload_includes,
+        )
+        uvicorn_config_options.update(uvicorn_config_options_015)
+    if value := os.getenv("UVICORN_CONFIG_OPTIONS"):
+        uvicorn_config_options_json = json.loads(value)
+        uvicorn_config_options.update(uvicorn_config_options_json)
+    return uvicorn_config_options
+
+
 def set_uvicorn_options(log_config: Optional[dict] = None) -> dict:
     """Set options for running the Uvicorn server."""
     host = os.getenv("HOST", "0.0.0.0")
     port = int(os.getenv("PORT", "80"))
     log_level = os.getenv("LOG_LEVEL", "info")
-    reload_delay = float(value) if (value := os.getenv("RELOAD_DELAY")) else None
     reload_dirs = _split_uvicorn_option("RELOAD_DIRS")
-    reload_excludes = _split_uvicorn_option("RELOAD_EXCLUDES")
-    reload_includes = _split_uvicorn_option("RELOAD_INCLUDES")
     use_reload = bool((value := os.getenv("WITH_RELOAD")) and value.lower() == "true")
     uvicorn_config_options = dict(
         host=host,
@@ -74,15 +88,9 @@ def set_uvicorn_options(log_config: Optional[dict] = None) -> dict:
         log_config=log_config,
         log_level=log_level,
         reload=use_reload,
-        reload_delay=reload_delay,
         reload_dirs=reload_dirs,
-        reload_excludes=reload_excludes,
-        reload_includes=reload_includes,
     )
-    if value := os.getenv("UVICORN_CONFIG_OPTIONS"):
-        uvicorn_config_options_json = json.loads(value)
-        return {**uvicorn_config_options, **uvicorn_config_options_json}
-    return uvicorn_config_options
+    return _update_uvicorn_config_options(uvicorn_config_options)
 
 
 def start_server(
