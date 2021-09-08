@@ -243,11 +243,11 @@ Change the port numbers to run multiple containers simultaneously (`-p 81:80`).
 -   **Branch protection is enabled on `develop` and `main`.**
     -   `develop`:
         -   Require signed commits
-        -   Include adminstrators
+        -   Include administrators
         -   Allow force pushes
     -   `main`:
         -   Require signed commits
-        -   Include adminstrators
+        -   Include administrators
         -   Do not allow force pushes
         -   Require status checks to pass before merging (commits must have previously been pushed to `develop` and passed all checks)
 -   **To create a release:**
