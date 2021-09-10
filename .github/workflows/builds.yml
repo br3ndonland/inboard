@@ -79,10 +79,6 @@ jobs:
           echo "LINUX_TAG=$LINUX_TAG" >> $GITHUB_ENV
           echo "PYTHON_VERSION=$PYTHON_VERSION" >> $GITHUB_ENV
           echo "PYTHON_TAG=$PYTHON_TAG" >> $GITHUB_ENV
-      - name: Log in to Docker registry
-        run: |
-          echo ${{ secrets.PAT_GHCR }} | docker login ghcr.io \
-            -u ${{ github.actor }} --password-stdin
       - name: Build Docker images
         run: |
           docker build . --rm --target base \
@@ -150,6 +146,14 @@ jobs:
           smoke_test_xfail -a test_user:incorrect_password :82/status
           smoke_test_xfail :81/status
           smoke_test_xfail :82/status
+      - name: Log in to Docker registry
+        if: >
+          startsWith(github.ref, 'refs/tags/') ||
+          github.ref == 'refs/heads/develop' ||
+          github.ref == 'refs/heads/main'
+        run: |
+          echo ${{ secrets.PAT_GHCR }} | docker login ghcr.io \
+            -u ${{ github.actor }} --password-stdin
       - name: Tag and push Docker images with latest tags
         if: >
           matrix.python-version == 3.9 &&
