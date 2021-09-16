@@ -4,13 +4,7 @@ import sys
 from fastapi import Depends, FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 
-from inboard.app.utilities_fastapi import (
-    GetRoot,
-    GetStatus,
-    GetUser,
-    Settings,
-    basic_auth,
-)
+from inboard.app.utilities_fastapi import GetRoot, GetStatus, GetUser, basic_auth
 
 origin_regex = r"^(https?:\/\/)(localhost|([\w\.]+\.)?br3ndon.land)(:[0-9]+)?$"
 server = (
@@ -20,9 +14,7 @@ server = (
 )
 version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
 
-settings = Settings()
-
-app = FastAPI(title=settings.name, version=settings.version)
+app = FastAPI(title="inboard")
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,

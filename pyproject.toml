@@ -34,7 +34,6 @@ gunicorn = "^20"
 uvicorn = {version = "^0.15", extras = ["standard"]}
 fastapi = {version = "^0.68", optional = true}
 starlette = {version = "^0.14", optional = true}
-toml = {version = ">=0.10", optional = true}
 
 [tool.poetry.dev-dependencies]
 black = {version = "21.7b0", allow-prereleases = true}
@@ -50,8 +49,8 @@ pytest-timeout = "^1.4"
 requests = "^2.24"
 
 [tool.poetry.extras]
-all = ["fastapi", "toml"]
-fastapi = ["fastapi", "toml"]
+all = ["fastapi"]
+fastapi = ["fastapi"]
 starlette = ["starlette"]
 
 [tool.poetry.urls]

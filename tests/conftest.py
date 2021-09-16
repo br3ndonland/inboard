@@ -13,7 +13,6 @@ from inboard.app import prestart as pre_start_module
 from inboard.app.main_base import app as base_app
 from inboard.app.main_fastapi import app as fastapi_app
 from inboard.app.main_starlette import app as starlette_app
-from inboard.app.utilities_fastapi import Settings
 
 
 @pytest.fixture(scope="session")
@@ -159,12 +158,6 @@ def pre_start_script_tmp_sh(tmp_path: Path) -> Path:
     with open(Path(tmp_file), "x") as f:
         f.write('echo "Hello World, from a temporary pre-start shell script"\n')
     return Path(tmp_file)
-
-
-@pytest.fixture(scope="session")
-def settings() -> Settings:
-    """Instantiate a _pydantic_ Settings model for testing."""
-    return Settings()
 
 
 @pytest.fixture(scope="session")
