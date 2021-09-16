@@ -183,6 +183,12 @@ The basic build dependencies used by inboard include `gcc`, `libc-dev`, and `mak
 
     Adding `--virtual .build-project` creates a "virtual package" named `.build-project` that groups the rest of the dependencies listed. All of the dependencies can then be deleted as a set by simply referencing the name of the virtual package, like `apk del .build-project`.
 
+!!! warning "Python packages with Rust extensions on Alpine Linux"
+
+    As described above, Python packages can have C extensions. In addition, an increasing number of packages also feature [Rust](https://www.rust-lang.org/) extensions. Building Python packages with Rust extensions will typically require installation of Rust and [Cargo](https://doc.rust-lang.org/cargo/) (`apk add --no-cache rust cargo`), as well as installation of a Python plugin like [`maturin`](https://github.com/PyO3/maturin) or [`setuptools-rust`](https://github.com/PyO3/setuptools-rust) (`python3 -m pip install --no-cache-dir setuptools-rust`). Remember to uninstall after (`python3 -m pip uninstall -y setuptools-rust`). The installed `rust` package should be retained.
+
+    In addition to build dependencies, Rust also has runtime dependencies, which are satisfied by the `rust` package installed with `apk`. The addition of the Rust runtime dependencies bloats Docker image sizes, and may make it impractical to work with Python packages that have Rust extensions on Alpine Linux. For related discussion, see [rust-lang/rust#88221](https://github.com/rust-lang/rust/issues/88221) and [rust-lang/rustup#2213](https://github.com/rust-lang/rustup/issues/2213).
+
 The good news - Python is planning to support binary package distributions built for Alpine Linux. See [PEP 656](https://www.python.org/dev/peps/pep-0656/) for details.
 
 ### Debian slim
