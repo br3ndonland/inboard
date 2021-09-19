@@ -48,7 +48,7 @@ jobs:
           echo "The POETRY_VERSION environment variable is set to $POETRY_VERSION."
           echo "The installed Poetry version is $POETRY_VERSION_INSTALLED."
           case $POETRY_VERSION_INSTALLED in
-          *$POETRY_VERSION) echo "Poetry version correct." ;;
+          *$POETRY_VERSION*) echo "Poetry version correct." ;;
           *) echo "Poetry version incorrect." && exit 1 ;;
           esac
       - name: Install dependencies
