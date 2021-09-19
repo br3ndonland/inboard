@@ -95,31 +95,51 @@ jobs:
         run: |
           docker build . --rm --target base \
             --build-arg LINUX_VERSION="$LINUX_VERSION" \
+            --build-arg POETRY_VERSION="$POETRY_VERSION" \
             --build-arg PYTHON_VERSION="$PYTHON_VERSION" \
             --cache-from python:"$PYTHON_VERSION$LINUX_TAG" \
             -t ghcr.io/br3ndonland/inboard:base"$LINUX_TAG"
           docker build . --rm --target starlette \
             --build-arg LINUX_VERSION="$LINUX_VERSION" \
+            --build-arg POETRY_VERSION="$POETRY_VERSION" \
             --build-arg PYTHON_VERSION="$PYTHON_VERSION" \
             -t ghcr.io/br3ndonland/inboard:starlette"$LINUX_TAG"
           docker build . --rm --target fastapi \
             --build-arg LINUX_VERSION="$LINUX_VERSION" \
+            --build-arg POETRY_VERSION="$POETRY_VERSION" \
             --build-arg PYTHON_VERSION="$PYTHON_VERSION" \
             -t ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG"
       - name: Run Docker containers for testing
         run: |
-          docker run -d -p 80:80 \
+          docker run -d -p 80:80 --name inboard-base \
             -e "BASIC_AUTH_USERNAME=test_user" \
             -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
             ghcr.io/br3ndonland/inboard:base"$LINUX_TAG"
-          docker run -d -p 81:80 \
+          docker run -d -p 81:80 --name inboard-starlette \
             -e "BASIC_AUTH_USERNAME=test_user" \
             -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
             ghcr.io/br3ndonland/inboard:starlette"$LINUX_TAG"
-          docker run -d -p 82:80 \
+          docker run -d -p 82:80 --name inboard-fastapi \
             -e "BASIC_AUTH_USERNAME=test_user" \
             -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
             ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG"
+      - name: Test Poetry version in Docker containers
+        run: |
+          test_poetry_version_in_docker() {
+            echo "The POETRY_VERSION environment variable is set to $POETRY_VERSION."
+            local poetry_version_in_docker
+            for container_name in "$@"; do
+              poetry_version_in_docker=$(docker exec "$container_name" poetry -V)
+              if [ -n "$poetry_version_in_docker" ]; then
+                echo "Docker container $container_name has $poetry_version_in_docker."
+              fi
+              case $poetry_version_in_docker in
+              *$POETRY_VERSION*) echo "Poetry versions match for $container_name." ;;
+              *) echo "Poetry version test failed for $container_name." && return 1 ;;
+              esac
+            done
+          }
+          test_poetry_version_in_docker inboard-base inboard-starlette inboard-fastapi
       - name: Smoke test Docker containers
         run: |
           handle_error_code() {
