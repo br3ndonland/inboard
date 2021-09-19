@@ -8,14 +8,17 @@ on:
       - "[0-9]+.[0-9]+.[0-9]+*"
   workflow_dispatch:
 
+env:
+  POETRY_HOME: /opt/poetry
+  POETRY_VERSION: 1.1.7
+  POETRY_VIRTUALENVS_CREATE: false
+
 jobs:
   python:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.8, 3.9]
-    env:
-      POETRY_VIRTUALENVS_CREATE: false
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -38,9 +41,18 @@ jobs:
       - name: Install Poetry
         run: |
           curl -fsS -o get-poetry.py \
-            https://raw.githubusercontent.com/python-poetry/poetry/HEAD/get-poetry.py
+            "https://raw.githubusercontent.com/python-poetry/poetry/$POETRY_VERSION/get-poetry.py"
           python get-poetry.py -y
-          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+          echo "$POETRY_HOME/bin" >> $GITHUB_PATH
+      - name: Test Poetry version
+        run: |
+          POETRY_VERSION_INSTALLED=$(poetry -V)
+          echo "The POETRY_VERSION environment variable is set to $POETRY_VERSION."
+          echo "The installed Poetry version is $POETRY_VERSION_INSTALLED."
+          case $POETRY_VERSION_INSTALLED in
+          *$POETRY_VERSION*) echo "Poetry version correct." ;;
+          *) echo "Poetry version incorrect." && exit 1 ;;
+          esac
       - name: Install dependencies
         run: poetry install --no-interaction -E fastapi
       - name: Run pre-commit hooks
