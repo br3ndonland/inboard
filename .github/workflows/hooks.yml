@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 env:
-  POETRY_HOME: /opt/poetry
-  POETRY_VERSION: 1.1.7
-  POETRY_VIRTUALENVS_CREATE: false
+  PIPX_VERSION: "0.16.4"
+  POETRY_VERSION: "1.1.11"
+  POETRY_VIRTUALENVS_IN_PROJECT: true
 
 jobs:
   pre-commit:
@@ -36,12 +36,10 @@ jobs:
           path: ~/.cache/pre-commit
           key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
           restore-keys: ${{ runner.os }}-pre-commit-
+      - name: Install pipx for Python ${{ matrix.python-version }}
+        run: python -m pip install "pipx==$PIPX_VERSION"
       - name: Install Poetry
-        run: |
-          curl -fsS -o get-poetry.py \
-            "https://raw.githubusercontent.com/python-poetry/poetry/$POETRY_VERSION/get-poetry.py"
-          python get-poetry.py -y
-          echo "$POETRY_HOME/bin" >> $GITHUB_PATH
+        run: pipx install "poetry==$POETRY_VERSION"
       - name: Test Poetry version
         run: |
           POETRY_VERSION_INSTALLED=$(poetry -V)
@@ -53,5 +51,15 @@ jobs:
           esac
       - name: Install dependencies
         run: poetry install --no-interaction -E fastapi
+      - name: Test virtualenv location
+        run: |
+          EXPECTED_VIRTUALENV_PATH=${{ github.workspace }}/.venv
+          INSTALLED_VIRTUALENV_PATH=$(poetry env info --path)
+          echo "The virtualenv should be at $EXPECTED_VIRTUALENV_PATH."
+          echo "Poetry is using a virtualenv at $INSTALLED_VIRTUALENV_PATH."
+          case "$INSTALLED_VIRTUALENV_PATH" in
+          "$EXPECTED_VIRTUALENV_PATH") echo "Correct Poetry virtualenv." ;;
+          *) echo "Incorrect Poetry virtualenv." && exit 1 ;;
+          esac
       - name: Run pre-commit hooks
-        run: pre-commit run --all-files
+        run: poetry run pre-commit run --all-files

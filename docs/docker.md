@@ -53,6 +53,7 @@ For a [Poetry](https://github.com/python-poetry/poetry) project with the followi
 
 -   `repo/`
     -   `package/`
+        -   `__init__.py`
         -   `main.py`
         -   `prestart.py`
     -   `Dockerfile`
@@ -69,7 +70,7 @@ The _Dockerfile_ could look like this:
 
     # Install Python requirements
     COPY poetry.lock pyproject.toml /app/
-    WORKDIR /app/
+    WORKDIR /app
     RUN poetry install --no-dev --no-interaction --no-root
 
     # Install Python app
@@ -84,6 +85,7 @@ For a standard `pip` install:
 
 -   `repo/`
     -   `package/`
+        -   `__init__.py`
         -   `main.py`
         -   `prestart.py`
     -   `Dockerfile`
@@ -97,7 +99,7 @@ For a standard `pip` install:
 
     # Install Python requirements
     COPY requirements.txt /app/
-    WORKDIR /app/
+    WORKDIR /app
     RUN python -m pip install -r requirements.txt
 
     # Install Python app
@@ -145,6 +147,41 @@ Details on the `docker run` command:
     -   `WITH_RELOAD`
 -   `-v $(pwd)/package:/app/package`: the specified directory (`/path/to/repo/package` in this example) will be [mounted as a volume](https://docs.docker.com/engine/reference/run/#volume-shared-filesystems) inside of the container at `/app/package`. When files in the working directory change, Docker and Uvicorn will sync the files to the running Docker container.
 
+## Docker and Poetry
+
+As explained in [python-poetry/poetry#1879](https://github.com/python-poetry/poetry/discussions/1879#discussioncomment-346113), there are two conflicting conventions to consider when working with Poetry in Docker:
+
+1. Docker's convention is to not use virtualenvs, because containers themselves provide sufficient isolation.
+2. Poetry's convention is to always use virtualenvs, because of the reasons given in [python-poetry/poetry#3209](https://github.com/python-poetry/poetry/pull/3209#issuecomment-710678083).
+
+!!! warning "Docker and Poetry - the previous approach"
+
+    This project previously preferred the Docker convention:
+
+    -   Poetry itself was installed with the _get-poetry.py_ script, with the environment variable `POETRY_HOME=/opt/poetry` used to specify a consistent location for Poetry.
+    -   `poetry install` was used with `POETRY_VIRTUALENVS_CREATE=false` to install the project's packages into the system Python directory.
+
+    The conventional Docker approach no longer works because:
+
+    -   The old install script _get-poetry.py_ is deprecated and not compatible with Python 3.10.
+    -   The new install script _install-poetry.py_ has been problematic so far, and Poetry doesn't really test it, so it will likely continue to be problematic.
+
+!!! success "Docker and Poetry - the updated approach"
+
+    The updated approach uses [`pipx`](https://pypa.github.io/pipx/) to install Poetry.
+
+    In the updated approach:
+
+    -   `ENV PATH=/opt/pipx/bin:/app/.venv/bin:$PATH` is set first to prepare the `$PATH`.
+    -   `pip` is used to install a pinned version of `pipx`.
+    -   `pipx` is used to install a pinned version of Poetry, with `PIPX_BIN_DIR=/opt/pipx/bin` used to specify the location where `pipx` installs the Poetry command-line application, and `PIPX_HOME=/opt/pipx/home` used to specify the location for `pipx` itself.
+    -   `poetry install` is used with `POETRY_VIRTUALENVS_CREATE=true`, `POETRY_VIRTUALENVS_IN_PROJECT=true` and `WORKDIR /app` to install the project's packages into the virtualenv at `/app/.venv`.
+
+    With this approach:
+
+    -   Subsequent `python` commands will use the executable at `app/.venv/bin/python`.
+    -   As long as `POETRY_VIRTUALENVS_IN_PROJECT=true` and `WORKDIR /app` are retained, subsequent Poetry commands will use the same virtual environment at `/app/.venv`.
+
 ## Linux distributions
 
 ### Alpine
@@ -172,7 +209,7 @@ The basic build dependencies used by inboard include `gcc`, `libc-dev`, and `mak
     FROM ghcr.io/br3ndonland/inboard:${INBOARD_DOCKER_TAG}
     ENV APP_MODULE=mypackage.main:app
     COPY poetry.lock pyproject.toml /app/
-    WORKDIR /app/
+    WORKDIR /app
     RUN sh -c '. /etc/os-release; if [ "$ID" = "alpine" ]; then apk add --no-cache --virtual .build-project build-base freetype-dev gcc libc-dev libpng-dev make openblas-dev postgresql-dev; fi' && \
       poetry install --no-dev --no-interaction --no-root && \
       sh -c '. /etc/os-release; if [ "$ID" = "alpine" ]; then apk del .build-project && apk add --no-cache libpq; fi'
@@ -208,7 +245,7 @@ A _Dockerfile_ equivalent to the Alpine Linux example might look like the follow
     FROM ghcr.io/br3ndonland/inboard:${INBOARD_DOCKER_TAG}
     ENV APP_MODULE=mypackage.main:app
     COPY poetry.lock pyproject.toml /app/
-    WORKDIR /app/
+    WORKDIR /app
     ARG INBOARD_DOCKER_TAG
     RUN sh -c '. /etc/os-release; if [ "$ID" = "debian" ] && echo "$INBOARD_DOCKER_TAG" | grep -q "slim"; then apt-get update -qy && apt-get install -qy --no-install-recommends gcc libc-dev libpq-dev make wget; fi' && \
       poetry install --no-dev --no-interaction --no-root && \
