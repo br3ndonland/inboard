@@ -16,9 +16,6 @@ env:
 jobs:
   analyze:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.8, 3.9]
     permissions:
       actions: read
       contents: read
@@ -27,14 +24,14 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.9"
       - name: Set up Poetry cache for Python dependencies
         uses: actions/cache@v2
         with:
           path: ~/.cache/pypoetry
           key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
           restore-keys: ${{ runner.os }}-poetry-
-      - name: Install pipx for Python ${{ matrix.python-version }}
+      - name: Install pipx
         run: python -m pip install "pipx==$PIPX_VERSION"
       - name: Install Poetry
         run: pipx install "poetry==$POETRY_VERSION"
