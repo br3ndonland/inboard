@@ -7,8 +7,8 @@ LABEL org.opencontainers.image.source="https://github.com/br3ndonland/inboard"
 LABEL org.opencontainers.image.title="inboard"
 LABEL org.opencontainers.image.url="https://github.com/br3ndonland/inboard/pkgs/container/inboard"
 ARG LINUX_VERSION PIPX_VERSION=0.16.4 POETRY_VERSION=1.1.11
-ENV APP_MODULE=inboard.app.main_base:app LINUX_VERSION=$LINUX_VERSION PATH=/opt/pipx/bin:/app/.venv/bin:$PATH PIPX_BIN_DIR=/opt/pipx/bin PIPX_HOME=/opt/pipx/home PIPX_VERSION=$PIPX_VERSION POETRY_VERSION=$POETRY_VERSION POETRY_VIRTUALENVS_IN_PROJECT=true PYTHONPATH=/app
-COPY poetry.lock pyproject.toml /app/
+ENV APP_MODULE=inboard.app.main_base:app LINUX_VERSION=$LINUX_VERSION PATH=/opt/pipx/bin:/app/.venv/bin:$PATH PIPX_BIN_DIR=/opt/pipx/bin PIPX_HOME=/opt/pipx/home PIPX_VERSION=$PIPX_VERSION POETRY_VERSION=$POETRY_VERSION PYTHONPATH=/app
+COPY poetry.lock poetry.toml pyproject.toml /app/
 WORKDIR /app
 RUN sh -c 'if [ "$LINUX_VERSION" = "slim" ]; then apt-get update -qy && apt-get install -qy --no-install-recommends gcc libc-dev make wget; fi' && \
   sh -c '. /etc/os-release; if [ "$ID" = "alpine" ]; then apk add --no-cache --virtual .build-deps gcc libc-dev libffi-dev make openssl-dev; fi' && \
