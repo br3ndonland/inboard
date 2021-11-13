@@ -226,7 +226,7 @@ The basic build dependencies used by inboard include `gcc`, `libc-dev`, and `mak
 
     In addition to build dependencies, Rust also has runtime dependencies, which are satisfied by the `rust` package installed with `apk`. The addition of the Rust runtime dependencies bloats Docker image sizes, and may make it impractical to work with Python packages that have Rust extensions on Alpine Linux. For related discussion, see [rust-lang/rust#88221](https://github.com/rust-lang/rust/issues/88221) and [rust-lang/rustup#2213](https://github.com/rust-lang/rustup/issues/2213).
 
-The good news - Python is planning to support binary package distributions built for Alpine Linux. See [PEP 656](https://www.python.org/dev/peps/pep-0656/) for details.
+The good news - Python now supports binary package distributions built for `musl`-based Linux distributions like Alpine Linux. See [PEP 656](https://www.python.org/dev/peps/pep-0656/) and [`cibuildwheel`](https://cibuildwheel.readthedocs.io/en/stable/) for details.
 
 ### Debian slim
 
