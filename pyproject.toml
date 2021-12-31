@@ -2,6 +2,15 @@
 profile = "black"
 src_paths = ["inboard", "tests"]
 
+[tool.mypy]
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+explicit_package_bases = true
+files = ["**/*.py"]
+namespace_packages = true
+plugins = "pydantic.mypy"
+show_error_codes = true
+
 [tool.poetry]
 name = "inboard"
 version = "0.13.0"
@@ -37,7 +46,7 @@ black = {version = "21.12b0", allow-prereleases = true}
 flake8 = "^4"
 isort = "^5.6"
 mkdocs-material = "^7"
-mypy = "0.812"
+mypy = ">0.900,<1"
 pre-commit = "^2.8"
 pytest = "^6.2"
 pytest-cov = "^3"
