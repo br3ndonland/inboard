@@ -2,7 +2,7 @@ minimum_pre_commit_version: 2.8.0
 default_stages: [commit, push, manual]
 repos:
   - repo: https://github.com/psf/black
-    rev: 21.9b0
+    rev: 21.12b0
     hooks:
       - id: black
   - repo: https://github.com/pycqa/flake8
@@ -11,7 +11,7 @@ repos:
       - id: flake8
         args: [--max-line-length=88]
   - repo: https://github.com/pycqa/isort
-    rev: 5.9.3
+    rev: 5.10.1
     hooks:
       - id: isort
         args: [--filter-files]
@@ -21,11 +21,11 @@ repos:
       - id: mypy
         language: system
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.4.1
+    rev: v2.5.1
     hooks:
       - id: prettier
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.1.0
     hooks:
       - id: check-added-large-files
         args: [--maxkb=800]
