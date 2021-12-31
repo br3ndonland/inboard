@@ -45,7 +45,7 @@ starlette = {version = "^0.16", optional = true}
 black = {version = "21.12b0", allow-prereleases = true}
 flake8 = "^4"
 isort = "^5.6"
-mkdocs-material = "^7"
+mkdocs-material = "^8"
 mypy = ">0.900,<1"
 pre-commit = "^2.8"
 pytest = "^6.2"
