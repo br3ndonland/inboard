@@ -42,7 +42,7 @@ fastapi = {version = "^0.70", optional = true}
 starlette = {version = "^0.16", optional = true}
 
 [tool.poetry.dev-dependencies]
-black = {version = "21.12b0", allow-prereleases = true}
+black = "^22"
 flake8 = "^4"
 isort = "^5.6"
 mkdocs-material = "^8"
