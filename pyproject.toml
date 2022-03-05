@@ -24,6 +24,7 @@ readme = "README.md"
 include = ["inboard/py.typed"]
 keywords = ["asgi", "docker", "fastapi", "gunicorn", "uvicorn"]
 classifiers = [
+  "Framework :: FastAPI",
   "Natural Language :: English",
   "Topic :: Internet :: Log Analysis",
   "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
