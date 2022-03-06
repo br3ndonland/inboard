@@ -18,9 +18,14 @@ Simply running `docker pull ghcr.io/br3ndonland/inboard` will pull the latest Fa
     docker pull ghcr.io/br3ndonland/inboard:starlette
 
     # Pull image from specific release (new in inboard 0.6.0)
-    docker pull ghcr.io/br3ndonland/inboard:base-0.6.0
-    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.6.0
-    docker pull ghcr.io/br3ndonland/inboard:starlette-0.6.0
+    docker pull ghcr.io/br3ndonland/inboard:base-0.22.0
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.22.0
+    docker pull ghcr.io/br3ndonland/inboard:starlette-0.22.0
+
+    # Pull image from latest minor version release (new in inboard 0.22.0)
+    docker pull ghcr.io/br3ndonland/inboard:base-0.22
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.22
+    docker pull ghcr.io/br3ndonland/inboard:starlette-0.22
 
     # Pull image with specific Python version
     docker pull ghcr.io/br3ndonland/inboard:base-python3.8
@@ -28,23 +33,23 @@ Simply running `docker pull ghcr.io/br3ndonland/inboard` will pull the latest Fa
     docker pull ghcr.io/br3ndonland/inboard:starlette-python3.8
 
     # Pull image from specific release and with specific Python version
-    docker pull ghcr.io/br3ndonland/inboard:base-0.6.0-python3.8
-    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.6.0-python3.8
-    docker pull ghcr.io/br3ndonland/inboard:starlette-0.6.0-python3.8
+    docker pull ghcr.io/br3ndonland/inboard:base-0.22-python3.8
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.22-python3.8
+    docker pull ghcr.io/br3ndonland/inboard:starlette-0.22-python3.8
 
     # Append `-alpine` to any of the above for Alpine Linux (new in inboard 0.11.0)
     docker pull ghcr.io/br3ndonland/inboard:latest-alpine
     docker pull ghcr.io/br3ndonland/inboard:fastapi-alpine
-    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.11.0-alpine
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.22-alpine
     docker pull ghcr.io/br3ndonland/inboard:fastapi-python3.8-alpine
-    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.11.0-python3.8-alpine
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.22-python3.8-alpine
 
     # Append `-slim` to any of the above for Debian slim (new in inboard 0.11.0)
     docker pull ghcr.io/br3ndonland/inboard:latest-slim
     docker pull ghcr.io/br3ndonland/inboard:fastapi-slim
-    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.11.0-slim
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.22-slim
     docker pull ghcr.io/br3ndonland/inboard:fastapi-python3.8-slim
-    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.11.0-python3.8-slim
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-0.22-python3.8-slim
     ```
 
 ## Use images in a _Dockerfile_
