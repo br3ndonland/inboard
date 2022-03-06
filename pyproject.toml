@@ -39,7 +39,7 @@ classifiers = [
 python = "^3.8"
 gunicorn = "^20"
 uvicorn = {version = "^0.15", extras = ["standard"]}
-fastapi = {version = "^0.73", optional = true}
+fastapi = {version = "^0.74", optional = true}
 starlette = {version = "^0.17", optional = true}
 
 [tool.poetry.dev-dependencies]

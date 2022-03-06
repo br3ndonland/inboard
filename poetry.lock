@@ -140,7 +140,7 @@ python-versions = "*"
 
 [[package]]
 name = "fastapi"
-version = "0.73.0"
+version = "0.74.1"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
 category = "main"
 optional = true
@@ -833,7 +833,7 @@ starlette = ["starlette"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "0721b619b5bfb6a2027212dea041b7de1857492263f1c5697d9bd3e1ff11c761"
+content-hash = "9e6186f7f330e68c704396a86c181b5bb4ca43fb593885525e618849b6af69d8"
 
 [metadata.files]
 anyio = [
@@ -945,8 +945,8 @@ distlib = [
     {file = "distlib-0.3.4.zip", hash = "sha256:e4b58818180336dc9c529bfb9a0b58728ffc09ad92027a3f30b7cd91e3458579"},
 ]
 fastapi = [
-    {file = "fastapi-0.73.0-py3-none-any.whl", hash = "sha256:f0a618aff5f6942862f2d3f20f39b1c037e33314d1b8207fd1c3a2cca76dfd8c"},
-    {file = "fastapi-0.73.0.tar.gz", hash = "sha256:dcfee92a7f9a72b5d4b7ca364bd2b009f8fc10d95ed5769be20e94f39f7e5a15"},
+    {file = "fastapi-0.74.1-py3-none-any.whl", hash = "sha256:b8ec8400623ef0b2ff558ebe06753b349f8e3a5dd38afea650800f2644ddba34"},
+    {file = "fastapi-0.74.1.tar.gz", hash = "sha256:b58a2c46df14f62ebe6f24a9439927539ba1959b9be55ba0e2f516a683e5b9d4"},
 ]
 filelock = [
     {file = "filelock-3.6.0-py3-none-any.whl", hash = "sha256:f8314284bfffbdcfa0ff3d7992b023d4c628ced6feb957351d4c48d059f56bc0"},
