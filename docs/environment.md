@@ -47,6 +47,8 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 `PRE_START_PATH`
 
 -   Path to a pre-start script.
+    -   inboard optionally runs a pre-start script before starting the server. The path to a pre-start script can be specified with the environment variable `PRE_START_PATH`. If the environment variable is set to a nonzero value, inboard will run the script at the provided path, using the [`subprocess`](https://docs.python.org/3/library/subprocess.html) standard library package.
+    -   If the pre-start script exits with an error, inboard will not start the server.
 -   Default: `"/app/inboard/prestart.py"` (provided with inboard)
 -   Custom:
 

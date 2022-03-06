@@ -66,6 +66,29 @@ class TestRunPreStartScript:
             ]
         )
 
+    def test_run_pre_start_script_error(
+        self,
+        mocker: MockerFixture,
+        monkeypatch: pytest.MonkeyPatch,
+        pre_start_script_error: Path,
+    ) -> None:
+        """Test `start.run_pre_start_script` with an error exit code."""
+        logger = mocker.patch.object(start.logging, "root", autospec=True)
+        monkeypatch.setenv("PRE_START_PATH", str(pre_start_script_error))
+        pre_start_path = os.getenv("PRE_START_PATH")
+        process = "python" if pre_start_script_error.suffix == ".py" else "sh"
+        with pytest.raises(start.subprocess.CalledProcessError):
+            start.run_pre_start_script(logger=logger)
+        assert logger.debug.call_count == 2
+        logger.debug.assert_has_calls(
+            calls=[
+                mocker.call("Checking for pre-start script."),
+                mocker.call(
+                    f"Running pre-start script with {process} {pre_start_path}."
+                ),
+            ]
+        )
+
 
 class TestSetAppModule:
     """Set app module string using the method in `start.py`.

@@ -160,6 +160,29 @@ def pre_start_script_tmp_sh(tmp_path: Path) -> Path:
     return Path(tmp_file)
 
 
+@pytest.fixture(
+    params=(
+        (
+            "prestart_error.py",
+            'raise RuntimeError("Testing pre-start script error behavior")\n',
+        ),
+        ("prestart_error.sh", "exit 1\n"),
+    )
+)
+def pre_start_script_error(request: pytest.FixtureRequest, tmp_path: Path) -> Path:
+    """Create custom temporary pre-start scripts for testing errors.
+
+    This is a parametrized fixture. When the fixture is used in a test, the test
+    will be automatically parametrized, running once for each fixture parameter.
+    https://docs.pytest.org/en/latest/how-to/fixtures.html
+    """
+    request_param = getattr(request, "param")
+    tmp_file = tmp_path / request_param[0]
+    with open(Path(tmp_file), "x") as f:
+        f.write(request_param[1])
+    return Path(tmp_file)
+
+
 @pytest.fixture(scope="session")
 def uvicorn_options_default() -> dict:
     """Return default options used by `uvicorn.run()` for use in test assertions."""

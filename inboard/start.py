@@ -20,7 +20,7 @@ def run_pre_start_script(logger: logging.Logger = logging.getLogger()) -> str:
         process = "python" if Path(pre_start_path).suffix == ".py" else "sh"
         run_message = f"Running pre-start script with {process} {pre_start_path}."
         logger.debug(run_message)
-        subprocess.run([process, pre_start_path])
+        subprocess.run([process, pre_start_path], check=True)
         message = f"Ran pre-start script with {process} {pre_start_path}."
     else:
         message = "No pre-start script found."
