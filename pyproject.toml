@@ -38,7 +38,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.8"
 gunicorn = "^20"
-uvicorn = {version = "^0.15", extras = ["standard"]}
+uvicorn = {version = "^0.16", extras = ["standard"]}
 fastapi = {version = "^0.75", optional = true}
 starlette = {version = "^0.17", optional = true}
 
