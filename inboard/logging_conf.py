@@ -67,7 +67,10 @@ LOGGING_CONFIG: dict = {
         },
         "verbose": {
             "class": "logging.Formatter",
-            "format": "%(asctime)-30s %(process)-10d %(name)-15s %(module)-15s %(levelname)-10s %(message)s",  # noqa: E501
+            "format": (
+                "%(asctime)-30s %(process)-10d %(name)-15s "
+                "%(module)-15s %(levelname)-10s %(message)s"
+            ),
             "datefmt": "%Y-%m-%d %H:%M:%S %z",
         },
         "gunicorn": {
