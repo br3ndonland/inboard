@@ -45,7 +45,7 @@ def set_gunicorn_options(app_module: str) -> list:
     """Set options for running the Gunicorn server."""
     gunicorn_conf_path = os.getenv("GUNICORN_CONF", "/app/inboard/gunicorn_conf.py")
     worker_class = os.getenv("WORKER_CLASS", "uvicorn.workers.UvicornWorker")
-    if not Path(gunicorn_conf_path).is_file():
+    if "python:" not in gunicorn_conf_path and not Path(gunicorn_conf_path).is_file():
         raise FileNotFoundError(f"Unable to find {gunicorn_conf_path}")
     return ["gunicorn", "-k", worker_class, "-c", gunicorn_conf_path, app_module]
 

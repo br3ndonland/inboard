@@ -49,32 +49,30 @@ def clients() -> List[TestClient]:
     return [TestClient(fastapi_app), TestClient(starlette_app)]
 
 
-@pytest.fixture
-def gunicorn_conf_path(monkeypatch: pytest.MonkeyPatch) -> Path:
-    """Set path to default Gunicorn configuration file."""
-    path = Path(gunicorn_conf_module.__file__)
-    monkeypatch.setenv("GUNICORN_CONF", str(path))
-    assert os.getenv("GUNICORN_CONF") == str(path)
+@pytest.fixture(
+    params=(gunicorn_conf_module.__file__, "python:inboard.gunicorn_conf"),
+    scope="session",
+)
+def gunicorn_conf_path(request: pytest.FixtureRequest) -> str:
+    """Set path to default Gunicorn configuration file.
+
+    This is a parametrized fixture. When the fixture is used in a test, the test
+    will be automatically parametrized, running once for each fixture parameter.
+    https://docs.pytest.org/en/latest/how-to/fixtures.html
+    """
+    request_param = getattr(request, "param")
+    path = str(request_param)
+    if "python:" not in path:
+        assert Path(path).is_file()
     return path
 
 
 @pytest.fixture(scope="session")
-def gunicorn_conf_tmp_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
-    """Create temporary directory for Gunicorn configuration file."""
-    return tmp_path_factory.mktemp("gunicorn")
-
-
-@pytest.fixture
-def gunicorn_conf_tmp_file_path(
-    gunicorn_conf_tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-    tmp_path_factory: pytest.TempPathFactory,
-) -> Path:
+def gunicorn_conf_tmp_file_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Copy gunicorn configuration file to temporary directory."""
+    gunicorn_conf_tmp_path = tmp_path_factory.mktemp("gunicorn")
     tmp_file = Path(f"{gunicorn_conf_tmp_path}/gunicorn_conf.py")
     shutil.copy(Path(gunicorn_conf_module.__file__), tmp_file)
-    monkeypatch.setenv("GUNICORN_CONF", str(tmp_file))
-    assert os.getenv("GUNICORN_CONF", str(tmp_file))
     return tmp_file
 
 

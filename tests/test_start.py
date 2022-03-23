@@ -141,24 +141,22 @@ class TestSetGunicornOptions:
     """
 
     def test_set_gunicorn_options_default(
-        self, gunicorn_conf_path: Path, monkeypatch: pytest.MonkeyPatch
+        self, gunicorn_conf_path: str, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test default Gunicorn server options."""
         app_module = "inboard.app.main_fastapi:app"
         monkeypatch.setenv("APP_MODULE", app_module)
-        monkeypatch.setenv("GUNICORN_CONF", str(gunicorn_conf_path))
+        monkeypatch.setenv("GUNICORN_CONF", gunicorn_conf_path)
         result = start.set_gunicorn_options(app_module)
-        assert os.getenv("APP_MODULE") == app_module
-        assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_path)
-        assert "/gunicorn_conf.py" in str(gunicorn_conf_path)
-        assert "logging" not in str(gunicorn_conf_path)
+        assert "gunicorn_conf" in gunicorn_conf_path
+        assert "logging" not in gunicorn_conf_path
         assert isinstance(result, list)
         assert result == [
             "gunicorn",
             "-k",
             "uvicorn.workers.UvicornWorker",
             "-c",
-            str(gunicorn_conf_path),
+            gunicorn_conf_path,
             app_module,
         ]
 
@@ -173,8 +171,6 @@ class TestSetGunicornOptions:
         monkeypatch.setenv("APP_MODULE", app_module)
         monkeypatch.setenv("GUNICORN_CONF", str(gunicorn_conf_tmp_file_path))
         result = start.set_gunicorn_options(app_module)
-        assert os.getenv("APP_MODULE") == app_module
-        assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_tmp_file_path)
         assert "/gunicorn_conf.py" in str(gunicorn_conf_tmp_file_path)
         assert "logging" not in str(gunicorn_conf_tmp_file_path)
         assert isinstance(result, list)
@@ -372,7 +368,7 @@ class TestStartServer:
     def test_start_server_uvicorn_gunicorn(
         self,
         app_module: str,
-        gunicorn_conf_path: Path,
+        gunicorn_conf_path: str,
         logging_conf_dict: dict,
         mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
@@ -385,6 +381,7 @@ class TestStartServer:
             "GUNICORN_CMD_ARGS",
             f"--worker-tmp-dir {tmp_path}",
         )
+        monkeypatch.setenv("GUNICORN_CONF", gunicorn_conf_path)
         monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
         start.start_server(
             str(os.getenv("PROCESS_MANAGER")),
@@ -392,8 +389,6 @@ class TestStartServer:
             logger=logger,
             logging_conf_dict=logging_conf_dict,
         )
-        assert gunicorn_conf_path.parent.exists()
-        assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_path)
         logger.debug.assert_called_once_with("Running Uvicorn with Gunicorn.")
         run.assert_called_once_with(
             [
@@ -401,7 +396,7 @@ class TestStartServer:
                 "-k",
                 "uvicorn.workers.UvicornWorker",
                 "-c",
-                str(gunicorn_conf_path),
+                gunicorn_conf_path,
                 app_module,
             ]
         )
@@ -429,11 +424,10 @@ class TestStartServer:
             "GUNICORN_CMD_ARGS",
             f"--worker-tmp-dir {gunicorn_conf_tmp_file_path.parent}",
         )
+        monkeypatch.setenv("GUNICORN_CONF", str(gunicorn_conf_tmp_file_path))
         monkeypatch.setenv("LOG_FORMAT", "gunicorn")
         monkeypatch.setenv("LOG_LEVEL", "debug")
         monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
-        assert gunicorn_conf_tmp_file_path.parent.exists()
-        assert os.getenv("GUNICORN_CONF") == str(gunicorn_conf_tmp_file_path)
         run = mocker.patch("inboard.start.subprocess.run", autospec=True)
         start.start_server(
             str(os.getenv("PROCESS_MANAGER")),
@@ -441,6 +435,7 @@ class TestStartServer:
             logger=logger,
             logging_conf_dict=logging_conf_dict,
         )
+        assert gunicorn_conf_tmp_file_path.is_file()
         logger.debug.assert_called_with("Running Uvicorn with Gunicorn.")
         run.assert_called_with(
             [
@@ -465,14 +460,16 @@ class TestStartServer:
     def test_start_server_uvicorn_incorrect_process_manager(
         self,
         app_module: str,
-        gunicorn_conf_path: Path,
+        gunicorn_conf_path: str,
         logging_conf_dict: dict,
         mocker: MockerFixture,
+        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.start_server` with Uvicorn and an incorrect process manager."""
         logger = mocker.patch.object(start.logging, "root", autospec=True)
         logger_error_msg = "Error when starting server"
         process_error_msg = "Process manager needs to be either uvicorn or gunicorn"
+        monkeypatch.setenv("GUNICORN_CONF", gunicorn_conf_path)
         with pytest.raises(NameError) as e:
             start.start_server(
                 "incorrect",

@@ -71,11 +71,12 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 `GUNICORN_CONF`
 
--   Path to a [Gunicorn configuration file](https://docs.gunicorn.org/en/latest/settings.html#config-file). The Gunicorn command-line accepts file paths instead of module paths.
+-   Path to a [Gunicorn configuration file](https://docs.gunicorn.org/en/latest/settings.html#config-file). Gunicorn accepts either file paths or module paths.
 -   Default:
     -   `"/app/inboard/gunicorn_conf.py"` (provided with inboard)
 -   Custom:
     -   `GUNICORN_CONF="/app/package/custom_gunicorn_conf.py"`
+    -   `GUNICORN_CONF="python:package.custom_gunicorn_conf"` (module paths accepted with the `python:` prefix)
 
 ### Process management
 

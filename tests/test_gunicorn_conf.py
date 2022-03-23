@@ -78,7 +78,9 @@ class TestGunicornSettings:
 
     @pytest.mark.parametrize("module", ("base", "fastapi", "starlette"))
     @pytest.mark.timeout(2)
-    def test_gunicorn_config(self, capfd: pytest.CaptureFixture, module: str) -> None:
+    def test_gunicorn_config(
+        self, capfd: pytest.CaptureFixture, gunicorn_conf_path: str, module: str
+    ) -> None:
         """Load Gunicorn configuration file and verify output."""
         app_module = f"inboard.app.main_{module}:app"
         gunicorn_conf_path = gunicorn_conf.__file__
