@@ -174,10 +174,10 @@ def pre_start_script_error(request: pytest.FixtureRequest, tmp_path: Path) -> Pa
     will be automatically parametrized, running once for each fixture parameter.
     https://docs.pytest.org/en/latest/how-to/fixtures.html
     """
-    request_param = getattr(request, "param")
-    tmp_file = tmp_path / request_param[0]
+    file_name, file_content = getattr(request, "param")
+    tmp_file = tmp_path / file_name
     with open(Path(tmp_file), "x") as f:
-        f.write(request_param[1])
+        f.write(file_content)
     return Path(tmp_file)
 
 
