@@ -1,7 +1,6 @@
 import os
 import shutil
 from pathlib import Path
-from typing import List
 
 import pytest
 from fastapi.testclient import TestClient
@@ -39,14 +38,20 @@ def basic_auth(
 
 @pytest.fixture(scope="session")
 def client_asgi() -> TestClient:
-    """Instantiate test client classes."""
+    """Instantiate test client with a plain ASGI app instance."""
     return TestClient(base_app)
 
 
-@pytest.fixture(scope="session")
-def clients() -> List[TestClient]:
-    """Instantiate test client classes."""
-    return [TestClient(fastapi_app), TestClient(starlette_app)]
+@pytest.fixture(params=(fastapi_app, starlette_app), scope="session")
+def client(request: pytest.FixtureRequest) -> TestClient:
+    """Instantiate test client with an app instance.
+
+    This is a parametrized fixture. When the fixture is used in a test, the test
+    will be automatically parametrized, running once for each fixture parameter.
+    https://docs.pytest.org/en/latest/how-to/fixtures.html
+    """
+    app = getattr(request, "param")
+    return TestClient(app)
 
 
 @pytest.fixture(
