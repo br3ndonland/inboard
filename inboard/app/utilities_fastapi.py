@@ -1,10 +1,8 @@
 import os
 import secrets
-from typing import Optional
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from pydantic import BaseModel
 
 
 async def basic_auth(credentials: HTTPBasicCredentials = Depends(HTTPBasic())) -> str:
@@ -26,17 +24,3 @@ async def basic_auth(credentials: HTTPBasicCredentials = Depends(HTTPBasic())) -
             headers={"WWW-Authenticate": "Basic"},
         )
     return credentials.username
-
-
-class GetRoot(BaseModel):
-    Hello: str = "World"
-
-
-class GetStatus(BaseModel):
-    application: str
-    status: str
-    message: Optional[str]
-
-
-class GetUser(BaseModel):
-    username: str

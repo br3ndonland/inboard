@@ -1,10 +1,12 @@
 import os
 import sys
+from typing import Optional
 
 from fastapi import Depends, FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
-from inboard.app.utilities_fastapi import GetRoot, GetStatus, GetUser, basic_auth
+from inboard.app.utilities_fastapi import basic_auth
 
 origin_regex = r"^(https?:\/\/)(localhost|([\w\.]+\.)?br3ndon.land)(:[0-9]+)?$"
 server = (
@@ -13,6 +15,21 @@ server = (
     else "Uvicorn, Gunicorn"
 )
 version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+
+
+class GetRoot(BaseModel):
+    Hello: str = "World"
+
+
+class GetStatus(BaseModel):
+    application: str
+    status: str
+    message: Optional[str]
+
+
+class GetUser(BaseModel):
+    username: str
+
 
 app = FastAPI(title="inboard")
 app.add_middleware(
