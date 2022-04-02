@@ -55,6 +55,91 @@ If inboard is installed from PyPI with `poetry add inboard` or `pip install inbo
 
     ```
 
+## Overriding the logging config
+
+Want to override inboard's entire logging config? No problem. Set up a separate `LOGGING_CONFIG` dictionary, and pass inboard the path to the module containing the dictionary. Try something like this:
+
+!!!example "Example of a complete custom logging config"
+
+    ```py
+    # /app/package/custom_logging.py: set with LOGGING_CONF=package.custom_logging
+    from uvicorn.config import LOGGING_CONFIG as UVICORN_LOGGING_CONFIG
+
+    LOGGING_CONFIG = {
+        "version": 1,
+        # Disable other loggers not specified in the configuration
+        "disable_existing_loggers": True,
+        "formatters": {
+            "gunicorn.access": {
+                "class": "logging.Formatter",
+                "format": "%(asctime)s [%(process)d] [%(levelname)s] %(message)s",
+                "datefmt": "[%Y-%m-%d %H:%M:%S %z]",
+            },
+            # Format Uvicorn loggers with Uvicorn's config directly
+            "uvicorn.access": {
+                "()": UVICORN_LOGGING_CONFIG["formatters"]["access"]["()"],
+                "format": UVICORN_LOGGING_CONFIG["formatters"]["access"]["fmt"],
+            },
+            "uvicorn.default": {
+                "()": UVICORN_LOGGING_CONFIG["formatters"]["default"]["()"],
+                "format": UVICORN_LOGGING_CONFIG["formatters"]["default"]["fmt"],
+            },
+        },
+        "handlers": {
+            "default": {
+                "class": "logging.StreamHandler",
+                "formatter": "uvicorn.default",
+                "level": "INFO",
+                "stream": "ext://sys.stdout",
+            },
+            # Add a separate handler for stderr
+            "error": {
+                "class": "logging.StreamHandler",
+                "formatter": "uvicorn.default",
+                "stream": "ext://sys.stderr",
+            },
+            # Add a separate handler just for gunicorn.access
+            "gunicorn.access": {
+                "class": "logging.StreamHandler",
+                "formatter": "gunicorn.access",
+                "stream": "ext://sys.stdout",
+            },
+            # Add a separate handler just for uvicorn.access
+            "uvicorn.access": {
+                "class": "logging.StreamHandler",
+                "formatter": "uvicorn.access",
+                "stream": "ext://sys.stdout",
+            },
+        },
+        "loggers": {
+            "fastapi": {"propagate": True},
+            # Use the gunicorn.access handler, and don't propagate to root
+            "gunicorn.access": {"handlers": ["gunicorn.access"], "propagate": False},
+            # Use the error handler to output to stderr, and don't propagate to root
+            "gunicorn.error": {
+                "handlers": ["error"],
+                "level": "INFO",
+                "propagate": False,
+            },
+            # Use the uvicorn.access handler, and don't propagate to root
+            "uvicorn.access": {
+                "handlers": ["uvicorn.access"],
+                "level": "INFO",
+                "propagate": False,
+            },
+            # Use the error handler to output to stderr, and don't propagate to root
+            "uvicorn.error": {
+                "handlers": ["error"],
+                "level": "INFO",
+                "propagate": False,
+            },
+        },
+        # Use the uvicorn.default formatter for root
+        "root": {"handlers": ["default"], "level": "INFO"},
+    }
+
+    ```
+
 ## Design decisions
 
 ### Simplify logging
