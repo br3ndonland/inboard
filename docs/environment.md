@@ -309,6 +309,19 @@ The idea here is to allow a catch-all Uvicorn config variable in the spirit of `
     -   `LOG_COLORS="true"`
     -   `LOG_COLORS="false"`
 
+`LOG_FILTERS`
+
+-   Comma-separated string identifying log records to filter out. The string will be split on commas and converted to a set. Each log message will then be checked for each filter in the set. If any matches are present in the log message, the logger will not log that message.
+-   Default: `None` (don't filter out any log records, just log every record)
+-   Custom: `LOG_FILTERS="/health, /heartbeat"` (filter out log messages that contain either the string `"/health"` or the string `"/heartbeat"`, to avoid logging health checks)
+-   See also:
+    -   [AWS Builders' Library: Implementing health checks](https://aws.amazon.com/builders-library/implementing-health-checks/)
+    -   [AWS Elastic Load Balancing docs: Target groups - Health checks for your target groups](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html)
+    -   [benoitc/gunicorn#1781](https://github.com/benoitc/gunicorn/issues/1781)
+    -   [Python 3 docs: How-To - Logging Cookbook - Using Filters to impart contextual information](https://docs.python.org/3/howto/logging-cookbook.html#using-filters-to-impart-contextual-information)
+    -   [Python 3 docs: What's new in Python 3.2 - logging](https://docs.python.org/3/whatsnew/3.2.html#logging)
+    -   [Django 4.0 docs: Topics - Logging](https://docs.djangoproject.com/en/4.0/topics/logging/)
+
 `LOG_FORMAT`
 
 -   [Python logging format](https://docs.python.org/3/library/logging.html#formatter-objects).

@@ -13,10 +13,11 @@ try:
     from .app.utilities_starlette import BasicAuth as StarletteBasicAuth
 except ImportError:  # pragma: no cover
     pass
-from .logging_conf import LOGGING_CONFIG, configure_logging
+from .logging_conf import LOGGING_CONFIG, LogFilter, configure_logging
 
 __all__ = (
     "LOGGING_CONFIG",
+    "LogFilter",
     "StarletteBasicAuth",
     "configure_logging",
     "fastapi_basic_auth",

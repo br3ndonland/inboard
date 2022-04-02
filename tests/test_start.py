@@ -258,11 +258,16 @@ class TestSetUvicornOptions:
     def test_set_uvicorn_options_custom_from_json(
         self,
         uvicorn_options_custom: dict,
+        mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Assert that the correct Uvicorn server options are set, in the correct order,
         when the `UVICORN_CONFIG_OPTIONS` environment variable is also set.
+
+        The `LOGGING_CONFIG` dictionary can't be encoded as a JSON string when it has
+        a class definition (the filter class), so the "filters" dict has to be removed.
         """
+        mocker.patch.dict(uvicorn_options_custom["log_config"]["filters"], clear=True)
         uvicorn_options_json = start.json.dumps(uvicorn_options_custom)
         monkeypatch.setenv("UVICORN_CONFIG_OPTIONS", uvicorn_options_json)
         monkeypatch.setenv("WITH_RELOAD", "false")
