@@ -82,7 +82,7 @@ class LogFilter(logging.Filter):
         if self.filters is None:
             return True
         message = record.getMessage()
-        return not any(match in message for match in self.filters)
+        return all(match not in message for match in self.filters)
 
     @staticmethod
     def set_filters(input_filters: Optional[str] = None) -> Optional[Set[str]]:
