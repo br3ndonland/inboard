@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import os
 import sys
-from typing import Awaitable, Callable, Dict
+from typing import Awaitable, Callable
 
 
 class App:
@@ -9,13 +11,13 @@ class App:
     https://www.uvicorn.org/
     """
 
-    def __init__(self, scope: Dict) -> None:
+    def __init__(self, scope: dict) -> None:
         assert scope["type"] == "http"
         self.scope = scope
 
     async def __call__(
-        self, receive: Dict, send: Callable[[Dict], Awaitable]
-    ) -> Dict[str, str]:
+        self, receive: dict, send: Callable[[dict], Awaitable]
+    ) -> dict[str, str]:
         await send(
             {
                 "type": "http.response.start",
@@ -32,7 +34,7 @@ class App:
             raise NameError("Process manager needs to be either uvicorn or gunicorn.")
         server = "Uvicorn" if process_manager == "uvicorn" else "Uvicorn, Gunicorn,"
         message = f"Hello World, from {server} and Python {version}!"
-        response: Dict = {"type": "http.response.body", "body": message.encode("utf-8")}
+        response: dict = {"type": "http.response.body", "body": message.encode("utf-8")}
         await send(response)
         return response
 

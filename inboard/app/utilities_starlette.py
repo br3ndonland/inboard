@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import base64
 import os
 import secrets
-from typing import Optional, Tuple
 
 from starlette.authentication import (
     AuthCredentials,
@@ -17,7 +18,7 @@ class BasicAuth(AuthenticationBackend):
 
     async def authenticate(
         self, request: HTTPConnection
-    ) -> Optional[Tuple[AuthCredentials, SimpleUser]]:
+    ) -> tuple[AuthCredentials, SimpleUser] | None:
         """Authenticate a Starlette request with HTTP Basic auth."""
         if "Authorization" not in request.headers:
             return None

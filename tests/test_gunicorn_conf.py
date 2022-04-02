@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import multiprocessing
 import subprocess
 from pathlib import Path
-from typing import Optional
 
 import pytest
 
@@ -20,7 +21,7 @@ class TestCalculateWorkers:
         assert gunicorn_conf.workers == max(cores, 2)
 
     @pytest.mark.parametrize("max_workers", (None, "1", "2", "5", "10"))
-    def test_calculate_workers_max(self, max_workers: Optional[str]) -> None:
+    def test_calculate_workers_max(self, max_workers: str | None) -> None:
         """Test Gunicorn worker process calculation with custom maximum."""
         cores = multiprocessing.cpu_count()
         default = max(cores, 2)
@@ -31,7 +32,7 @@ class TestCalculateWorkers:
             assert result == default
 
     @pytest.mark.parametrize("total_workers", (None, "1", "2", "5", "10"))
-    def test_calculate_workers_total(self, total_workers: Optional[str]) -> None:
+    def test_calculate_workers_total(self, total_workers: str | None) -> None:
         """Test Gunicorn worker process calculation with custom total."""
         cores = multiprocessing.cpu_count()
         result = gunicorn_conf.calculate_workers(None, total_workers)
