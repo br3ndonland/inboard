@@ -14,9 +14,11 @@ from inboard.logging_conf import configure_logging
 
 def run_pre_start_script(logger: logging.Logger = logging.getLogger()) -> str:
     """Run a pre-start script at the provided path."""
+    pre_start_path = os.getenv("PRE_START_PATH")
     logger.debug("Checking for pre-start script.")
-    pre_start_path = os.getenv("PRE_START_PATH", "/app/inboard/app/prestart.py")
-    if Path(pre_start_path).is_file():
+    if not pre_start_path:
+        message = "No pre-start script specified."
+    elif Path(pre_start_path).is_file():
         process = "python" if Path(pre_start_path).suffix == ".py" else "sh"
         run_message = f"Running pre-start script with {process} {pre_start_path}."
         logger.debug(run_message)

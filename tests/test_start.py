@@ -66,6 +66,17 @@ class TestRunPreStartScript:
             ]
         )
 
+    def test_run_pre_start_script_none(self, mocker: MockerFixture) -> None:
+        """Test `start.run_pre_start_script` with `PRE_START_PATH` set to `None`."""
+        logger = mocker.patch.object(start.logging, "root", autospec=True)
+        start.run_pre_start_script(logger=logger)
+        logger.debug.assert_has_calls(
+            calls=[
+                mocker.call("Checking for pre-start script."),
+                mocker.call("No pre-start script specified."),
+            ]
+        )
+
     def test_run_pre_start_script_error(
         self,
         mocker: MockerFixture,
