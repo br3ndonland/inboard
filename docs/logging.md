@@ -10,6 +10,82 @@ See [environment variable reference](environment.md).
 -   When running Uvicorn alone, logging is configured programmatically from within the [`start.py` start script](https://github.com/br3ndonland/inboard/blob/HEAD/inboard/start.py), by passing the `LOGGING_CONFIG` dictionary to `uvicorn.run()`.
 -   When running Gunicorn with the Uvicorn worker, the logging configuration dictionary is specified within the [`gunicorn_conf.py`](https://github.com/br3ndonland/inboard/blob/HEAD/inboard/gunicorn_conf.py) configuration file.
 
+## Filtering log messages
+
+[Filters](https://docs.python.org/3/howto/logging-cookbook.html#using-filters-to-impart-contextual-information) identify log messages to filter out, so that the logger does not log messages containing any of the filters. If any matches are present in a log message, the logger will not output the message.
+
+One of the primary use cases for log message filters is health checks. When applications with APIs are deployed, it is common to perform "health checks" on them. Health checks are usually performed by making HTTP requests to a designated API endpoint. These checks are made at frequent intervals, and so they can fill up the access logs with large numbers of unnecessary log records. To avoid logging health checks, add those endpoints to the `LOG_FILTERS` environment variable.
+
+The `LOG_FILTERS` environment variable can be used to specify filters as a comma-separated string, like `LOG_FILTERS="/health, /heartbeat"`. To then add the filters to a class instance, the `LogFilter.set_filters()` method can produce the set of filters from the environment variable value.
+
+```py
+# start a REPL session in a venv in which inboard is installed
+.venv ❯ python
+>>> import os
+>>> import inboard
+>>> os.environ["LOG_FILTERS"] = "/health, /heartbeat"
+>>> inboard.LogFilter.set_filters()
+{'/heartbeat', '/health'}
+```
+
+inboard will do this automatically by reading the `LOG_FILTERS` environment variable.
+
+Let's see this in action by using the [VSCode debugger](https://code.visualstudio.com/docs/python/debugging), with the configuration in _inboard/.vscode/launch.json_. We'll have one terminal instance open to see the server logs from Uvicorn, and another one open to make client HTTP requests.
+
+Start the server:
+
+```log
+/path/to/inboard
+❯ export LOG_FILTERS="/health, /heartbeat"
+
+/path/to/inboard
+❯  /usr/bin/env /path/to/inboard/.venv/bin/python \
+  /path/to/the/python/vscode/extension/pythonFiles/lib/python/debugpy/launcher \
+  61527 -- -m inboard.start
+DEBUG:    Logging dict config loaded from inboard.logging_conf.
+DEBUG:    Checking for pre-start script.
+DEBUG:    Running pre-start script with python /path/to/inboard/inboard/app/prestart.py.
+[prestart] Hello World, from prestart.py! Add database migrations and other scripts here.
+DEBUG:    Ran pre-start script with python /path/to/inboard/inboard/app/prestart.py.
+DEBUG:    App module set to inboard.app.main_fastapi:app.
+DEBUG:    Running Uvicorn without Gunicorn.
+INFO:     Will watch for changes in these directories: ['/path/to/inboard/inboard']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [69531] using watchgod
+INFO:     Started server process [69552]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+```
+
+Make a request to an endpoint that should be logged, using an HTTP client like [HTTPie](https://httpie.io/) or the [HTTPX CLI](https://www.python-httpx.org/):
+
+```sh
+❯ http :8000 -b
+{
+    "Hello": "World"
+}
+
+```
+
+The request will be logged through `uvicorn.access`:
+
+```log
+INFO:     127.0.0.1:61575 - "GET / HTTP/1.1" 200
+```
+
+Next, make a request to an endpoint that should be filtered out of the logs. The username and password you see here are just test values set in the _launch.json_.
+
+```sh
+❯ http :8000/health -a test_user:r4ndom_bUt_memorable -b
+{
+    "application": "inboard",
+    "message": null,
+    "status": "active"
+}
+```
+
+The server does not display a log message.
+
 ## Extending the logging config
 
 If inboard is installed from PyPI with `poetry add inboard` or `pip install inboard`, the logging configuration can be easily customized as explained in the [Python logging configuration docs](https://docs.python.org/3/library/logging.config.html).
