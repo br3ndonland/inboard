@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import os
 from pathlib import Path
-from typing import Set
 
 import pytest
 from pytest_mock import MockerFixture
@@ -194,7 +195,7 @@ class TestLoggingOutput:
         self,
         capfd: pytest.CaptureFixture,
         log_filters_input: str,
-        log_filters_output: Set[str],
+        log_filters_output: set[str],
         mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
