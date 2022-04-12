@@ -143,7 +143,7 @@ class TestEndpoints:
         monkeypatch.setenv("WITH_RELOAD", "false")
         with pytest.raises(NameError) as e:
             client_asgi.get("/")
-            assert str(e) == "Process manager needs to be either uvicorn or gunicorn."
+        assert "Process manager needs to be either uvicorn or gunicorn" in str(e.value)
 
     def test_get_root(self, client: TestClient) -> None:
         """Test a `GET` request to the root endpoint."""
@@ -181,7 +181,7 @@ class TestEndpoints:
                 "detail": "Server HTTP Basic auth credentials not set",
                 "error": "Incorrect username or password",
             }
-        else:
+        else:  # pragma: no cover
             raise AssertionError("TestClient should have a FastAPI or Starlette app.")
         assert error_response_json == expected_json
 
@@ -214,7 +214,7 @@ class TestEndpoints:
                 "detail": "HTTP Basic auth credentials not correct",
                 "error": "Incorrect username or password",
             }
-        else:
+        else:  # pragma: no cover
             raise AssertionError("TestClient should have a FastAPI or Starlette app.")
         assert error_response_json == expected_json
 
@@ -237,7 +237,7 @@ class TestEndpoints:
             assert "FastAPI" in response_json["message"]
         elif isinstance(client.app, Starlette):
             assert "Starlette" in response_json["message"]
-        else:
+        else:  # pragma: no cover
             raise AssertionError("TestClient should have a FastAPI or Starlette app.")
 
     def test_get_user(
