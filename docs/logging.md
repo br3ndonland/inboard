@@ -30,31 +30,35 @@ The `LOG_FILTERS` environment variable can be used to specify filters as a comma
 
 inboard will do this automatically by reading the `LOG_FILTERS` environment variable.
 
-Let's see this in action by using the [VSCode debugger](https://code.visualstudio.com/docs/python/debugging), with the configuration in _inboard/.vscode/launch.json_. We'll have one terminal instance open to see the server logs from Uvicorn, and another one open to make client HTTP requests.
+Let's see this in action by using one of the inboard Docker images. We'll have one terminal instance open to see the server logs from Uvicorn, and another one open to make client HTTP requests.
 
 Start the server:
 
-```log
-/path/to/inboard
-❯ export LOG_FILTERS="/health, /heartbeat"
+```sh
+docker pull ghcr.io/br3ndonland/inboard
+docker run \
+  -d \
+  -e BASIC_AUTH_USERNAME=test_user \
+  -e BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable \
+  -e LOG_FILTERS="/health, /heartbeat" \
+  -e LOG_LEVEL=debug \
+  -e PROCESS_MANAGER=uvicorn \
+  -p 8000:80 \
+  --platform linux/amd64 \
+  ghcr.io/br3ndonland/inboard
+docker logs -f $(docker ps -q -n 1)
+```
 
-/path/to/inboard
-❯  /usr/bin/env /path/to/inboard/.venv/bin/python \
-  /path/to/the/python/vscode/extension/pythonFiles/lib/python/debugpy/launcher \
-  61527 -- -m inboard.start
-DEBUG:    Logging dict config loaded from inboard.logging_conf.
-DEBUG:    Checking for pre-start script.
-DEBUG:    Running pre-start script with python /path/to/inboard/inboard/app/prestart.py.
-[prestart] Hello World, from prestart.py! Add database migrations and other scripts here.
-DEBUG:    Ran pre-start script with python /path/to/inboard/inboard/app/prestart.py.
-DEBUG:    App module set to inboard.app.main_fastapi:app.
-DEBUG:    Running Uvicorn without Gunicorn.
-INFO:     Will watch for changes in these directories: ['/path/to/inboard/inboard']
-INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [69531] using watchgod
-INFO:     Started server process [69552]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
+```log
+DEBUG      Logging dict config loaded from inboard.logging_conf.
+DEBUG      Checking for pre-start script.
+DEBUG      No pre-start script specified.
+DEBUG      App module set to inboard.app.main_fastapi:app.
+DEBUG      Running Uvicorn without Gunicorn.
+INFO       Started server process [1]
+INFO       Waiting for application startup.
+INFO       Application startup complete.
+INFO       Uvicorn running on http://0.0.0.0:80 (Press CTRL+C to quit)
 ```
 
 Make a request to an endpoint that should be logged, using an HTTP client like [HTTPie](https://httpie.io/) or the [HTTPX CLI](https://www.python-httpx.org/):
@@ -70,10 +74,10 @@ Make a request to an endpoint that should be logged, using an HTTP client like [
 The request will be logged through `uvicorn.access`:
 
 ```log
-INFO:     127.0.0.1:61575 - "GET / HTTP/1.1" 200
+INFO       172.17.0.1:65026 - "GET / HTTP/1.1" 200
 ```
 
-Next, make a request to an endpoint that should be filtered out of the logs. The username and password you see here are just test values set in the _launch.json_.
+Next, make a request to an endpoint that should be filtered out of the logs. The username and password you see here are just test values.
 
 ```sh
 ❯ http :8000/health -a test_user:r4ndom_bUt_memorable -b
