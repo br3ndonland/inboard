@@ -21,7 +21,7 @@ show_error_codes = true
 
 [tool.poetry]
 name = "inboard"
-version = "0.23.0"
+version = "0.23.1"
 description = "Docker images and utilities to power your Python APIs and help you ship faster."
 authors = ["Brendon Smith <bws@bws.bio>"]
 license = "MIT"
