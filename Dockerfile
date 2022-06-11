@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.4
 ARG PYTHON_VERSION=3.10 LINUX_VERSION=
 FROM python:${PYTHON_VERSION}${LINUX_VERSION:+-$LINUX_VERSION} AS base
 LABEL org.opencontainers.image.authors="Brendon Smith <bws@bws.bio>"
@@ -10,11 +11,31 @@ ARG LINUX_VERSION PIPX_VERSION=1.1.0 POETRY_VERSION=1.1.11
 ENV APP_MODULE=inboard.app.main_base:app LINUX_VERSION=$LINUX_VERSION PATH=/opt/pipx/bin:/app/.venv/bin:$PATH PIPX_BIN_DIR=/opt/pipx/bin PIPX_HOME=/opt/pipx/home PIPX_VERSION=$PIPX_VERSION POETRY_VERSION=$POETRY_VERSION PYTHONPATH=/app
 COPY poetry.lock poetry.toml pyproject.toml /app/
 WORKDIR /app
-RUN sh -c 'if [ "$LINUX_VERSION" = "slim" ]; then apt-get update -qy && apt-get install -qy --no-install-recommends gcc libc-dev make wget; fi' && \
-  sh -c '. /etc/os-release; if [ "$ID" = "alpine" ]; then apk add --no-cache --virtual .build-deps gcc libc-dev libffi-dev make openssl-dev; fi' && \
-  python -m pip install --no-cache-dir --upgrade pip "pipx==$PIPX_VERSION" && pipx install "poetry==$POETRY_VERSION" && poetry install --no-dev --no-interaction --no-root && \
-  sh -c 'if [ "$LINUX_VERSION" = "slim" ]; then apt-get purge --auto-remove -qy gcc libc-dev make wget; fi' && \
-  sh -c '. /etc/os-release; if [ "$ID" = "alpine" ]; then apk del .build-deps; fi'
+RUN <<HEREDOC
+
+. /etc/os-release
+
+if [ "$ID" = "alpine" ]; then
+  apk add --no-cache --virtual .build-deps \
+    gcc libc-dev libffi-dev make openssl-dev
+elif [ "$LINUX_VERSION" = "slim" ]; then
+  apt-get update -qy
+  apt-get install -qy --no-install-recommends \
+    gcc libc-dev make wget
+fi
+
+python -m pip install --no-cache-dir --upgrade pip "pipx==$PIPX_VERSION"
+pipx install "poetry==$POETRY_VERSION"
+poetry install --no-dev --no-interaction --no-root
+
+if [ "$ID" = "alpine" ]; then
+  apk del .build-deps
+elif [ "$LINUX_VERSION" = "slim" ]; then
+  apt-get purge --auto-remove -qy \
+    gcc libc-dev make wget
+fi
+
+HEREDOC
 COPY inboard /app/inboard
 ENTRYPOINT ["python"]
 CMD ["-m", "inboard.start"]
