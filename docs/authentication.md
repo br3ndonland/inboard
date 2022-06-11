@@ -10,7 +10,6 @@ inboard provides utilities for configuring HTTP Basic auth.
 
 For Starlette applications, inboard provides [middleware](https://www.starlette.io/middleware/) for HTTP Basic auth. Starlette middleware are applied to every request.
 
-<!-- prettier-ignore -->
 !!!example "Example of HTTP Basic auth with Starlette middleware"
 
     ```py
@@ -24,7 +23,6 @@ For Starlette applications, inboard provides [middleware](https://www.starlette.
 
 FastAPI is built on Starlette, so a FastAPI app can be configured with middleware as above, substituting `FastAPI()` for `Starlette()`. inboard also provides a [FastAPI dependency](https://fastapi.tiangolo.com/tutorial/dependencies/), which can be applied to specific API endpoints or [`APIRouter` objects](https://fastapi.tiangolo.com/tutorial/bigger-applications/).
 
-<!-- prettier-ignore -->
 !!!example "Example of HTTP Basic auth with a FastAPI dependency"
 
     ```py

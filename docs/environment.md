@@ -26,7 +26,6 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 -   Default: The appropriate app module from inboard.
 -   Custom: For a module at `/app/package/custom/module.py` and app instance object `api`, `APP_MODULE="package.custom.module:api"`
 
-    <!-- prettier-ignore -->
     !!!example "Example of a custom FastAPI app module"
 
         ```py
@@ -40,8 +39,8 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
             return {"message": "Hello World!"}
         ```
 
-    <!-- prettier-ignore -->
     !!! note
+
         The base Docker image sets the environment variable `PYTHONPATH=/app`, so the module name will be relative to `/app` unless you supply a custom [`PYTHONPATH`](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH).
 
 `PRE_START_PATH`
@@ -55,8 +54,8 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
     -   `PRE_START_PATH="/app/package/custom_script.sh"`
     -   `PRE_START_PATH= ` (set to an empty value) to disable
 
-    <!-- prettier-ignore -->
     !!! tip
+
         Add a file `prestart.py` or `prestart.sh` to the application directory, and copy the directory into the Docker image as described (for a project with the Python application in `repo/package`, `COPY package /app/package`). The container will automatically detect and run the prestart script before starting the web server.
 
 [`PYTHONPATH`](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH)
@@ -80,8 +79,8 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 ### Process management
 
-<!-- prettier-ignore -->
 !!! info
+
     As described in the [Uvicorn docs](https://www.uvicorn.org), "Uvicorn includes a Gunicorn worker class allowing you to run ASGI applications, with all of Uvicorn's performance benefits, while also giving you Gunicorn's fully-featured process management."
 
 `PROCESS_MANAGER`
@@ -98,8 +97,8 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 ### Worker process calculation
 
-<!-- prettier-ignore -->
 !!! info
+
     The number of [Gunicorn worker processes](https://docs.gunicorn.org/en/latest/settings.html#worker-processes) to run is determined based on the `MAX_WORKERS`, `WEB_CONCURRENCY`, and `WORKERS_PER_CORE` environment variables, with a default of 1 worker per CPU core and a default minimum of 2. This is the "performance auto-tuning" feature described in [tiangolo/uvicorn-gunicorn-docker](https://github.com/tiangolo/uvicorn-gunicorn-docker).
 
 `MAX_WORKERS`
@@ -123,8 +122,8 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
     -   `WORKERS_PER_CORE="2"`: Run 2 worker processes per core (8 worker processes on a server with 4 cores).
     -   `WORKERS_PER_CORE="0.5"` (floating point values permitted): Run 1 worker process for every 2 cores (2 worker processes on a server with 4 cores).
 
-    <!-- prettier-ignore -->
     !!! note
+
         -   The default number of workers is the number of CPU cores multiplied by the value of the environment variable `WORKERS_PER_CORE` (which defaults to 1). On a machine with only 1 CPU core, the default minimum number of workers is 2 to avoid poor performance and blocking, as explained in the release notes for [tiangolo/uvicorn-gunicorn-docker 0.3.0](https://github.com/tiangolo/uvicorn-gunicorn-docker/releases/tag/0.3.0).
         -   If both `MAX_WORKERS` and `WEB_CONCURRENCY` are set, the least of the two will be used as the total number of workers.
         -   If either `MAX_WORKERS` or `WEB_CONCURRENCY` are set to 1, the total number of workers will be 1, overriding the default minimum of 2.
@@ -185,8 +184,8 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 ## Uvicorn
 
-<!-- prettier-ignore -->
 !!! info
+
     These settings are mostly used for local development.
 
 `WITH_RELOAD`
@@ -195,8 +194,8 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 -   Default: `"false"` (don't auto-reload when files change)
 -   Custom: `"true"` (watch files with [watchgod](https://github.com/samuelcolvin/watchgod) and auto-reload when files change).
 
-    <!-- prettier-ignore -->
     !!! note
+
         Auto-reloading is useful for local development. [Watchgod](https://github.com/samuelcolvin/watchgod) was added as an optional dependency in [Uvicorn 0.11.4](https://github.com/encode/uvicorn/releases/tag/0.11.4), and is included with inboard.
 
 `RELOAD_DIRS` _(new in inboard 0.7)_
@@ -209,8 +208,8 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
     -   `"inboard, tests"` (two directories)
     -   `"inboard, tests, Dockerfile"` (two directories and a file)
 
-    <!-- prettier-ignore -->
     !!! note
+
         On the command-line, this [Uvicorn setting](https://www.uvicorn.org/settings/) is configured by passing `--reload-dir`, and can be passed multiple times, with one directory each.
 
         However, when running Uvicorn programmatically, `uvicorn.run` accepts a list of strings (`uvicorn.run(reload_dirs=["dir1", "dir2"])`), so inboard will parse the environment variable, send the list to Uvicorn, and watchgod will watch each directory or file specified.
@@ -221,7 +220,6 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 -   Default: not set (the value is set by `uvicorn.config.Config`)
 -   Custom: `"0.5"`
 
-    <!-- prettier-ignore -->
     !!! note
 
         - `uvicorn.run` equivalent: `reload_delay`
@@ -233,7 +231,6 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 -   Default: not set (the value is set by `uvicorn.config.Config`)
 -   Custom: `"*[Dd]ockerfile"`
 
-    <!-- prettier-ignore -->
     !!! note
 
         - Parsed into a list of strings in the same manner as for `RELOAD_DIRS`.
@@ -246,7 +243,6 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 -   Default: not set (the value is set by `uvicorn.config.Config`)
 -   Custom: `"*.py, *.md"`
 
-    <!-- prettier-ignore -->
     !!! note
 
         - Parsed into a list of strings in the same manner as for `RELOAD_DIRS`.
@@ -263,7 +259,6 @@ The idea here is to allow a catch-all Uvicorn config variable in the spirit of `
 
 `json.loads()` converts data types from JSON to Python, and returns a Python dictionary. See the guide to [understanding JSON schema](https://json-schema.org/understanding-json-schema/index.html) for many helpful examples of how JSON data types correspond to Python data types. If the Uvicorn options are already available as a Python dictionary, dump them to a JSON-formatted string with `json.dumps()`, and set that as an environment variable.
 
-<!-- prettier-ignore -->
 !!! example "Example of how to format `UVICORN_CONFIG_OPTIONS` as valid JSON"
 
     ```py
@@ -277,7 +272,6 @@ The idea here is to allow a catch-all Uvicorn config variable in the spirit of `
     True
     ```
 
-<!-- prettier-ignore -->
 !!! warning
 
     The `UVICORN_CONFIG_OPTIONS` environment variable is suggested for advanced usage because it requires some knowledge of `uvicorn.config.Config`. Other than the JSON -> Python dictionary conversion, no additional type conversions or validations are performed on `UVICORN_CONFIG_OPTIONS`. All options should be able to be passed directly to `uvicorn.config.Config`.
@@ -333,8 +327,8 @@ The idea here is to allow a catch-all Uvicorn config variable in the spirit of `
     -   `"gunicorn"`: Gunicorn's default format.
     -   `"uvicorn"`: Uvicorn's default format, similar to `simple`, with support for `LOG_COLORS`. Note that Uvicorn's `access` formatter is not supported here, because it frequently throws errors related to [ASGI scope](https://asgi.readthedocs.io/en/latest/specs/lifespan.html).
 
-    <!-- prettier-ignore -->
     !!!example "Example log message in different formats"
+
         ```log
         # simple
         INFO       Started server process [19012]
