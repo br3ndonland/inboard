@@ -65,9 +65,32 @@ For a [Poetry](https://github.com/python-poetry/poetry) project with the followi
     -   `poetry.lock`
     -   `pyproject.toml`
 
+The _pyproject.toml_ could look like this:
+
+!!! example "Example pyproject.toml for Poetry project"
+
+    ```toml
+    [tool.poetry]
+    name = "package"
+    version = "0.1.0"
+    description = ""
+    authors = ["Your Name <you@example.com>"]
+
+    [tool.poetry.dependencies]
+    python = "^3.10"
+    inboard = {version = "^0.26", extras = ["fastapi"]}
+
+    [tool.poetry.dev-dependencies]
+    black = "^22"
+
+    [build-system]
+    requires = ["poetry-core>=1.0.0"]
+    build-backend = "poetry.core.masonry.api"
+    ```
+
 The _Dockerfile_ could look like this:
 
-!!!example "Example Dockerfile for Poetry project"
+!!! example "Example Dockerfile for Poetry project"
 
     ```dockerfile
     FROM ghcr.io/br3ndonland/inboard:fastapi
@@ -83,8 +106,6 @@ The _Dockerfile_ could look like this:
     # RUN command already included in base image
     ```
 
-Organizing the _Dockerfile_ this way helps [leverage the Docker build cache](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#leverage-build-cache). Files and commands that change most frequently are added last to the _Dockerfile_. Next time the image is built, Docker will skip any layers that didn't change, speeding up builds.
-
 For a standard `pip` install:
 
 -   `repo/`
@@ -95,7 +116,17 @@ For a standard `pip` install:
     -   `Dockerfile`
     -   `requirements.txt`
 
-!!!example "Example Dockerfile for project with pip and requirements.txt"
+The _requirements.txt_ could look like this:
+
+!!! example "Example requirements.txt for pip project"
+
+    ```text
+    inboard[fastapi]==0.26.*
+    ```
+
+The _Dockerfile_ could look like this:
+
+!!! example "Example Dockerfile for project with pip and requirements.txt"
 
     ```dockerfile
     FROM ghcr.io/br3ndonland/inboard:fastapi
@@ -110,6 +141,8 @@ For a standard `pip` install:
     ENV APP_MODULE=package.main:app
     # RUN command already included in base image
     ```
+
+Organizing the _Dockerfile_ this way helps [leverage the Docker build cache](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#leverage-build-cache). Files and commands that change most frequently are added last to the _Dockerfile_. Next time the image is built, Docker will skip any layers that didn't change, speeding up builds.
 
 The image could then be built with:
 
