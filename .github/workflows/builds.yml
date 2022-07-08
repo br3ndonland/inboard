@@ -110,6 +110,7 @@ jobs:
       - name: Build Docker images
         run: |
           docker build . --rm --target base \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
             --build-arg LINUX_VERSION="$LINUX_VERSION" \
             --build-arg PIPX_VERSION="$PIPX_VERSION" \
             --build-arg POETRY_VERSION="$POETRY_VERSION" \
@@ -117,12 +118,14 @@ jobs:
             --cache-from python:"$PYTHON_VERSION$LINUX_TAG" \
             -t ghcr.io/br3ndonland/inboard:base"$LINUX_TAG"
           docker build . --rm --target starlette \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
             --build-arg LINUX_VERSION="$LINUX_VERSION" \
             --build-arg PIPX_VERSION="$PIPX_VERSION" \
             --build-arg POETRY_VERSION="$POETRY_VERSION" \
             --build-arg PYTHON_VERSION="$PYTHON_VERSION" \
             -t ghcr.io/br3ndonland/inboard:starlette"$LINUX_TAG"
           docker build . --rm --target fastapi \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
             --build-arg LINUX_VERSION="$LINUX_VERSION" \
             --build-arg PIPX_VERSION="$PIPX_VERSION" \
             --build-arg POETRY_VERSION="$POETRY_VERSION" \
