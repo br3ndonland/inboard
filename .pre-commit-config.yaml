@@ -2,7 +2,7 @@ minimum_pre_commit_version: 2.8.0
 default_stages: [commit, push, manual]
 repos:
   - repo: https://github.com/psf/black
-    rev: 22.3.0
+    rev: 22.6.0
     hooks:
       - id: black
   - repo: https://github.com/pycqa/flake8
@@ -21,7 +21,7 @@ repos:
       - id: mypy
         language: system
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.6.2
+    rev: v2.7.1
     hooks:
       - id: prettier
   - repo: https://github.com/pre-commit/pre-commit-hooks
