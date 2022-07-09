@@ -241,7 +241,7 @@ The basic build dependencies used by inboard include `gcc`, `libc-dev`, and `mak
 !!! example "Example Alpine Linux _Dockerfile_ for PostgreSQL project"
 
     ```dockerfile
-    # syntax=docker/dockerfile:1.4
+    # syntax=docker/dockerfile:1
     ARG INBOARD_DOCKER_TAG=fastapi-alpine
     FROM ghcr.io/br3ndonland/inboard:${INBOARD_DOCKER_TAG}
     ENV APP_MODULE=mypackage.main:app
@@ -292,7 +292,7 @@ A _Dockerfile_ equivalent to the Alpine Linux example might look like the follow
 !!! example "Example Debian Linux slim _Dockerfile_ for PostgreSQL project"
 
     ```dockerfile
-    # syntax=docker/dockerfile:1.4
+    # syntax=docker/dockerfile:1
     ARG INBOARD_DOCKER_TAG=fastapi-slim
     FROM ghcr.io/br3ndonland/inboard:${INBOARD_DOCKER_TAG}
     ENV APP_MODULE=mypackage.main:app

@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.4
+# syntax=docker/dockerfile:1
 ARG PYTHON_VERSION=3.10 LINUX_VERSION=
 FROM python:${PYTHON_VERSION}${LINUX_VERSION:+-$LINUX_VERSION} AS builder
 LABEL org.opencontainers.image.authors="Brendon Smith <bws@bws.bio>"
