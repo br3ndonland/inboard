@@ -9,6 +9,7 @@ on:
   workflow_dispatch:
 
 env:
+  DOCKER_BUILDKIT: "1"
   PIPX_VERSION: "1.1.0"
   POETRY_VERSION: "1.1.11"
 
@@ -109,19 +110,22 @@ jobs:
       - name: Build Docker images
         run: |
           docker build . --rm --target base \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
             --build-arg LINUX_VERSION="$LINUX_VERSION" \
             --build-arg PIPX_VERSION="$PIPX_VERSION" \
             --build-arg POETRY_VERSION="$POETRY_VERSION" \
             --build-arg PYTHON_VERSION="$PYTHON_VERSION" \
-            --cache-from python:"$PYTHON_VERSION$LINUX_TAG" \
+            --cache-from ghcr.io/br3ndonland/inboard \
             -t ghcr.io/br3ndonland/inboard:base"$LINUX_TAG"
           docker build . --rm --target starlette \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
             --build-arg LINUX_VERSION="$LINUX_VERSION" \
             --build-arg PIPX_VERSION="$PIPX_VERSION" \
             --build-arg POETRY_VERSION="$POETRY_VERSION" \
             --build-arg PYTHON_VERSION="$PYTHON_VERSION" \
             -t ghcr.io/br3ndonland/inboard:starlette"$LINUX_TAG"
           docker build . --rm --target fastapi \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
             --build-arg LINUX_VERSION="$LINUX_VERSION" \
             --build-arg PIPX_VERSION="$PIPX_VERSION" \
             --build-arg POETRY_VERSION="$POETRY_VERSION" \

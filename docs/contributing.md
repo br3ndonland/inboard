@@ -167,12 +167,16 @@ docker cp [container_name]:/path/to/file destination.file
 
 ### Building development images
 
+Note that Docker builds use BuildKit. See the [BuildKit docs](https://github.com/moby/buildkit/blob/HEAD/frontend/dockerfile/docs/syntax.md) and [Docker docs](https://docs.docker.com/develop/develop-images/build_enhancements/).
+
 To build the Docker images for each stage:
 
 ```sh
 git clone git@github.com:br3ndonland/inboard.git
 
 cd inboard
+
+export DOCKER_BUILDKIT=1
 
 docker build . --rm --target base -t localhost/br3ndonland/inboard:base && \
 docker build . --rm --target fastapi -t localhost/br3ndonland/inboard:fastapi && \

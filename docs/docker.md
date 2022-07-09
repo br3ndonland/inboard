@@ -241,14 +241,29 @@ The basic build dependencies used by inboard include `gcc`, `libc-dev`, and `mak
 !!! example "Example Alpine Linux _Dockerfile_ for PostgreSQL project"
 
     ```dockerfile
+    # syntax=docker/dockerfile:1
     ARG INBOARD_DOCKER_TAG=fastapi-alpine
     FROM ghcr.io/br3ndonland/inboard:${INBOARD_DOCKER_TAG}
     ENV APP_MODULE=mypackage.main:app
     COPY poetry.lock pyproject.toml /app/
     WORKDIR /app
-    RUN sh -c '. /etc/os-release; if [ "$ID" = "alpine" ]; then apk add --no-cache --virtual .build-project build-base freetype-dev gcc libc-dev libpng-dev make openblas-dev postgresql-dev; fi' && \
-      poetry install --no-dev --no-interaction --no-root && \
-      sh -c '. /etc/os-release; if [ "$ID" = "alpine" ]; then apk del .build-project && apk add --no-cache libpq; fi'
+    RUN <<HEREDOC
+
+    . /etc/os-release
+
+    if [ "$ID" = "alpine" ]; then
+      apk add --no-cache --virtual .build-project \
+        build-base freetype-dev gcc libc-dev libpng-dev make openblas-dev postgresql-dev
+    fi
+
+    poetry install --no-dev --no-interaction --no-root
+
+    if [ "$ID" = "alpine" ]; then
+      apk del .build-project
+      apk add --no-cache libpq
+    fi
+
+    HEREDOC
     COPY mypackage /app/mypackage
     ```
 
@@ -277,18 +292,47 @@ A _Dockerfile_ equivalent to the Alpine Linux example might look like the follow
 !!! example "Example Debian Linux slim _Dockerfile_ for PostgreSQL project"
 
     ```dockerfile
+    # syntax=docker/dockerfile:1
     ARG INBOARD_DOCKER_TAG=fastapi-slim
     FROM ghcr.io/br3ndonland/inboard:${INBOARD_DOCKER_TAG}
     ENV APP_MODULE=mypackage.main:app
     COPY poetry.lock pyproject.toml /app/
     WORKDIR /app
     ARG INBOARD_DOCKER_TAG
-    RUN sh -c '. /etc/os-release; if [ "$ID" = "debian" ] && echo "$INBOARD_DOCKER_TAG" | grep -q "slim"; then apt-get update -qy && apt-get install -qy --no-install-recommends gcc libc-dev libpq-dev make wget; fi' && \
-      poetry install --no-dev --no-interaction --no-root && \
-      sh -c '. /etc/os-release; if [ "$ID" = "debian" ] && echo "$INBOARD_DOCKER_TAG" | grep -q "slim"; then apt-get purge --auto-remove -qy gcc libc-dev make wget; fi'
+    RUN <<HEREDOC
+
+    . /etc/os-release
+
+    if [ "$ID" = "debian" ] && echo "$INBOARD_DOCKER_TAG" | grep -q "slim"; then
+      apt-get update -qy
+      apt-get install -qy --no-install-recommends \
+        gcc libc-dev make wget
+    fi
+
+    poetry install --no-dev --no-interaction --no-root
+
+    if [ "$ID" = "debian" ] && echo "$INBOARD_DOCKER_TAG" | grep -q "slim"; then
+      apt-get purge --auto-remove -qy \
+        gcc libc-dev make wget
+    fi
+
+    HEREDOC
     COPY mypackage /app/mypackage
     ```
 
 !!! info "Redeclaring Docker build arguments"
 
     Why is `ARG INBOARD_DOCKER_TAG` repeated in the example above? To understand this, it is necessary to [understand how `ARG` and `FROM` interact](https://docs.docker.com/engine/reference/builder/#understand-how-arg-and-from-interact). Any `ARG`s before `FROM` are outside the Docker build context. In order to use them again inside the build context, they must be redeclared.
+
+!!! tip "Here-documents in Dockerfiles"
+
+    The `RUN` commands in the Dockerfiles above use a special syntax called a [here-document](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_07), or "heredoc". This syntax allows multiple lines of text to be passed into a shell command, enabling Dockerfile `RUN` commands to be written like shell scripts, instead of having to jam commands into long run-on lines. Heredoc support was added to Dockerfiles in the [1.4.0 release](https://github.com/moby/buildkit/releases/tag/dockerfile%2F1.4.0).
+
+    For more info, see:
+
+    -   [br3ndonland/inboard#54](https://github.com/br3ndonland/inboard/pull/54)
+    -   [BuildKit docs: Dockerfile frontend syntaxes](https://github.com/moby/buildkit/blob/HEAD/frontend/dockerfile/docs/syntax.md)
+    -   [BuildKit releases: dockerfile/1.4.0](https://github.com/moby/buildkit/releases/tag/dockerfile%2F1.4.0)
+    -   [Docker blog 2021-07-30: Introduction to heredocs in Dockerfiles](https://www.docker.com/blog/introduction-to-heredocs-in-dockerfiles/)
+    -   [Docker docs: Develop with Docker - Build images with BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/)
+    -   [Docker docs: Dockerfile reference - BuildKit](https://docs.docker.com/engine/reference/builder/#buildkit)
