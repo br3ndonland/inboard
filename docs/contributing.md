@@ -266,3 +266,18 @@ Change the port numbers to run multiple containers simultaneously (`-p 81:80`).
         -   Omit the leading `v` (use `1.0.0` instead of `v1.0.0`)
         -   Example: `git tag -a -s 1.0.0`
     -   Push the tag. GitHub Actions will build and push the Python package and Docker images.
+-   **To create a changelog:**
+
+    ```sh
+    printf '# Changelog\n\n' >CHANGELOG.md
+
+    GIT_LOG_FORMAT='## %(subject) - %(taggerdate:short)
+
+    %(contents:body)
+    Tagger: %(taggername) %(taggeremail)
+    Date: %(taggerdate:iso)
+
+    %(contents:signature)'
+
+    git tag -l --sort=-taggerdate:iso --format="$GIT_LOG_FORMAT" >>CHANGELOG.md
+    ```
