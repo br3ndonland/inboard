@@ -160,7 +160,8 @@ class TestLoggingOutput:
         assert "Hello, World!" in captured.out
 
     @pytest.mark.parametrize(
-        "log_format,log_level_output", (("gunicorn", "[DEBUG]"), ("verbose", "DEBUG"))
+        "log_format,log_level_output",
+        (("gunicorn", "[DEBUG]"), ("uvicorn", "DEBUG: "), ("verbose", "DEBUG  ")),
     )
     def test_logging_output_custom_format(
         self,
@@ -172,7 +173,7 @@ class TestLoggingOutput:
     ) -> None:
         """Test logger output with custom format."""
         logging_conf_file = f"{logging_conf_tmp_file_path}/tmp_log.py"
-        monkeypatch.setenv("LOG_FORMAT", "gunicorn")
+        monkeypatch.setenv("LOG_FORMAT", log_format)
         monkeypatch.setenv("LOG_LEVEL", "debug")
         logger = logging_conf.logging.getLogger()
         logging_conf.configure_logging(logging_conf=logging_conf_file)
