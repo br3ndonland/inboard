@@ -53,7 +53,7 @@ starlette = {version = "^0.19", optional = true}
 [tool.poetry.dev-dependencies]
 black = "^22"
 coverage = {version = "^6", extras = ["toml"]}
-flake8 = "^4"
+flake8 = "^5"
 isort = "^5.6"
 mkdocs-material = "^8"
 mypy = ">0.900,<1"
