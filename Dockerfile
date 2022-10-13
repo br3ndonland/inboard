@@ -7,7 +7,7 @@ LABEL org.opencontainers.image.licenses="MIT"
 LABEL org.opencontainers.image.source="https://github.com/br3ndonland/inboard"
 LABEL org.opencontainers.image.title="inboard"
 LABEL org.opencontainers.image.url="https://github.com/br3ndonland/inboard/pkgs/container/inboard"
-ARG LINUX_VERSION PIPX_VERSION=1.1.0 POETRY_VERSION=1.1.11
+ARG LINUX_VERSION PIPX_VERSION=1.1.0 POETRY_VERSION=1.2.2
 ENV APP_MODULE=inboard.app.main_base:app LINUX_VERSION=$LINUX_VERSION PATH=/opt/pipx/bin:/app/.venv/bin:$PATH PIPX_BIN_DIR=/opt/pipx/bin PIPX_HOME=/opt/pipx/home PIPX_VERSION=$PIPX_VERSION POETRY_VERSION=$POETRY_VERSION PYTHONPATH=/app
 COPY --link poetry.lock poetry.toml pyproject.toml /app/
 WORKDIR /app

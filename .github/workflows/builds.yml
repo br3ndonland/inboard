@@ -11,7 +11,7 @@ on:
 env:
   DOCKER_BUILDKIT: "1"
   PIPX_VERSION: "1.1.0"
-  POETRY_VERSION: "1.1.11"
+  POETRY_VERSION: "1.2.2"
 
 jobs:
   python:
