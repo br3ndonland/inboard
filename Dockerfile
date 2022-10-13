@@ -23,7 +23,7 @@ elif [ "$LINUX_VERSION" = "slim" ]; then
 fi
 python -m pip install --no-cache-dir --upgrade pip "pipx==$PIPX_VERSION"
 pipx install "poetry==$POETRY_VERSION"
-poetry install --no-dev --no-interaction --no-root
+poetry install --only main --no-interaction --no-root
 HEREDOC
 COPY --link inboard /app/inboard
 ENTRYPOINT ["python"]
@@ -43,7 +43,7 @@ HEREDOC
 FROM builder AS fastapi
 ENV APP_MODULE=inboard.app.main_fastapi:app
 RUN <<HEREDOC
-poetry install --no-dev --no-interaction --no-root -E fastapi
+poetry install --only main --no-interaction --no-root -E fastapi
 . /etc/os-release
 if [ "$ID" = "alpine" ]; then
   apk del .build-deps
@@ -56,7 +56,7 @@ HEREDOC
 FROM builder AS starlette
 ENV APP_MODULE=inboard.app.main_starlette:app
 RUN <<HEREDOC
-poetry install --no-dev --no-interaction --no-root -E starlette
+poetry install --only main --no-interaction --no-root -E starlette
 . /etc/os-release
 if [ "$ID" = "alpine" ]; then
   apk del .build-deps

@@ -98,7 +98,7 @@ The _Dockerfile_ could look like this:
     # Install Python requirements
     COPY poetry.lock pyproject.toml /app/
     WORKDIR /app
-    RUN poetry install --no-dev --no-interaction --no-root
+    RUN poetry install --only main --no-interaction --no-root
 
     # Install Python app
     COPY package /app/package
@@ -256,7 +256,7 @@ The basic build dependencies used by inboard include `gcc`, `libc-dev`, and `mak
         build-base freetype-dev gcc libc-dev libpng-dev make openblas-dev postgresql-dev
     fi
 
-    poetry install --no-dev --no-interaction --no-root
+    poetry install --only main --no-interaction --no-root
 
     if [ "$ID" = "alpine" ]; then
       apk del .build-project
@@ -309,7 +309,7 @@ A _Dockerfile_ equivalent to the Alpine Linux example might look like the follow
         gcc libc-dev make wget
     fi
 
-    poetry install --no-dev --no-interaction --no-root
+    poetry install --only main --no-interaction --no-root
 
     if [ "$ID" = "debian" ] && echo "$INBOARD_DOCKER_TAG" | grep -q "slim"; then
       apt-get purge --auto-remove -qy \
