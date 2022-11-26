@@ -153,7 +153,7 @@ class TestEndpoints:
 
     @pytest.mark.parametrize("endpoint", ("/health", "/status"))
     def test_gets_with_basic_auth(
-        self, basic_auth: tuple, client: TestClient, endpoint: str
+        self, basic_auth: tuple[str, str], client: TestClient, endpoint: str
     ) -> None:
         """Test `GET` requests to endpoints that require HTTP Basic auth."""
         error_response = client.get(endpoint)
@@ -196,7 +196,7 @@ class TestEndpoints:
     @pytest.mark.parametrize("endpoint", ("/health", "/status"))
     def test_gets_with_basic_auth_incorrect_credentials(
         self,
-        basic_auth_incorrect: tuple,
+        basic_auth_incorrect: tuple[str, str],
         client: TestClient,
         endpoint: str,
         monkeypatch: pytest.MonkeyPatch,
@@ -220,7 +220,7 @@ class TestEndpoints:
 
     def test_get_status_message(
         self,
-        basic_auth: tuple,
+        basic_auth: tuple[str, str],
         client: TestClient,
         endpoint: str = "/status",
     ) -> None:
@@ -242,7 +242,7 @@ class TestEndpoints:
 
     def test_get_user(
         self,
-        basic_auth: tuple,
+        basic_auth: tuple[str, str],
         client: TestClient,
         endpoint: str = "/users/me",
     ) -> None:
