@@ -3,7 +3,7 @@
   "configurations": [
     // inboard uvicorn debug config
     {
-      "name": "Uvicorn",
+      "name": "inboard",
       "type": "python",
       "request": "launch",
       "stopOnEntry": false,
