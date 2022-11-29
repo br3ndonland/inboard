@@ -1,10 +1,21 @@
+from __future__ import annotations
+
+import json
+import logging
 import os
-from pathlib import Path
+import subprocess
+from typing import TYPE_CHECKING
 
 import pytest
-from pytest_mock import MockerFixture
 
 from inboard import start
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from pytest_mock import MockerFixture
+
+    from inboard.types import DictConfig, UvicornOptions
 
 
 class TestRunPreStartScript:
@@ -19,7 +30,7 @@ class TestRunPreStartScript:
         pre_start_script_tmp_py: Path,
     ) -> None:
         """Test `start.run_pre_start_script` using temporary Python pre-start script."""
-        logger = mocker.patch.object(start.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         monkeypatch.setenv("PRE_START_PATH", str(pre_start_script_tmp_py))
         pre_start_path = os.getenv("PRE_START_PATH")
         start.run_pre_start_script(logger=logger)
@@ -38,7 +49,7 @@ class TestRunPreStartScript:
         pre_start_script_tmp_sh: Path,
     ) -> None:
         """Test `start.run_pre_start_script` using temporary pre-start shell script."""
-        logger = mocker.patch.object(start.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         monkeypatch.setenv("PRE_START_PATH", str(pre_start_script_tmp_sh))
         pre_start_path = os.getenv("PRE_START_PATH")
         start.run_pre_start_script(logger=logger)
@@ -56,7 +67,7 @@ class TestRunPreStartScript:
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.run_pre_start_script` with an incorrect file path."""
-        logger = mocker.patch.object(start.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         monkeypatch.setenv("PRE_START_PATH", "/no/file/here")
         start.run_pre_start_script(logger=logger)
         logger.debug.assert_has_calls(
@@ -68,7 +79,7 @@ class TestRunPreStartScript:
 
     def test_run_pre_start_script_none(self, mocker: MockerFixture) -> None:
         """Test `start.run_pre_start_script` with `PRE_START_PATH` set to `None`."""
-        logger = mocker.patch.object(start.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         start.run_pre_start_script(logger=logger)
         logger.debug.assert_has_calls(
             calls=[
@@ -84,11 +95,11 @@ class TestRunPreStartScript:
         pre_start_script_error: Path,
     ) -> None:
         """Test `start.run_pre_start_script` with an error exit code."""
-        logger = mocker.patch.object(start.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         monkeypatch.setenv("PRE_START_PATH", str(pre_start_script_error))
         pre_start_path = os.getenv("PRE_START_PATH")
         process = "python" if pre_start_script_error.suffix == ".py" else "sh"
-        with pytest.raises(start.subprocess.CalledProcessError):
+        with pytest.raises(subprocess.CalledProcessError):
             start.run_pre_start_script(logger=logger)
         assert logger.debug.call_count == 2
         logger.debug.assert_has_calls(
@@ -111,7 +122,7 @@ class TestSetAppModule:
         self, module: str, mocker: MockerFixture, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         """Test `start.set_app_module` with default module path."""
-        logger = mocker.patch.object(start.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         monkeypatch.setenv("APP_MODULE", f"inboard.app.main_{module}:app")
         start.set_app_module(logger=logger)
         assert mocker.call(f"App module set to inboard.app.main_{module}:app.")
@@ -125,7 +136,7 @@ class TestSetAppModule:
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.set_app_module` with custom module path."""
-        logger = mocker.patch.object(start.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         monkeypatch.syspath_prepend(app_module_tmp_path)
         monkeypatch.setenv("APP_MODULE", f"tmp_app.main_{module}:app")
         start.set_app_module(logger=logger)
@@ -137,7 +148,7 @@ class TestSetAppModule:
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.set_app_module` with incorrect module path."""
-        logger = mocker.patch.object(start.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         monkeypatch.setenv("APP_MODULE", "inboard.app.incorrect:app")
         logger_error_msg = "Error when setting app module"
         incorrect_module_msg = "Unable to find or import inboard.app.incorrect"
@@ -217,7 +228,7 @@ class TestSetUvicornOptions:
 
     def test_set_uvicorn_options_default(
         self,
-        uvicorn_options_default: dict,
+        uvicorn_options_default: UvicornOptions,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test default Uvicorn server options."""
@@ -227,8 +238,8 @@ class TestSetUvicornOptions:
 
     def test_set_uvicorn_options_custom(
         self,
-        logging_conf_dict: dict,
-        uvicorn_options_custom: dict,
+        logging_conf_dict: DictConfig,
+        uvicorn_options_custom: UvicornOptions,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test custom Uvicorn server options."""
@@ -240,7 +251,7 @@ class TestSetUvicornOptions:
 
     def test_set_uvicorn_options_default_from_json(
         self,
-        uvicorn_options_default: dict,
+        uvicorn_options_default: UvicornOptions,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Assert that the correct Uvicorn server options are set, in the correct order,
@@ -257,7 +268,7 @@ class TestSetUvicornOptions:
 
     def test_set_uvicorn_options_custom_from_json(
         self,
-        uvicorn_options_custom: dict,
+        uvicorn_options_custom: UvicornOptions,
         mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
@@ -267,8 +278,12 @@ class TestSetUvicornOptions:
         The `LOGGING_CONFIG` dictionary can't be encoded as a JSON string when it has
         a class definition (the filter class), so the "filters" dict has to be removed.
         """
-        mocker.patch.dict(uvicorn_options_custom["log_config"]["filters"], clear=True)
-        uvicorn_options_json = start.json.dumps(uvicorn_options_custom)
+        log_config = uvicorn_options_custom.get("log_config")
+        assert log_config is not None
+        filters = log_config.get("filters")
+        assert filters is not None
+        mocker.patch.dict(filters, clear=True)
+        uvicorn_options_json = json.dumps(uvicorn_options_custom)
         monkeypatch.setenv("UVICORN_CONFIG_OPTIONS", uvicorn_options_json)
         monkeypatch.setenv("WITH_RELOAD", "false")
         result = start.set_uvicorn_options()
@@ -292,12 +307,12 @@ class TestStartServer:
     def test_start_server_uvicorn(
         self,
         app_module: str,
-        logging_conf_dict: dict,
+        logging_conf_dict: DictConfig,
         mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.start_server` with Uvicorn."""
-        logger = mocker.patch.object(start.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         run = mocker.patch("inboard.start.uvicorn.run", autospec=True)
         monkeypatch.setenv("PROCESS_MANAGER", "uvicorn")
         start.start_server(
@@ -335,13 +350,13 @@ class TestStartServer:
     def test_start_server_uvicorn_reload_dirs(
         self,
         app_module: str,
-        logging_conf_dict: dict,
+        logging_conf_dict: DictConfig,
         mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
         reload_dirs: str,
     ) -> None:
         """Test `start.start_server` with Uvicorn."""
-        logger = mocker.patch.object(start.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         monkeypatch.setenv("PROCESS_MANAGER", "uvicorn")
         monkeypatch.setenv("WITH_RELOAD", "true")
         monkeypatch.setenv("RELOAD_DELAY", "0.5")
@@ -385,14 +400,14 @@ class TestStartServer:
         self,
         app_module: str,
         gunicorn_conf_path: str,
-        logging_conf_dict: dict,
+        logging_conf_dict: DictConfig,
         mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
         tmp_path: Path,
     ) -> None:
         """Test `start.start_server` with Uvicorn managed by Gunicorn."""
-        logger = mocker.patch.object(start.logging, "root", autospec=True)
-        run = mocker.patch("inboard.start.subprocess.run", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
+        run = mocker.patch("subprocess.run", autospec=True)
         monkeypatch.setenv(
             "GUNICORN_CMD_ARGS",
             f"--worker-tmp-dir {tmp_path}",
@@ -430,12 +445,12 @@ class TestStartServer:
         self,
         app_module: str,
         gunicorn_conf_tmp_file_path: Path,
-        logging_conf_dict: dict,
+        logging_conf_dict: DictConfig,
         mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test customized `start.start_server` with Uvicorn managed by Gunicorn."""
-        logger = mocker.patch.object(start.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         monkeypatch.setenv(
             "GUNICORN_CMD_ARGS",
             f"--worker-tmp-dir {gunicorn_conf_tmp_file_path.parent}",
@@ -444,7 +459,7 @@ class TestStartServer:
         monkeypatch.setenv("LOG_FORMAT", "gunicorn")
         monkeypatch.setenv("LOG_LEVEL", "debug")
         monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
-        run = mocker.patch("inboard.start.subprocess.run", autospec=True)
+        run = mocker.patch("subprocess.run", autospec=True)
         start.start_server(
             str(os.getenv("PROCESS_MANAGER")),
             app_module=app_module,
@@ -477,12 +492,12 @@ class TestStartServer:
         self,
         app_module: str,
         gunicorn_conf_path: str,
-        logging_conf_dict: dict,
+        logging_conf_dict: DictConfig,
         mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.start_server` with Uvicorn and an incorrect process manager."""
-        logger = mocker.patch.object(start.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         logger_error_msg = "Error when starting server"
         process_error_msg = "Process manager needs to be either uvicorn or gunicorn"
         monkeypatch.setenv("GUNICORN_CONF", gunicorn_conf_path)

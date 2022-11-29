@@ -6,9 +6,13 @@ import logging.config
 import os
 import sys
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from inboard.types import DictConfig
 
 
-def find_and_load_logging_conf(logging_conf: str) -> dict:
+def find_and_load_logging_conf(logging_conf: str) -> DictConfig:
     """Find and load a logging configuration module or file."""
     logging_conf_path = Path(logging_conf)
     spec = (
@@ -23,7 +27,7 @@ def find_and_load_logging_conf(logging_conf: str) -> dict:
     exec_module(logging_conf_module)
     if not hasattr(logging_conf_module, "LOGGING_CONFIG"):
         raise AttributeError(f"No LOGGING_CONFIG in {logging_conf_module.__name__}")
-    logging_conf_dict = getattr(logging_conf_module, "LOGGING_CONFIG")
+    logging_conf_dict: DictConfig = getattr(logging_conf_module, "LOGGING_CONFIG")
     if not isinstance(logging_conf_dict, dict):
         raise TypeError("LOGGING_CONFIG is not a dictionary instance")
     return logging_conf_dict
@@ -32,12 +36,12 @@ def find_and_load_logging_conf(logging_conf: str) -> dict:
 def configure_logging(
     logger: logging.Logger = logging.getLogger(),
     logging_conf: str | None = os.getenv("LOGGING_CONF"),
-) -> dict:
+) -> DictConfig:
     """Configure Python logging given the name of a logging module or file."""
     try:
         if not logging_conf:
             logging_conf_path = __name__
-            logging_conf_dict = LOGGING_CONFIG
+            logging_conf_dict: DictConfig = LOGGING_CONFIG
         else:
             logging_conf_path = logging_conf
             logging_conf_dict = find_and_load_logging_conf(logging_conf_path)
@@ -115,7 +119,7 @@ LOG_COLORS = (
 LOG_FILTERS = LogFilter.set_filters()
 LOG_FORMAT = str(os.getenv("LOG_FORMAT", "simple"))
 LOG_LEVEL = str(os.getenv("LOG_LEVEL", "info")).upper()
-LOGGING_CONFIG: dict = {
+LOGGING_CONFIG: DictConfig = {
     "version": 1,
     "disable_existing_loggers": False,
     "filters": {

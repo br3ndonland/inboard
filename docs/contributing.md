@@ -13,15 +13,17 @@
 
 -   _[Why use Git?](https://www.git-scm.com/about)_ Git enables creation of multiple versions of a code repository called branches, with the ability to track and undo changes in detail.
 -   Install Git by [downloading](https://www.git-scm.com/downloads) from the website, or with a package manager like [Homebrew](https://brew.sh/).
--   [Configure Git to connect to GitHub with SSH](https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/connecting-to-github-with-ssh).
--   [Fork](https://docs.github.com/en/free-pro-team@latest/github/getting-started-with-github/fork-a-repo) this repo.
+-   [Configure Git to connect to GitHub with SSH](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh).
+-   [Fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) this repo.
 -   Create a [branch](https://www.git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell) in your fork.
 -   Commit your changes with a [properly-formatted Git commit message](https://chris.beams.io/posts/git-commit/).
--   Create a [pull request (PR)](https://docs.github.com/en/free-pro-team@latest/github/collaborating-with-issues-and-pull-requests/about-pull-requests) to incorporate your changes into the upstream project you forked.
+-   Create a [pull request (PR)](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests) to incorporate your changes into the upstream project you forked.
 
-## Code style
+## Code quality
 
--   **Python code is formatted with [Black](https://black.readthedocs.io/en/stable/)**. Configuration for Black is stored in _[pyproject.toml](https://github.com/br3ndonland/inboard/blob/develop/pyproject.toml)_.
+### Code style
+
+-   **Python code is formatted with [Black](https://black.readthedocs.io/en/stable/)**. Configuration for Black is stored in _[pyproject.toml](https://github.com/br3ndonland/inboard/blob/HEAD/pyproject.toml)_.
 -   **Python imports are organized automatically with [isort](https://pycqa.github.io/isort/)**.
     -   The isort package organizes imports in three sections:
         1. Standard library
@@ -29,29 +31,35 @@
         3. Project
     -   Within each of those groups, `import` statements occur first, then `from` statements, in alphabetical order.
     -   You can run isort from the command line with `poetry run isort .`.
-    -   Configuration for isort is stored in _[pyproject.toml](https://github.com/br3ndonland/inboard/blob/develop/pyproject.toml)_.
+    -   Configuration for isort is stored in _[pyproject.toml](https://github.com/br3ndonland/inboard/blob/HEAD/pyproject.toml)_.
 -   Other web code (JSON, Markdown, YAML) is formatted with [Prettier](https://prettier.io/).
--   Code style is enforced with [pre-commit](https://pre-commit.com/), which runs [Git hooks](https://www.git-scm.com/book/en/v2/Customizing-Git-Git-Hooks).
 
-    -   Configuration is stored in _[.pre-commit-config.yaml](https://github.com/br3ndonland/inboard/blob/develop/.pre-commit-config.yaml)_.
-    -   Pre-commit can run locally before each commit (hence "pre-commit"), or on different Git events like `pre-push`.
-    -   Pre-commit is installed in the Poetry environment. To use:
+### Static type checking
 
-        ```sh
-        # after running `poetry install`
-        path/to/inboard
-        ❯ poetry shell
+-   To learn type annotation basics, see the [Python typing module docs](https://docs.python.org/3/library/typing.html), [Python type annotations how-to](https://docs.python.org/3/howto/annotations.html), the [Real Python type checking tutorial](https://realpython.com/python-type-checking/), and [this gist](https://gist.github.com/987bdc6263217895d4bf03d0a5ff114c).
+-   Type annotations are not used at runtime. The standard library `typing` module includes a `TYPE_CHECKING` constant that is `False` at runtime, but `True` when conducting static type checking prior to runtime. Type imports are included under `if TYPE_CHECKING:` conditions so that they are not imported at runtime. These conditions are ignored when calculating test coverage.
+-   Type annotations can be provided inline or in separate stub files. Much of the Python standard library is annotated with stubs. For example, the Python standard library [`logging.config` module uses type stubs](https://github.com/python/typeshed/blob/main/stdlib/logging/config.pyi). The typeshed types for the `logging.config` module are used solely for type-checking usage of the `logging.config` module itself. They cannot be imported and used to type annotate other modules.
+-   The standard library `typing` module includes a `NoReturn` type. This would seem useful for [unreachable code](https://typing.readthedocs.io/en/stable/source/unreachable.html), including functions that do not return a value, such as test functions. Unfortunately mypy reports an error when using `NoReturn`, "Implicit return in function which does not return (misc)." To avoid headaches from the opaque "misc" category of [mypy errors](https://mypy.readthedocs.io/en/stable/error_code_list.html), these functions are annotated as returning `None`.
+-   [Mypy](https://mypy.readthedocs.io/en/stable/) is used for type-checking. [Mypy configuration](https://mypy.readthedocs.io/en/stable/config_file.html) is included in _pyproject.toml_.
+-   Mypy strict mode is enabled. Strict includes `--no-explicit-reexport` (`implicit_reexport = false`), which means that objects imported into a module will not be re-exported for import into other modules. Imports can be made into explicit exports with the syntax `from module import x as x` (i.e., changing from `import logging` to `import logging as logging`), or by including imports in `__all__`. This explicit import syntax can be confusing. Another option is to apply mypy overrides to any modules that need to leverage implicit exports.
 
-        # install hooks that run before each commit
-        path/to/inboard
-        .venv ❯ pre-commit install
+### Pre-commit
 
-        # and/or install hooks that run before each push
-        path/to/inboard
-        .venv ❯ pre-commit install --hook-type pre-push
-        ```
+[Pre-commit](https://pre-commit.com/) runs [Git hooks](https://www.git-scm.com/book/en/v2/Customizing-Git-Git-Hooks). Configuration is stored in _[.pre-commit-config.yaml](https://github.com/br3ndonland/inboard/blob/HEAD/.pre-commit-config.yaml)_. It can run locally before each commit (hence "pre-commit"), or on different Git events like `pre-push`. Pre-commit is installed in the Poetry environment. To use:
 
-    -   Pre-commit is also useful as a CI tool. The [hooks](https://github.com/br3ndonland/inboard/blob/develop/.github/workflows/hooks.yml) GitHub Actions workflow runs pre-commit hooks with [GitHub Actions](https://github.com/features/actions).
+```sh
+# after running `poetry install`
+path/to/inboard
+❯ poetry shell
+
+# install hooks that run before each commit
+path/to/inboard
+.venv ❯ pre-commit install
+
+# and/or install hooks that run before each push
+path/to/inboard
+.venv ❯ pre-commit install --hook-type pre-push
+```
 
 ## Python
 

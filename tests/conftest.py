@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import os
 import shutil
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 from fastapi.testclient import TestClient
-from pytest_mock import MockerFixture
 
 from inboard import gunicorn_conf as gunicorn_conf_module
 from inboard import logging_conf as logging_conf_module
@@ -12,6 +14,11 @@ from inboard.app import prestart as pre_start_module
 from inboard.app.main_base import app as base_app
 from inboard.app.main_fastapi import app as fastapi_app
 from inboard.app.main_starlette import app as starlette_app
+
+if TYPE_CHECKING:
+    from pytest_mock import MockerFixture
+
+    from inboard.types import DictConfig, UvicornOptions
 
 
 @pytest.fixture(scope="session")
@@ -27,7 +34,7 @@ def basic_auth(
     monkeypatch: pytest.MonkeyPatch,
     username: str = "test_user",
     password: str = "r4ndom_bUt_memorable",
-) -> tuple:
+) -> tuple[str, str]:
     """Set username and password for HTTP Basic auth."""
     monkeypatch.setenv("BASIC_AUTH_USERNAME", username)
     monkeypatch.setenv("BASIC_AUTH_PASSWORD", password)
@@ -38,8 +45,16 @@ def basic_auth(
 
 @pytest.fixture(scope="session")
 def client_asgi() -> TestClient:
-    """Instantiate test client with a plain ASGI app instance."""
-    return TestClient(base_app)
+    """Instantiate test client with a plain ASGI app instance.
+
+    Note that, while Uvicorn uses `asgiref.typing`, Starlette does not.
+    The type signature expected by the Starlette/FastAPI `TestClient`
+    therefore does not match `asgiref.typing.ASGIApplication`. A mypy
+    `type: ignore[arg-type]` comment is used to resolve this difference.
+
+    https://asgi.readthedocs.io/en/stable/specs/main.html#applications
+    """
+    return TestClient(base_app)  # type: ignore[arg-type]
 
 
 @pytest.fixture(params=(fastapi_app, starlette_app), scope="session")
@@ -82,9 +97,10 @@ def gunicorn_conf_tmp_file_path(tmp_path_factory: pytest.TempPathFactory) -> Pat
 
 
 @pytest.fixture
-def logging_conf_dict(mocker: MockerFixture) -> dict:
+def logging_conf_dict(mocker: MockerFixture) -> DictConfig:
     """Load logging configuration dictionary from logging configuration module."""
-    return mocker.patch.dict(logging_conf_module.LOGGING_CONFIG)
+    dict_config: DictConfig = mocker.patch.dict(logging_conf_module.LOGGING_CONFIG)
+    return dict_config
 
 
 @pytest.fixture
@@ -187,7 +203,7 @@ def pre_start_script_error(request: pytest.FixtureRequest, tmp_path: Path) -> Pa
 
 
 @pytest.fixture(scope="session")
-def uvicorn_options_default() -> dict:
+def uvicorn_options_default() -> UvicornOptions:
     """Return default options used by `uvicorn.run()` for use in test assertions."""
     return dict(
         host="0.0.0.0",
@@ -203,7 +219,7 @@ def uvicorn_options_default() -> dict:
 
 
 @pytest.fixture
-def uvicorn_options_custom(logging_conf_dict: dict) -> dict:
+def uvicorn_options_custom(logging_conf_dict: DictConfig) -> UvicornOptions:
     """Return custom options used by `uvicorn.run()` for use in test assertions."""
     return dict(
         host="0.0.0.0",

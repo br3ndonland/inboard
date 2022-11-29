@@ -7,10 +7,14 @@ import logging
 import os
 import subprocess
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-import uvicorn  # type: ignore
+import uvicorn
 
 from inboard.logging_conf import configure_logging
+
+if TYPE_CHECKING:
+    from inboard.types import DictConfig, UvicornOptions
 
 
 def run_pre_start_script(logger: logging.Logger = logging.getLogger()) -> str:
@@ -44,7 +48,7 @@ def set_app_module(logger: logging.Logger = logging.getLogger()) -> str:
         raise
 
 
-def set_gunicorn_options(app_module: str) -> list:
+def set_gunicorn_options(app_module: str) -> list[str]:
     """Set options for running the Gunicorn server."""
     gunicorn_conf_path = os.getenv("GUNICORN_CONF", "python:inboard.gunicorn_conf")
     worker_class = os.getenv("WORKER_CLASS", "uvicorn.workers.UvicornWorker")
@@ -53,7 +57,7 @@ def set_gunicorn_options(app_module: str) -> list:
     return ["gunicorn", "-k", worker_class, "-c", gunicorn_conf_path, app_module]
 
 
-def _split_uvicorn_option(option: str) -> list | None:
+def _split_uvicorn_option(option: str) -> list[str] | None:
     return (
         [option_item.strip() for option_item in str(option_value).split(sep=",")]
         if (option_value := os.getenv(option.upper()))
@@ -61,31 +65,31 @@ def _split_uvicorn_option(option: str) -> list | None:
     )
 
 
-def _update_uvicorn_config_options(uvicorn_config_options: dict) -> dict:
+def _update_uvicorn_options(uvicorn_options: UvicornOptions) -> UvicornOptions:
     if uvicorn.__version__ >= "0.15.0":
         reload_delay = float(value) if (value := os.getenv("RELOAD_DELAY")) else None
         reload_excludes = _split_uvicorn_option("RELOAD_EXCLUDES")
         reload_includes = _split_uvicorn_option("RELOAD_INCLUDES")
-        uvicorn_config_options_015 = dict(
+        uvicorn_options_015: UvicornOptions = dict(
             reload_delay=reload_delay,
             reload_excludes=reload_excludes,
             reload_includes=reload_includes,
         )
-        uvicorn_config_options.update(uvicorn_config_options_015)
+        uvicorn_options.update(uvicorn_options_015)
     if value := os.getenv("UVICORN_CONFIG_OPTIONS"):
-        uvicorn_config_options_json = json.loads(value)
-        uvicorn_config_options.update(uvicorn_config_options_json)
-    return uvicorn_config_options
+        uvicorn_options_json: UvicornOptions = json.loads(value)
+        uvicorn_options.update(uvicorn_options_json)
+    return uvicorn_options
 
 
-def set_uvicorn_options(log_config: dict | None = None) -> dict:
+def set_uvicorn_options(log_config: DictConfig | None = None) -> UvicornOptions:
     """Set options for running the Uvicorn server."""
     host = os.getenv("HOST", "0.0.0.0")
     port = int(os.getenv("PORT", "80"))
     log_level = os.getenv("LOG_LEVEL", "info")
     reload_dirs = _split_uvicorn_option("RELOAD_DIRS")
     use_reload = bool((value := os.getenv("WITH_RELOAD")) and value.lower() == "true")
-    uvicorn_config_options = dict(
+    uvicorn_options: UvicornOptions = dict(
         host=host,
         port=port,
         log_config=log_config,
@@ -93,24 +97,26 @@ def set_uvicorn_options(log_config: dict | None = None) -> dict:
         reload=use_reload,
         reload_dirs=reload_dirs,
     )
-    return _update_uvicorn_config_options(uvicorn_config_options)
+    return _update_uvicorn_options(uvicorn_options)
 
 
 def start_server(
     process_manager: str,
     app_module: str,
     logger: logging.Logger = logging.getLogger(),
-    logging_conf_dict: dict | None = None,
+    logging_conf_dict: DictConfig | None = None,
 ) -> None:
     """Start the Uvicorn or Gunicorn server."""
     try:
         if process_manager == "gunicorn":
             logger.debug("Running Uvicorn with Gunicorn.")
-            gunicorn_options: list = set_gunicorn_options(app_module)
+            gunicorn_options: list[str] = set_gunicorn_options(app_module)
             subprocess.run(gunicorn_options)
         elif process_manager == "uvicorn":
             logger.debug("Running Uvicorn without Gunicorn.")
-            uvicorn_options: dict = set_uvicorn_options(log_config=logging_conf_dict)
+            uvicorn_options: UvicornOptions = set_uvicorn_options(
+                log_config=logging_conf_dict
+            )
             uvicorn.run(app_module, **uvicorn_options)
         else:
             raise NameError("Process manager needs to be either uvicorn or gunicorn")

@@ -1,4 +1,5 @@
 [tool.coverage.report]
+exclude_lines = ["if TYPE_CHECKING:","pragma: no cover"]
 fail_under = 100
 show_missing = true
 
@@ -11,13 +12,10 @@ profile = "black"
 src_paths = ["inboard", "tests"]
 
 [tool.mypy]
-disallow_incomplete_defs = true
-disallow_untyped_defs = true
-explicit_package_bases = true
 files = ["**/*.py"]
-namespace_packages = true
 plugins = "pydantic.mypy"
 show_error_codes = true
+strict = true
 
 [tool.poetry]
 name = "inboard"
@@ -51,6 +49,7 @@ fastapi = {version = "^0.88", optional = true}
 starlette = {version = "^0.22", optional = true}
 
 [tool.poetry.dev-dependencies]
+asgiref = "^3"
 black = "^22"
 coverage = {version = "^6", extras = ["toml"]}
 flake8 = "^6"

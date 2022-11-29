@@ -1,12 +1,17 @@
 from __future__ import annotations
 
+import logging
 import os
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
-from pytest_mock import MockerFixture
 
 from inboard import logging_conf
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from pytest_mock import MockerFixture
 
 
 class TestConfigureLogging:
@@ -18,7 +23,7 @@ class TestConfigureLogging:
         self, logging_conf_file_path: Path, mocker: MockerFixture
     ) -> None:
         """Test logging configuration with correct logging config file path."""
-        logger = mocker.patch.object(logging_conf.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         logging_conf.configure_logging(
             logger=logger, logging_conf=str(logging_conf_file_path)
         )
@@ -30,7 +35,7 @@ class TestConfigureLogging:
         self, logging_conf_module_path: str, mocker: MockerFixture
     ) -> None:
         """Test logging configuration with correct logging config module path."""
-        logger = mocker.patch.object(logging_conf.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         logging_conf.configure_logging(
             logger=logger, logging_conf=logging_conf_module_path
         )
@@ -40,7 +45,7 @@ class TestConfigureLogging:
 
     def test_configure_logging_module_incorrect(self, mocker: MockerFixture) -> None:
         """Test logging configuration with incorrect logging config module path."""
-        logger = mocker.patch.object(logging_conf.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         logger_error_msg = "Error when setting logging module"
         with pytest.raises(ModuleNotFoundError):
             logging_conf.configure_logging(logger=logger, logging_conf="no.module.here")
@@ -51,7 +56,7 @@ class TestConfigureLogging:
         self, logging_conf_tmp_file_path: Path, mocker: MockerFixture
     ) -> None:
         """Test logging configuration with temporary logging config file path."""
-        logger = mocker.patch.object(logging_conf.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         logging_conf_file = f"{logging_conf_tmp_file_path}/tmp_log.py"
         logging_conf.configure_logging(logger=logger, logging_conf=logging_conf_file)
         logger.debug.assert_called_once_with(
@@ -64,7 +69,7 @@ class TestConfigureLogging:
         mocker: MockerFixture,
     ) -> None:
         """Test logging configuration with incorrect temporary file type."""
-        logger = mocker.patch.object(logging_conf.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         incorrect_logging_conf = logging_conf_tmp_path_incorrect_extension.joinpath(
             "tmp_logging_conf"
         )
@@ -90,7 +95,7 @@ class TestConfigureLogging:
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test logging configuration with temporary logging config path."""
-        logger = mocker.patch.object(logging_conf.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         monkeypatch.syspath_prepend(logging_conf_tmp_file_path)
         monkeypatch.setenv("LOGGING_CONF", "tmp_log")
         assert os.getenv("LOGGING_CONF") == "tmp_log"
@@ -107,7 +112,7 @@ class TestConfigureLogging:
         - Correct module name
         - `LOGGING_CONFIG` object with incorrect type
         """
-        logger = mocker.patch.object(logging_conf.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         monkeypatch.syspath_prepend(logging_conf_tmp_path_incorrect_type)
         monkeypatch.setenv("LOGGING_CONF", "incorrect_type")
         logger_error_msg = "Error when setting logging module"
@@ -129,7 +134,7 @@ class TestConfigureLogging:
         - Correct module name
         - No `LOGGING_CONFIG` object
         """
-        logger = mocker.patch.object(logging_conf.logging, "root", autospec=True)
+        logger = mocker.patch.object(logging, "root", autospec=True)
         monkeypatch.syspath_prepend(logging_conf_tmp_path_no_dict)
         monkeypatch.setenv("LOGGING_CONF", "no_dict")
         logger_error_msg = "Error when setting logging module"
@@ -147,12 +152,12 @@ class TestLoggingOutput:
     ---
     """
 
-    def _uvicorn_access_log_args(self, path: str) -> tuple:
+    def _uvicorn_access_log_args(self, path: str) -> tuple[int | str, ...]:
         return ('%s - "%s %s HTTP/%s" %d', "127.0.0.1:60364", "GET", path, "1.1", 200)
 
-    def test_logging_output_default(self, capfd: pytest.CaptureFixture) -> None:
+    def test_logging_output_default(self, capfd: pytest.CaptureFixture[str]) -> None:
         """Test logger output with default format."""
-        logger = logging_conf.logging.getLogger()
+        logger = logging.getLogger()
         logging_conf.configure_logging()
         logger.info("Hello, World!")
         captured = capfd.readouterr()
@@ -165,7 +170,7 @@ class TestLoggingOutput:
     )
     def test_logging_output_custom_format(
         self,
-        capfd: pytest.CaptureFixture,
+        capfd: pytest.CaptureFixture[str],
         log_format: str,
         log_level_output: str,
         logging_conf_tmp_file_path: Path,
@@ -175,7 +180,7 @@ class TestLoggingOutput:
         logging_conf_file = f"{logging_conf_tmp_file_path}/tmp_log.py"
         monkeypatch.setenv("LOG_FORMAT", log_format)
         monkeypatch.setenv("LOG_LEVEL", "debug")
-        logger = logging_conf.logging.getLogger()
+        logger = logging.getLogger()
         logging_conf.configure_logging(logging_conf=logging_conf_file)
         logger.debug("Hello, Customized World!")
         captured = capfd.readouterr()
@@ -194,7 +199,7 @@ class TestLoggingOutput:
     )
     def test_logging_filters(
         self,
-        capfd: pytest.CaptureFixture,
+        capfd: pytest.CaptureFixture[str],
         log_filters_input: str,
         log_filters_output: set[str],
         mocker: MockerFixture,
@@ -211,7 +216,7 @@ class TestLoggingOutput:
             clear=True,
         )
         path_to_log = "/status"
-        logger = logging_conf.logging.getLogger("test.logging_conf.output.filters")
+        logger = logging.getLogger("test.logging_conf.output.filters")
         logging_conf.configure_logging(logger=logger)
         logger.info(*self._uvicorn_access_log_args(path_to_log))
         logger.info(log_filters_input)
@@ -228,7 +233,7 @@ class TestLoggingOutput:
     )
     def test_logging_filters_with_known_limitations(
         self,
-        capfd: pytest.CaptureFixture,
+        capfd: pytest.CaptureFixture[str],
         log_filters_input: str,
         mocker: MockerFixture,
     ) -> None:
@@ -244,7 +249,7 @@ class TestLoggingOutput:
             {"()": logging_conf.LogFilter, "filters": filters},
             clear=True,
         )
-        logger = logging_conf.logging.getLogger("test.logging_conf.output.filtererrors")
+        logger = logging.getLogger("test.logging_conf.output.filtererrors")
         logging_conf.configure_logging(logger=logger)
         logger.info(log_filters_input)
         logger.info("/healthy")

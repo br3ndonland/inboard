@@ -875,7 +875,7 @@ starlette = ["starlette"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8.1"
-content-hash = "2afebc5234e1c0407d1beea50847b4e612110289f066d3e1d7089d4012bc9b65"
+content-hash = "d86f1b18c0a1f11cdbdab711bfea5fb5ebca6668587d8cf4a4e45adbb5dc2de4"
 
 [metadata.files]
 anyio = [
