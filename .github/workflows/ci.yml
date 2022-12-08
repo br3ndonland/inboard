@@ -268,27 +268,51 @@ jobs:
           GIT_TAG_MAJOR_MINOR=$(echo $GIT_TAG_FULL | cut -d '.' -f 1-2)
           for GIT_TAG in "$GIT_TAG_FULL" "$GIT_TAG_MAJOR_MINOR"; do
             docker tag \
-              ghcr.io/br3ndonland/inboard:base"$LINUX_TAG" \
-              ghcr.io/br3ndonland/inboard:base-"$GIT_TAG$LINUX_TAG"
+              ghcr.io/br3ndonland/inboard:"base$LINUX_TAG" \
+              ghcr.io/br3ndonland/inboard:"base-$GIT_TAG$LINUX_TAG"
             docker tag \
-              ghcr.io/br3ndonland/inboard:starlette"$LINUX_TAG" \
-              ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG$LINUX_TAG"
+              ghcr.io/br3ndonland/inboard:"starlette$LINUX_TAG" \
+              ghcr.io/br3ndonland/inboard:"starlette-$GIT_TAG$LINUX_TAG"
             docker tag \
-              ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG" \
-              ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG$LINUX_TAG"
+              ghcr.io/br3ndonland/inboard:"fastapi$LINUX_TAG" \
+              ghcr.io/br3ndonland/inboard:"fastapi-$GIT_TAG$LINUX_TAG"
             docker tag \
-              ghcr.io/br3ndonland/inboard:base"$LINUX_TAG" \
-              ghcr.io/br3ndonland/inboard:base"-$GIT_TAG$PYTHON_TAG$LINUX_TAG"
+              ghcr.io/br3ndonland/inboard:"base$LINUX_TAG" \
+              ghcr.io/br3ndonland/inboard:"base-$GIT_TAG$PYTHON_TAG$LINUX_TAG"
             docker tag \
-              ghcr.io/br3ndonland/inboard:starlette"$LINUX_TAG" \
-              ghcr.io/br3ndonland/inboard:starlette"-$GIT_TAG$PYTHON_TAG$LINUX_TAG"
+              ghcr.io/br3ndonland/inboard:"starlette$LINUX_TAG" \
+              ghcr.io/br3ndonland/inboard:"starlette-$GIT_TAG$PYTHON_TAG$LINUX_TAG"
             docker tag \
-              ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG" \
-              ghcr.io/br3ndonland/inboard:fastapi"-$GIT_TAG$PYTHON_TAG$LINUX_TAG"
-            docker push ghcr.io/br3ndonland/inboard:base-"$GIT_TAG$LINUX_TAG"
-            docker push ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG$LINUX_TAG"
-            docker push ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG$LINUX_TAG"
-            docker push ghcr.io/br3ndonland/inboard:base-"$GIT_TAG$PYTHON_TAG$LINUX_TAG"
-            docker push ghcr.io/br3ndonland/inboard:starlette-"$GIT_TAG$PYTHON_TAG$LINUX_TAG"
-            docker push ghcr.io/br3ndonland/inboard:fastapi-"$GIT_TAG$PYTHON_TAG$LINUX_TAG"
+              ghcr.io/br3ndonland/inboard:"fastapi$LINUX_TAG" \
+              ghcr.io/br3ndonland/inboard:"fastapi-$GIT_TAG$PYTHON_TAG$LINUX_TAG"
+            docker tag \
+              ghcr.io/br3ndonland/inboard:"base$LINUX_TAG" \
+              ghcr.io/br3ndonland/inboard:"$GIT_TAG-base$LINUX_TAG"
+            docker tag \
+              ghcr.io/br3ndonland/inboard:"starlette$LINUX_TAG" \
+              ghcr.io/br3ndonland/inboard:"$GIT_TAG-starlette$LINUX_TAG"
+            docker tag \
+              ghcr.io/br3ndonland/inboard:"fastapi$LINUX_TAG" \
+              ghcr.io/br3ndonland/inboard:"$GIT_TAG-fastapi$LINUX_TAG"
+            docker tag \
+              ghcr.io/br3ndonland/inboard:"base$LINUX_TAG" \
+              ghcr.io/br3ndonland/inboard:"$GIT_TAG-base$PYTHON_TAG$LINUX_TAG"
+            docker tag \
+              ghcr.io/br3ndonland/inboard:"starlette$LINUX_TAG" \
+              ghcr.io/br3ndonland/inboard:"$GIT_TAG-starlette$PYTHON_TAG$LINUX_TAG"
+            docker tag \
+              ghcr.io/br3ndonland/inboard:"fastapi$LINUX_TAG" \
+              ghcr.io/br3ndonland/inboard:"$GIT_TAG-fastapi$PYTHON_TAG$LINUX_TAG"
+            docker push ghcr.io/br3ndonland/inboard:"base-$GIT_TAG$LINUX_TAG"
+            docker push ghcr.io/br3ndonland/inboard:"starlette-$GIT_TAG$LINUX_TAG"
+            docker push ghcr.io/br3ndonland/inboard:"fastapi-$GIT_TAG$LINUX_TAG"
+            docker push ghcr.io/br3ndonland/inboard:"base-$GIT_TAG$PYTHON_TAG$LINUX_TAG"
+            docker push ghcr.io/br3ndonland/inboard:"starlette-$GIT_TAG$PYTHON_TAG$LINUX_TAG"
+            docker push ghcr.io/br3ndonland/inboard:"fastapi-$GIT_TAG$PYTHON_TAG$LINUX_TAG"
+            docker push ghcr.io/br3ndonland/inboard:"$GIT_TAG-base$LINUX_TAG"
+            docker push ghcr.io/br3ndonland/inboard:"$GIT_TAG-starlette$LINUX_TAG"
+            docker push ghcr.io/br3ndonland/inboard:"$GIT_TAG-fastapi$LINUX_TAG"
+            docker push ghcr.io/br3ndonland/inboard:"$GIT_TAG-base$PYTHON_TAG$LINUX_TAG"
+            docker push ghcr.io/br3ndonland/inboard:"$GIT_TAG-starlette$PYTHON_TAG$LINUX_TAG"
+            docker push ghcr.io/br3ndonland/inboard:"$GIT_TAG-fastapi$PYTHON_TAG$LINUX_TAG"
           done
