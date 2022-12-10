@@ -61,6 +61,43 @@ path/to/inboard
 .venv ❯ pre-commit install --hook-type pre-push
 ```
 
+### Spell check
+
+Spell check is performed with [CSpell](https://cspell.org/).
+
+In GitHub Actions, CSpell runs using [cspell-action](https://github.com/streetsidesoftware/cspell-action).
+
+To run spell check locally, consider installing [their VSCode extension](https://github.com/streetsidesoftware/vscode-spell-checker) or running from the command line.
+
+CSpell can be run with `pnpm` if `pnpm` is installed:
+
+```sh
+pnpm -s dlx cspell --dot --gitignore "**/*.md"
+```
+
+or with `npx` if `npm` is installed:
+
+```sh
+npx -s -y cspell --dot --gitignore "**/*.md"
+```
+
+CSpell also offers a pre-commit hook through their [cspell-cli](https://github.com/streetsidesoftware/cspell-cli) repo. A `.pre-commit-config.yaml` configuration could look like this:
+
+```yml
+repos:
+    - repo: https://github.com/streetsidesoftware/cspell-cli
+      rev: v6.16.0
+      hooks:
+          - id: cspell
+            files: "^.*.md$"
+            args: ["--dot", "--gitignore", "**/*.md"]
+```
+
+CSpell is not currently used with pre-commit in this project because behavior of the pre-commit hook is inconsistent.
+
+-   [CSpell matches files with globs](https://cspell.org/docs/globs/), but [pre-commit uses Python regexes](https://pre-commit.com/#regular-expressions). Two separate file patterns have to be specified (a regex for pre-commit and a glob for CSpell), which is awkward and error-prone.
+-   When running with pre-commit, CSpell seems to output each error multiple times.
+
 ## Python
 
 ### Poetry

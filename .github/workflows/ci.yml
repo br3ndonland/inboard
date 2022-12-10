@@ -63,6 +63,13 @@ jobs:
           "$EXPECTED_VIRTUALENV_PATH") echo "Correct Poetry virtualenv." ;;
           *) echo "Incorrect Poetry virtualenv." && exit 1 ;;
           esac
+      - name: Run spell check
+        uses: streetsidesoftware/cspell-action@v2
+        with:
+          check_dot_files: true
+          files: "**/*.md"
+          incremental_files_only: false
+          strict: true
       - name: Run pre-commit hooks
         run: poetry run pre-commit run --all-files
       - name: Run tests
