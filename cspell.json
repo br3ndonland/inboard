@@ -1,4 +1,5 @@
 {
+  "ignorePaths": ["CHANGELOG.md", "**/*changelog.md"],
   "ignoreRegExpList": ["/(```+)\\s?[a-z][\\s\\S]+?\\1/g", "/`([\\s\\S]+?)`/g"],
   "languageSettings": [
     {

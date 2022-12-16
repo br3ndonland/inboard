@@ -4,8 +4,7 @@ on:
   pull_request:
   push:
     branches: [develop, main]
-    tags:
-      - "[0-9]+.[0-9]+.[0-9]+*"
+    tags: ["[0-9]+.[0-9]+.[0-9]+*"]
   workflow_dispatch:
 
 env:
@@ -323,3 +322,53 @@ jobs:
             docker push ghcr.io/br3ndonland/inboard:"$GIT_TAG-starlette$PYTHON_TAG$LINUX_TAG"
             docker push ghcr.io/br3ndonland/inboard:"$GIT_TAG-fastapi$PYTHON_TAG$LINUX_TAG"
           done
+  changelog:
+    if: github.ref_type == 'tag'
+    needs: [python, docker]
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: develop
+      - name: Configure Git for GitHub Actions
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+      - name: Generate changelog from Git tags
+        run: |
+          echo '# Changelog
+          ' >CHANGELOG.md
+
+          echo '# Changelog
+
+          [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
+          ' >docs/changelog.md
+
+          GIT_LOG_FORMAT='## %(subject) - %(taggerdate:short)
+
+          %(contents:body)
+          Tagger: %(taggername) %(taggeremail)
+
+          Date: %(taggerdate:iso)
+
+          ```text
+          %(contents:signature)```
+          '
+
+          git tag -l --sort=-taggerdate:iso --format="$GIT_LOG_FORMAT" >>CHANGELOG.md
+          git tag -l --sort=-taggerdate:iso --format="$GIT_LOG_FORMAT" >>docs/changelog.md
+
+          # shellcheck disable=SC2016
+          ESCAPE_DUNDERS='s:([^`])(__)([a-z]+)(__)([^`]):\1\\_\\_\3\\_\\_\5:g'
+          sed -Ei "$ESCAPE_DUNDERS" CHANGELOG.md
+          sed -Ei "$ESCAPE_DUNDERS" docs/changelog.md
+      - name: Format changelog with Prettier
+        run: npx -s -y prettier@'^2' --write CHANGELOG.md docs/changelog.md
+      - name: Commit and push changelog
+        run: |
+          git add CHANGELOG.md docs/changelog.md
+          git commit -m "Update changelog for version $GITHUB_REF_NAME"
+          git push
