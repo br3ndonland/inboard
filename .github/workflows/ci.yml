@@ -327,16 +327,13 @@ jobs:
     needs: [python, docker]
     permissions:
       contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
           ref: develop
-      - name: Configure Git for GitHub Actions
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
       - name: Generate changelog from Git tags
         run: |
           echo '# Changelog
@@ -367,8 +364,13 @@ jobs:
           sed -Ei "$ESCAPE_DUNDERS" docs/changelog.md
       - name: Format changelog with Prettier
         run: npx -s -y prettier@'^2' --write CHANGELOG.md docs/changelog.md
-      - name: Commit and push changelog
-        run: |
-          git add CHANGELOG.md docs/changelog.md
-          git commit -m "Update changelog for version $GITHUB_REF_NAME"
-          git push
+      - name: Create pull request with updated changelog
+        uses: peter-evans/create-pull-request@v4
+        with:
+          add-paths: |
+            CHANGELOG.md
+            docs/changelog.md
+          author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
+          branch: create-pull-request/${{ github.ref_name }}
+          commit-message: Update changelog for version ${{ github.ref_name }}
+          title: Update changelog for version ${{ github.ref_name }}

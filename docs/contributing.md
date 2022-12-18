@@ -310,4 +310,5 @@ Change the port numbers to run multiple containers simultaneously (`-p 81:80`).
             ```
         -   Omit the leading `v` (use `1.0.0` instead of `v1.0.0`)
         -   Example: `git tag -a -s 1.0.0`
-    -   Push the tag. GitHub Actions will build and push the Python package and Docker images, and update the changelog.
+    -   Push the tag. GitHub Actions will build and push the Python package and Docker images, and open a PR to update the changelog.
+    -   Squash and merge the changelog PR, removing any [`Co-authored-by` trailers](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors) before merging.
