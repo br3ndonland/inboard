@@ -6,7 +6,7 @@ Docker images are stored in [GitHub Container Registry](https://docs.github.com/
 
 Simply running `docker pull ghcr.io/br3ndonland/inboard` will pull the latest FastAPI image (Docker uses the `latest` tag by default). If specific versions of inboard or Python are desired, specify the version number at the beginning of the Docker tag as shown below _(new in inboard version 0.6.0)_. All the available images are also provided with [Alpine Linux](https://alpinelinux.org/) builds, which are available by appending `-alpine`, and Debian "slim" builds, which are available by appending `-slim` _(new in inboard version 0.11.0)_. Alpine and Debian slim users should be aware of their [limitations](#linux-distributions).
 
-Please see [inboard Git tags](https://github.com/br3ndonland/inboard/tags) and [inboard GHCR](https://github.com/br3ndonland/inboard/pkgs/container/inboard) for the latest version numbers and available Docker tags.
+Please see [inboard Git tags](https://github.com/br3ndonland/inboard/tags), [inboard PyPI release history](https://pypi.org/project/inboard/#history), and [inboard Docker images on GHCR](https://github.com/br3ndonland/inboard/pkgs/container/inboard) for the latest version numbers and available Docker tags.
 
 !!! example "Example Docker tags"
 
@@ -42,82 +42,164 @@ Please see [inboard Git tags](https://github.com/br3ndonland/inboard/tags) and [
 
 ## Use images in a _Dockerfile_
 
-For a [Poetry](https://github.com/python-poetry/poetry) project with the following directory structure:
+For a [Hatch](https://hatch.pypa.io/latest/) project with the following directory structure:
 
 -   `repo/`
-    -   `package/`
+    -   `package_name/`
         -   `__init__.py`
         -   `main.py`
         -   `prestart.py`
+    -   `tests/`
     -   `Dockerfile`
-    -   `poetry.lock`
     -   `pyproject.toml`
+    -   `README.md`
 
 The _pyproject.toml_ could look like this:
 
-!!! example "Example pyproject.toml for Poetry project"
+!!! example "Example _pyproject.toml_ for Hatch project"
 
     ```toml
-    [tool.poetry]
-    name = "package"
-    version = "0.1.0"
-    description = ""
-    authors = ["Your Name <you@example.com>"]
-
-    [tool.poetry.dependencies]
-    python = "^3.10"
-    inboard = {version = "^0.26", extras = ["fastapi"]}
-
-    [tool.poetry.dev-dependencies]
-    black = "^22"
-
     [build-system]
-    requires = ["poetry-core>=1.0.0"]
-    build-backend = "poetry.core.masonry.api"
+    build-backend = "hatchling.build"
+    requires = ["hatchling"]
+
+    [project]
+    authors = [{email = "you@example.com", name = "Your Name"}]
+    dependencies = [
+      "inboard[fastapi]",
+    ]
+    description = "Your project description here."
+    dynamic = ["version"]
+    license = "MIT"
+    name = "package-name"
+    readme = "README.md"
+    requires-python = ">=3.8.1,<4"
+
+    [project.optional-dependencies]
+    checks = [
+      "black",
+      "flake8",
+      "isort",
+      "mypy",
+      "pre-commit",
+    ]
+    docs = [
+      "mkdocs-material",
+    ]
+    tests = [
+      "coverage[toml]",
+      "httpx",
+      "pytest",
+      "pytest-mock",
+      "pytest-timeout",
+    ]
+
+    [tool.coverage.report]
+    exclude_lines = ["if TYPE_CHECKING:", "pragma: no cover"]
+    fail_under = 100
+    show_missing = true
+
+    [tool.coverage.run]
+    command_line = "-m pytest"
+    source = ["package_name", "tests"]
+
+    [tool.hatch.build.targets.sdist]
+    include = ["/package_name"]
+
+    [tool.hatch.envs.ci]
+    dev-mode = false
+    features = [
+      "checks",
+      "tests",
+    ]
+    path = ".venv"
+
+    [tool.hatch.envs.default]
+    dev-mode = true
+    features = [
+      "checks",
+      "docs",
+      "tests",
+    ]
+    path = ".venv"
+
+    [tool.hatch.envs.production]
+    dev-mode = false
+    features = []
+    path = ".venv"
+
+    [tool.hatch.version]
+    path = "package_name/__init__.py"
+
+    [tool.isort]
+    profile = "black"
+    src_paths = ["package_name", "tests"]
+
+    [tool.mypy]
+    files = ["**/*.py"]
+    plugins = "pydantic.mypy"
+    show_error_codes = true
+    strict = true
+
+    [tool.pytest.ini_options]
+    addopts = "-q"
+    minversion = "6.0"
+    testpaths = ["tests"]
+
     ```
 
 The _Dockerfile_ could look like this:
 
-!!! example "Example Dockerfile for Poetry project"
+!!! example "Example _Dockerfile_ for Hatch project"
 
     ```dockerfile
     FROM ghcr.io/br3ndonland/inboard:fastapi
 
+    # Set environment variables
+    ENV APP_MODULE=package_name.main:app
+
     # Install Python requirements
-    COPY poetry.lock pyproject.toml /app/
+    COPY pyproject.toml README.md /app/
     WORKDIR /app
-    RUN poetry install --no-dev --no-interaction --no-root
+    RUN hatch env create production
 
     # Install Python app
-    COPY package /app/package
-    ENV APP_MODULE=package.main:app
+    COPY package_name /app/package_name
+
     # RUN command already included in base image
     ```
 
 For a standard `pip` install:
 
 -   `repo/`
-    -   `package/`
+    -   `package_name/`
         -   `__init__.py`
         -   `main.py`
         -   `prestart.py`
+    -   `tests/`
     -   `Dockerfile`
     -   `requirements.txt`
+    -   `README.md`
+
+Packaging would be set up separately as described in the [Python packaging user guide](https://packaging.python.org/en/latest/).
 
 The _requirements.txt_ could look like this:
 
-!!! example "Example requirements.txt for pip project"
+!!! example "Example _requirements.txt_ for `pip` project"
 
     ```text
-    inboard[fastapi]==0.26.*
+    inboard[fastapi]
     ```
 
 The _Dockerfile_ could look like this:
 
-!!! example "Example Dockerfile for project with pip and requirements.txt"
+!!! example "Example _Dockerfile_ for `pip` project"
 
     ```dockerfile
     FROM ghcr.io/br3ndonland/inboard:fastapi
+
+    # Set environment variables
+    ENV APP_MODULE=package_name.main:app
 
     # Install Python requirements
     COPY requirements.txt /app/
@@ -125,8 +207,8 @@ The _Dockerfile_ could look like this:
     RUN python -m pip install -r requirements.txt
 
     # Install Python app
-    COPY package /app/package
-    ENV APP_MODULE=package.main:app
+    COPY package_name /app/package_name
+
     # RUN command already included in base image
     ```
 
@@ -171,40 +253,40 @@ Details on the `docker run` command:
     -   `WITH_RELOAD`
 -   `-v $(pwd)/package:/app/package`: the specified directory (`/path/to/repo/package` in this example) will be [mounted as a volume](https://docs.docker.com/engine/reference/run/#volume-shared-filesystems) inside of the container at `/app/package`. When files in the working directory change, Docker and Uvicorn will sync the files to the running Docker container.
 
+## Docker and Hatch
+
+This project uses [Hatch](https://hatch.pypa.io/latest/) for Python dependency management and packaging, and uses [`pipx`](https://pypa.github.io/pipx/) to install Hatch in Docker:
+
+-   `ENV PATH=/opt/pipx/bin:/app/.venv/bin:$PATH` is set first to prepare the `$PATH`.
+-   `pip` is used to install `pipx`.
+-   `pipx` is used to install Hatch, with `PIPX_BIN_DIR=/opt/pipx/bin` used to specify the location where `pipx` installs the Hatch command-line application, and `PIPX_HOME=/opt/pipx/home` used to specify the location for `pipx` itself.
+-   `hatch env create` is used with `HATCH_ENV_TYPE_VIRTUAL_PATH=.venv` and `WORKDIR=/app` to create the virtualenv at `/app/.venv` and install the project's packages into the virtualenv.
+
+With this approach:
+
+-   Subsequent `python` commands use the executable at `app/.venv/bin/python`.
+-   As long as `HATCH_ENV_TYPE_VIRTUAL_PATH=.venv` and `WORKDIR /app` are retained, subsequent Hatch commands use the same virtual environment at `/app/.venv`.
+
 ## Docker and Poetry
 
-As explained in [python-poetry/poetry#1879](https://github.com/python-poetry/poetry/discussions/1879#discussioncomment-346113), there are two conflicting conventions to consider when working with Poetry in Docker:
+This project now uses Hatch for Python dependency management and packaging. Poetry 1.1 was used before Hatch, and Poetry 1.1 is still included in the Docker images for backwards compatibility. If you have a downstream project using the inboard Docker images with a newer version of Poetry, you can add `RUN pipx upgrade poetry` or `RUN pipx install poetry>1.2 --force` to your Dockerfile to upgrade Poetry for your project.
+
+As explained in [python-poetry/poetry#1879](https://github.com/python-poetry/poetry/discussions/1879#discussioncomment-346113), there were two conflicting conventions to consider when working with Poetry in Docker:
 
 1. Docker's convention is to not use virtualenvs, because containers themselves provide sufficient isolation.
 2. Poetry's convention is to always use virtualenvs, because of the reasons given in [python-poetry/poetry#3209](https://github.com/python-poetry/poetry/pull/3209#issuecomment-710678083).
 
-!!! warning "Docker and Poetry - the previous approach"
+This project used [`pipx`](https://pypa.github.io/pipx/) to install Poetry in Docker:
 
-    This project previously preferred the Docker convention:
+-   `ENV PATH=/opt/pipx/bin:/app/.venv/bin:$PATH` was set first to prepare the `$PATH`.
+-   `pip` was used to install `pipx`.
+-   `pipx` was used to install Poetry.
+-   `poetry install` was used with `POETRY_VIRTUALENVS_CREATE=true`, `POETRY_VIRTUALENVS_IN_PROJECT=true` and `WORKDIR /app` to install the project's packages into the virtualenv at `/app/.venv`.
 
-    -   Poetry itself was installed with the _get-poetry.py_ script, with the environment variable `POETRY_HOME=/opt/poetry` used to specify a consistent location for Poetry.
-    -   `poetry install` was used with `POETRY_VIRTUALENVS_CREATE=false` to install the project's packages into the system Python directory.
+With this approach:
 
-    The conventional Docker approach no longer works because:
-
-    -   The old install script _get-poetry.py_ is deprecated and not compatible with Python 3.10.
-    -   The new install script _install-poetry.py_ has been problematic so far, and Poetry doesn't really test it, so it will likely continue to be problematic.
-
-!!! success "Docker and Poetry - the updated approach"
-
-    The updated approach uses [`pipx`](https://pypa.github.io/pipx/) to install Poetry.
-
-    In the updated approach:
-
-    -   `ENV PATH=/opt/pipx/bin:/app/.venv/bin:$PATH` is set first to prepare the `$PATH`.
-    -   `pip` is used to install a pinned version of `pipx`.
-    -   `pipx` is used to install a pinned version of Poetry, with `PIPX_BIN_DIR=/opt/pipx/bin` used to specify the location where `pipx` installs the Poetry command-line application, and `PIPX_HOME=/opt/pipx/home` used to specify the location for `pipx` itself.
-    -   `poetry install` is used with `POETRY_VIRTUALENVS_CREATE=true`, `POETRY_VIRTUALENVS_IN_PROJECT=true` and `WORKDIR /app` to install the project's packages into the virtualenv at `/app/.venv`.
-
-    With this approach:
-
-    -   Subsequent `python` commands will use the executable at `app/.venv/bin/python`.
-    -   As long as `POETRY_VIRTUALENVS_IN_PROJECT=true` and `WORKDIR /app` are retained, subsequent Poetry commands will use the same virtual environment at `/app/.venv`.
+-   Subsequent `python` commands used the executable at `app/.venv/bin/python`.
+-   As long as `POETRY_VIRTUALENVS_IN_PROJECT=true` and `WORKDIR /app` were retained, subsequent Poetry commands used the same virtual environment at `/app/.venv`.
 
 ## Linux distributions
 
@@ -233,7 +315,7 @@ The basic build dependencies used by inboard include `gcc`, `libc-dev`, and `mak
     ARG INBOARD_DOCKER_TAG=fastapi-alpine
     FROM ghcr.io/br3ndonland/inboard:${INBOARD_DOCKER_TAG}
     ENV APP_MODULE=mypackage.main:app
-    COPY poetry.lock pyproject.toml /app/
+    COPY pyproject.toml README.md /app/
     WORKDIR /app
     RUN <<HEREDOC
 
@@ -244,7 +326,7 @@ The basic build dependencies used by inboard include `gcc`, `libc-dev`, and `mak
         build-base freetype-dev gcc libc-dev libpng-dev make openblas-dev postgresql-dev
     fi
 
-    poetry install --no-dev --no-interaction --no-root
+    hatch env create production
 
     if [ "$ID" = "alpine" ]; then
       apk del .build-project
@@ -284,7 +366,7 @@ A _Dockerfile_ equivalent to the Alpine Linux example might look like the follow
     ARG INBOARD_DOCKER_TAG=fastapi-slim
     FROM ghcr.io/br3ndonland/inboard:${INBOARD_DOCKER_TAG}
     ENV APP_MODULE=mypackage.main:app
-    COPY poetry.lock pyproject.toml /app/
+    COPY pyproject.toml README.md /app/
     WORKDIR /app
     ARG INBOARD_DOCKER_TAG
     RUN <<HEREDOC
@@ -297,7 +379,7 @@ A _Dockerfile_ equivalent to the Alpine Linux example might look like the follow
         gcc libc-dev make wget
     fi
 
-    poetry install --no-dev --no-interaction --no-root
+    hatch env create production
 
     if [ "$ID" = "debian" ] && echo "$INBOARD_DOCKER_TAG" | grep -q "slim"; then
       apt-get purge --auto-remove -qy \

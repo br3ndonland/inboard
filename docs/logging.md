@@ -92,7 +92,7 @@ The server does not display a log message.
 
 ## Extending the logging config
 
-If inboard is installed from PyPI with `poetry add inboard` or `pip install inboard`, the logging configuration can be easily customized as explained in the [Python logging configuration docs](https://docs.python.org/3/library/logging.config.html).
+If the inboard Python package is installed from PyPI, the logging configuration can be easily customized as explained in the [Python logging configuration docs](https://docs.python.org/3/library/logging.config.html).
 
 !!!example "Example of a custom logging module"
 

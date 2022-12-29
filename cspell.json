@@ -23,6 +23,7 @@
   "words": [
     "anyio",
     "asgi",
+    "asgiref",
     "asyncio",
     "autoformat",
     "autoformatter",
@@ -62,6 +63,7 @@
     "noqa",
     "pipx",
     "postinstallation",
+    "prereleases",
     "prestart",
     "prettier",
     "prettierignore",
