@@ -7,9 +7,22 @@ LABEL org.opencontainers.image.licenses="MIT"
 LABEL org.opencontainers.image.source="https://github.com/br3ndonland/inboard"
 LABEL org.opencontainers.image.title="inboard"
 LABEL org.opencontainers.image.url="https://github.com/br3ndonland/inboard/pkgs/container/inboard"
-ARG LINUX_VERSION PIPX_VERSION=1.1.0 POETRY_VERSION=1.1.11
-ENV APP_MODULE=inboard.app.main_base:app LINUX_VERSION=$LINUX_VERSION PATH=/opt/pipx/bin:/app/.venv/bin:$PATH PIPX_BIN_DIR=/opt/pipx/bin PIPX_HOME=/opt/pipx/home PIPX_VERSION=$PIPX_VERSION POETRY_VERSION=$POETRY_VERSION PYTHONPATH=/app
-COPY --link poetry.lock poetry.toml pyproject.toml /app/
+ARG \
+  HATCH_VERSION=1.6.3 \
+  LINUX_VERSION \
+  PIPX_VERSION=1.1.0 \
+  POETRY_VERSION=1.1.11
+ENV \
+  HATCH_ENV_TYPE_VIRTUAL_PATH=.venv \
+  HATCH_VERSION=$HATCH_VERSION \
+  LINUX_VERSION=$LINUX_VERSION \
+  PATH=/opt/pipx/bin:/app/.venv/bin:$PATH \
+  PIPX_BIN_DIR=/opt/pipx/bin \
+  PIPX_HOME=/opt/pipx/home \
+  PIPX_VERSION=$PIPX_VERSION \
+  POETRY_VERSION=$POETRY_VERSION \
+  PYTHONPATH=/app
+COPY --link pyproject.toml README.md /app/
 WORKDIR /app
 RUN <<HEREDOC
 . /etc/os-release
@@ -22,15 +35,17 @@ elif [ "$LINUX_VERSION" = "slim" ]; then
     gcc libc-dev make wget
 fi
 python -m pip install --no-cache-dir --upgrade pip "pipx==$PIPX_VERSION"
+pipx install "hatch==$HATCH_VERSION"
 pipx install "poetry==$POETRY_VERSION"
-poetry install --no-dev --no-interaction --no-root
 HEREDOC
 COPY --link inboard /app/inboard
 ENTRYPOINT ["python"]
 CMD ["-m", "inboard.start"]
 
 FROM builder as base
+ENV APP_MODULE=inboard.app.main_base:app
 RUN <<HEREDOC
+hatch env create base
 . /etc/os-release
 if [ "$ID" = "alpine" ]; then
   apk del .build-deps
@@ -43,7 +58,7 @@ HEREDOC
 FROM builder AS fastapi
 ENV APP_MODULE=inboard.app.main_fastapi:app
 RUN <<HEREDOC
-poetry install --no-dev --no-interaction --no-root -E fastapi
+hatch env create fastapi
 . /etc/os-release
 if [ "$ID" = "alpine" ]; then
   apk del .build-deps
@@ -56,7 +71,7 @@ HEREDOC
 FROM builder AS starlette
 ENV APP_MODULE=inboard.app.main_starlette:app
 RUN <<HEREDOC
-poetry install --no-dev --no-interaction --no-root -E starlette
+hatch env create starlette
 . /etc/os-release
 if [ "$ID" = "alpine" ]; then
   apk del .build-deps
