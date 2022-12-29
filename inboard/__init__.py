@@ -22,3 +22,5 @@ __all__ = (
     "configure_logging",
     "fastapi_basic_auth",
 )
+
+__version__ = "0.37.0"

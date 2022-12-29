@@ -1,11 +1,126 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[project]
+authors = [{email = "bws@bws.bio", name = "Brendon Smith"}]
+classifiers = [
+  "Framework :: FastAPI",
+  "Natural Language :: English",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Topic :: Internet :: Log Analysis",
+  "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+  "Topic :: Internet :: WWW/HTTP :: WSGI",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
+  "Topic :: System :: Software Distribution",
+  "Topic :: Utilities",
+  "Typing :: Typed",
+]
+dependencies = [
+  "gunicorn>=20,<21",
+  "uvicorn[standard]>=0.17,<0.18",
+]
+description = "Docker images and utilities to power your Python APIs and help you ship faster."
+dynamic = ["version"]
+keywords = ["asgi", "docker", "fastapi", "gunicorn", "uvicorn"]
+license = "MIT"
+name = "inboard"
+readme = "README.md"
+repository = "https://github.com/br3ndonland/inboard"
+requires-python = ">=3.8.1,<4"
+
+[project.optional-dependencies]
+checks = [
+  "asgiref==3.6.0",
+  "black>=22,<23",
+  "flake8>=6,<7",
+  "isort>=5,<6",
+  "mypy==0.991",
+  "pre-commit>=2,<3",
+]
+docs = [
+  "mkdocs-material>=8,<9",
+]
+fastapi = [
+  "fastapi>=0.88,<0.89",
+]
+starlette = [
+  "starlette>=0.22,<0.23",
+]
+tests = [
+  "coverage[toml]>=6,<7",
+  "httpx>=0.23,<24",
+  "pytest>=7,<8",
+  "pytest-mock>=3,<4",
+  "pytest-timeout>=1,<2",
+]
+
+[project.urls]
+Docker = "https://github.com/br3ndonland/inboard/pkgs/container/inboard"
+Documentation = "https://inboard.bws.bio"
+Homepage = "https://github.com/br3ndonland/inboard"
+
 [tool.coverage.report]
-exclude_lines = ["if TYPE_CHECKING:","pragma: no cover"]
+exclude_lines = ["if TYPE_CHECKING:", "pragma: no cover"]
 fail_under = 100
 show_missing = true
 
 [tool.coverage.run]
 command_line = "-m pytest"
 source = ["inboard", "tests"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/inboard"]
+
+[tool.hatch.envs.base]
+dev-mode = false
+features = []
+path = ".venv"
+
+[tool.hatch.envs.ci]
+dev-mode = false
+features = [
+  "checks",
+  "fastapi",
+  "tests",
+]
+path = ".venv"
+
+[tool.hatch.envs.default]
+dev-mode = true
+features = [
+  "checks",
+  "docs",
+  "fastapi",
+  "tests",
+]
+path = ".venv"
+
+[tool.hatch.envs.docs]
+dev-mode = false
+features = [
+  "docs",
+]
+
+[tool.hatch.envs.fastapi]
+dev-mode = false
+features = [
+  "fastapi",
+]
+path = ".venv"
+
+[tool.hatch.envs.starlette]
+dev-mode = false
+features = [
+  "starlette",
+]
+path = ".venv"
+
+[tool.hatch.version]
+path = "inboard/__init__.py"
 
 [tool.isort]
 profile = "black"
@@ -17,64 +132,7 @@ plugins = "pydantic.mypy"
 show_error_codes = true
 strict = true
 
-[tool.poetry]
-name = "inboard"
-version = "0.37.0"
-description = "Docker images and utilities to power your Python APIs and help you ship faster."
-authors = ["Brendon Smith <bws@bws.bio>"]
-license = "MIT"
-homepage = "https://github.com/br3ndonland/inboard"
-repository = "https://github.com/br3ndonland/inboard"
-documentation = "https://inboard.bws.bio"
-readme = "README.md"
-include = ["inboard/py.typed"]
-keywords = ["asgi", "docker", "fastapi", "gunicorn", "uvicorn"]
-classifiers = [
-  "Framework :: FastAPI",
-  "Natural Language :: English",
-  "Topic :: Internet :: Log Analysis",
-  "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
-  "Topic :: Internet :: WWW/HTTP :: WSGI",
-  "Topic :: Software Development :: Libraries :: Application Frameworks",
-  "Topic :: System :: Software Distribution",
-  "Topic :: Utilities",
-  "Typing :: Typed"
-]
-
-[tool.poetry.dependencies]
-python = "^3.8.1"
-gunicorn = "^20"
-uvicorn = {version = "^0.17", extras = ["standard"]}
-fastapi = {version = "^0.88", optional = true}
-starlette = {version = "^0.22", optional = true}
-
-[tool.poetry.dev-dependencies]
-asgiref = "^3"
-black = "^22"
-coverage = {version = "^6", extras = ["toml"]}
-flake8 = "^6"
-httpx = "^0.23"
-isort = "^5.6"
-mkdocs-material = "^8"
-mypy = ">0.900,<1"
-pre-commit = "^2.8"
-pytest = "^7"
-pytest-mock = "^3.3"
-pytest-timeout = "^1.4"
-
-[tool.poetry.extras]
-all = ["fastapi"]
-fastapi = ["fastapi"]
-starlette = ["starlette"]
-
-[tool.poetry.urls]
-Docker = "https://github.com/br3ndonland/inboard/pkgs/container/inboard"
-
 [tool.pytest.ini_options]
 addopts = "-q"
 minversion = "6.0"
 testpaths = ["tests"]
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
