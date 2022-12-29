@@ -41,6 +41,7 @@ async def app(
         "type": "http.response.start",
         "status": 200,
         "headers": [(b"content-type", b"text/plain")],
+        "trailers": False,
     }
     body_event: HTTPResponseBodyEvent = {
         "type": "http.response.body",
