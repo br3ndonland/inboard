@@ -1,5 +1,95 @@
 # Changelog
 
+## 0.38.0-alpha.0 - 2022-12-30
+
+Changes:
+
+**Migrate from Poetry 1.1 to Hatch** (#56, #58)
+
+inboard has been migrated to [Hatch](https://hatch.pypa.io/latest/).
+See #56 for more details and context around the motivations for this.
+
+The inboard Python version is now available at `inboard.__version__`.
+
+Projects using inboard are not required to migrate to Hatch. The Docker
+images will retain Poetry 1.1 for backwards compatibility for now.
+Poetry 1.1 is unmaintained, so it will eventually need to be removed.
+Notice will be given at least one minor version prior to removal. If
+projects using inboard require `poetry>1.2`, they can add
+`pipx upgrade poetry` or `pipx install poetry>1.2 --force` to their
+Dockerfiles as described in the updated docs (on the Docker page,
+under "Docker and Poetry").
+
+**Auto-generate changelog from Git tags** (b15efff, e6e0490)
+
+A changelog will now be provided at CHANGELOG.md for viewing on GitHub,
+and in the docs at the `/changelog` endpoint.
+
+**Update Docker tag syntax for inboard releases** (5617084)
+
+Originally, inboard just provided three Docker images, tagged with
+`base`, `fastapi`, and `starlette` based on the dependencies installed,
+and appended inboard version numbers when Git tags were pushed.
+
+Appending version numbers to Docker tags can result in confusing syntax.
+For example, `ghcr.io/br3ndonland/inboard:fastapi-0.37-alpine` refers to
+inboard 0.37, but some users could interpret this as FastAPI 0.37.
+
+The inboard version number will now be added to the beginning of all
+Docker tags to avoid this confusion.
+
+- Before: `ghcr.io/br3ndonland/inboard:fastapi-0.37-alpine`
+- After: `ghcr.io/br3ndonland/inboard:0.37-fastapi-alpine`
+
+The original syntax will remain supported for backwards compatibility,
+so either the "before" or "after" syntax shown above will work.
+
+**Enable mypy strict mode** (2cbc99c)
+
+Mypy will run in strict mode on all Python code (source code and tests).
+In terms of user-facing improvements, this update will:
+
+- Add a new `inboard.types` module, with a `DictConfig` type that can be
+  used to type-annotate logging configuration dictionaries, and a
+  `UvicornOptions` type that can be used to type-annotate options passed
+  to Uvicorn via `uvicorn.run()` or `uvicorn.Config`
+- Update the base ASGI application in `inboard.app.main_base` to ASGI3
+- Update `contributing.md` with type annotation info and instructions
+
+Commits:
+
+- Bump version from 0.37.0 to 0.38.0-alpha.0 (e9348b0)
+- Merge pull request #58 from br3ndonland/hatch (78be3c2)
+- Update docs for Hatch (ec344ad)
+- Update GitHub Actions workflows for Hatch (9285efb)
+- Update Dockerfile for Hatch (93d9e0a)
+- Update configuration files for Hatch (5bd4ff5)
+- Update to actions/setup-python@v4 (8840873)
+- Add required `trailers` key for `asgiref==3.6.0` (d729fdf)
+- Update to `asgiref==3.6.0` (d534de8)
+- Move changelog updates to PRs (e6e0490)
+- Auto-generate changelog from Git tags (b15efff)
+- Remove unused `.prettierrc` (ef25ea0)
+- Add spell check with CSpell (7361702)
+- Remove GitHub issue templates (3797b2d)
+- Update GitHub Actions Git tag syntax (c8a0638)
+- Update Docker tag syntax for inboard releases (5617084)
+- Remove redundant GitHub Actions workflows (4d19501)
+- Enable mypy strict mode (2cbc99c)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2022-12-30 15:04:26 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQBzt5FXBpT7Li/8pIyb9SGbb8QGUHc0pLt1jdxlHquNFjO0FpaNUvmknvpC9cWCVxl
+sEq0/rwYwb4VafulRlqAU=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.37.0 - 2022-11-28
 
 Changes:
