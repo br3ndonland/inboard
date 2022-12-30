@@ -21,7 +21,7 @@ This repository provides [Docker images](https://github.com/br3ndonland/inboard/
 
 _Why use this project?_ You might want to try out inboard because it:
 
-- **Offers a Python package and Docker images that work together**. Python packages and Docker images don't automatically share the same versioning systems, but inboard can help with this. You might install a minor release of the Python package with `pip install 'inboard>=0.28,<0.29[fastapi]'` or `poetry add inboard@'^0.28' -E fastapi`. You can also pull the corresponding Docker image `FROM ghcr.io/br3ndonland/inboard:0.28`.
+- **Offers a Python package and Docker images that work together**. Python packages and Docker images don't automatically share the same versioning systems, but inboard can help with this. You might install the Python package with a minor version constraint. You can also pull the corresponding Docker image by specifying the minor version in the Docker tag (`FROM ghcr.io/br3ndonland/inboard:<version>`).
 - **Tests everything**. inboard performs unit testing of 100% of the Python code, and also runs smoke tests of the Docker images each time they are built.
 - **Sets sane defaults, but allows configuration**. Configure a variety of settings with environment variables. Or run it as-is and it just works.
 - **Configures logging extensibly**. inboard simplifies logging by handling all its Python log streams with a single logging config. It also offers the ability to filter health check endpoints out of the access logs. Don't like it? No problem. You can easily extend or override the logging behavior.

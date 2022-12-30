@@ -9,8 +9,9 @@ on:
 
 env:
   DOCKER_BUILDKIT: "1"
+  HATCH_ENV: "ci"
+  HATCH_VERSION: "1.6.3"
   PIPX_VERSION: "1.1.0"
-  POETRY_VERSION: "1.1.11"
 
 jobs:
   python:
@@ -23,45 +24,57 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Set up Poetry cache for Python dependencies
+      - name: Set up pip cache
+        if: runner.os == 'Linux'
         uses: actions/cache@v3
-        if: startsWith(runner.os, 'Linux')
         with:
-          path: ~/.cache/pypoetry
-          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: ${{ runner.os }}-poetry-
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
+          restore-keys: ${{ runner.os }}-pip-
       - name: Set up pre-commit cache
+        if: runner.os == 'Linux'
         uses: actions/cache@v3
-        if: startsWith(runner.os, 'Linux')
         with:
           path: ~/.cache/pre-commit
           key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
           restore-keys: ${{ runner.os }}-pre-commit-
       - name: Install pipx for Python ${{ matrix.python-version }}
         run: python -m pip install "pipx==$PIPX_VERSION"
-      - name: Install Poetry
-        run: pipx install "poetry==$POETRY_VERSION"
-      - name: Test Poetry version
+      - name: Install Hatch
+        run: pipx install "hatch==$HATCH_VERSION"
+      - name: Test Hatch version
         run: |
-          POETRY_VERSION_INSTALLED=$(poetry -V)
-          echo "The POETRY_VERSION environment variable is set to $POETRY_VERSION."
-          echo "The installed Poetry version is $POETRY_VERSION_INSTALLED."
-          case $POETRY_VERSION_INSTALLED in
-          *$POETRY_VERSION*) echo "Poetry version correct." ;;
-          *) echo "Poetry version incorrect." && exit 1 ;;
+          HATCH_VERSION_INSTALLED=$(hatch --version)
+          echo "The HATCH_VERSION environment variable is set to $HATCH_VERSION."
+          echo "The installed Hatch version is ${HATCH_VERSION_INSTALLED##Hatch, version }."
+          case $HATCH_VERSION_INSTALLED in
+          *$HATCH_VERSION) echo "Hatch version correct." ;;
+          *) echo "Hatch version incorrect." && exit 1 ;;
           esac
       - name: Install dependencies
-        run: poetry install --no-interaction -E fastapi
+        run: hatch env create ci
       - name: Test virtualenv location
         run: |
-          EXPECTED_VIRTUALENV_PATH=${{ github.workspace }}/.venv
-          INSTALLED_VIRTUALENV_PATH=$(poetry env info --path)
+          EXPECTED_VIRTUALENV_PATH=$GITHUB_WORKSPACE/.venv
+          INSTALLED_VIRTUALENV_PATH=$(hatch env find)
           echo "The virtualenv should be at $EXPECTED_VIRTUALENV_PATH."
-          echo "Poetry is using a virtualenv at $INSTALLED_VIRTUALENV_PATH."
+          echo "Hatch is using a virtualenv at $INSTALLED_VIRTUALENV_PATH."
           case "$INSTALLED_VIRTUALENV_PATH" in
-          "$EXPECTED_VIRTUALENV_PATH") echo "Correct Poetry virtualenv." ;;
-          *) echo "Incorrect Poetry virtualenv." && exit 1 ;;
+          "$EXPECTED_VIRTUALENV_PATH") echo "Correct Hatch virtualenv." ;;
+          *) echo "Incorrect Hatch virtualenv." && exit 1 ;;
           esac
+      - name: Test that Git tag version and Python package version match
+        if: github.ref_type == 'tag' && matrix.python-version == '3.10'
+        run: |
+          GIT_TAG_VERSION=$GITHUB_REF_NAME
+          PACKAGE_VERSION=$(hatch version)
+          echo "The Python package version is $PACKAGE_VERSION."
+          echo "The Git tag version is $GIT_TAG_VERSION."
+          if [ "$PACKAGE_VERSION" = "$GIT_TAG_VERSION" ]; then
+            echo "Versions match."
+          else
+            echo "Versions do not match." && exit 1
+          fi
       - name: Run spell check
         uses: streetsidesoftware/cspell-action@v2
         with:
@@ -70,24 +83,16 @@ jobs:
           incremental_files_only: false
           strict: true
       - name: Run pre-commit hooks
-        run: poetry run pre-commit run --all-files
+        run: hatch run pre-commit run --all-files
       - name: Run tests
-        run: poetry run coverage run
+        run: hatch run coverage run
       - name: Enforce test coverage
-        run: poetry run coverage report
-      - name: Build Python package with latest Python version and publish to PyPI
+        run: hatch run coverage report
+      - name: Build Python package
+        run: hatch build
+      - name: Publish Python package to PyPI
         if: github.ref_type == 'tag' && matrix.python-version == '3.10'
-        run: |
-          GIT_TAG_VERSION=${{ github.ref_name }}
-          PACKAGE_VERSION=$(poetry version -s)
-          echo "The Python package version is $PACKAGE_VERSION."
-          echo "The Git tag version is $GIT_TAG_VERSION."
-          if [ "$PACKAGE_VERSION" = "$GIT_TAG_VERSION" ]; then
-            echo "Versions match."
-          else
-            echo "Versions do not match." && exit 1
-          fi
-          poetry publish --build -u __token__ -p ${{ secrets.PYPI_TOKEN }}
+        run: hatch publish -n -u __token__ -a ${{ secrets.PYPI_TOKEN }}
   docker:
     runs-on: ubuntu-latest
     needs: [python]
@@ -117,24 +122,24 @@ jobs:
         run: |
           docker build . --rm --target base \
             --build-arg BUILDKIT_INLINE_CACHE=1 \
+            --build-arg HATCH_VERSION="$HATCH_VERSION" \
             --build-arg LINUX_VERSION="$LINUX_VERSION" \
             --build-arg PIPX_VERSION="$PIPX_VERSION" \
-            --build-arg POETRY_VERSION="$POETRY_VERSION" \
             --build-arg PYTHON_VERSION="$PYTHON_VERSION" \
             --cache-from ghcr.io/br3ndonland/inboard \
             -t ghcr.io/br3ndonland/inboard:base"$LINUX_TAG"
           docker build . --rm --target starlette \
             --build-arg BUILDKIT_INLINE_CACHE=1 \
+            --build-arg HATCH_VERSION="$HATCH_VERSION" \
             --build-arg LINUX_VERSION="$LINUX_VERSION" \
             --build-arg PIPX_VERSION="$PIPX_VERSION" \
-            --build-arg POETRY_VERSION="$POETRY_VERSION" \
             --build-arg PYTHON_VERSION="$PYTHON_VERSION" \
             -t ghcr.io/br3ndonland/inboard:starlette"$LINUX_TAG"
           docker build . --rm --target fastapi \
             --build-arg BUILDKIT_INLINE_CACHE=1 \
+            --build-arg HATCH_VERSION="$HATCH_VERSION" \
             --build-arg LINUX_VERSION="$LINUX_VERSION" \
             --build-arg PIPX_VERSION="$PIPX_VERSION" \
-            --build-arg POETRY_VERSION="$POETRY_VERSION" \
             --build-arg PYTHON_VERSION="$PYTHON_VERSION" \
             -t ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG"
       - name: Run Docker containers for testing
@@ -151,37 +156,38 @@ jobs:
             -e "BASIC_AUTH_USERNAME=test_user" \
             -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
             ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG"
-      - name: Test Poetry version in Docker containers
+      - name: Test Hatch version in Docker containers
         run: |
-          test_poetry_version_in_docker() {
-            echo "The POETRY_VERSION environment variable is set to $POETRY_VERSION."
-            local poetry_version_in_docker
+          test_hatch_version_in_docker() {
+            echo "The HATCH_VERSION environment variable is set to $HATCH_VERSION."
+            local hatch_version_in_docker hatch_version_in_docker_full
             for container_name in "$@"; do
-              poetry_version_in_docker=$(docker exec "$container_name" poetry -V)
-              if [ -n "$poetry_version_in_docker" ]; then
-                echo "Docker container $container_name has $poetry_version_in_docker."
+              hatch_version_in_docker_full=$(docker exec "$container_name" hatch --version)
+              hatch_version_in_docker="${hatch_version_in_docker_full##Hatch, version }"
+              if [ -n "$hatch_version_in_docker" ]; then
+                echo "Docker container $container_name has $hatch_version_in_docker."
               fi
-              case $poetry_version_in_docker in
-              *$POETRY_VERSION*) echo "Poetry versions match for $container_name." ;;
-              *) echo "Poetry version test failed for $container_name." && return 1 ;;
+              case $hatch_version_in_docker in
+              *$HATCH_VERSION) echo "Hatch versions match for $container_name." ;;
+              *) echo "Hatch version test failed for $container_name." && return 1 ;;
               esac
             done
           }
-          test_poetry_version_in_docker inboard-base inboard-starlette inboard-fastapi
+          test_hatch_version_in_docker inboard-base inboard-starlette inboard-fastapi
       - name: Test virtualenv location in Docker containers
         run: |
           test_virtualenv_location_in_docker() {
-            local docker_poetry docker_python expected_poetry expected_python
-            expected_poetry="/app/.venv"
-            expected_python="$expected_poetry/bin/python"
-            echo "The Poetry virtualenv should be at $expected_poetry."
+            local docker_virtualenv docker_python expected_virtualenv expected_python
+            expected_virtualenv="/app/.venv"
+            expected_python="$expected_virtualenv/bin/python"
+            echo "The Hatch virtualenv should be at $expected_virtualenv."
             echo "The Python executable should be at $expected_python."
             for container_name in "$@"; do
-              docker_poetry=$(docker exec "$container_name" poetry env info --path)
+              docker_virtualenv=$(docker exec "$container_name" hatch env find)
               docker_python=$(docker exec "$container_name" which python)
-              case "$docker_poetry" in
-              "$expected_poetry") echo "Correct Poetry virtualenv $docker_poetry for $container_name." ;;
-              *) echo "Incorrect Poetry virtualenv $docker_poetry for $container_name." && return 1 ;;
+              case "$docker_virtualenv" in
+              "$expected_virtualenv") echo "Correct Hatch virtualenv $docker_virtualenv for $container_name." ;;
+              *) echo "Incorrect Hatch virtualenv $docker_virtualenv for $container_name." && return 1 ;;
               esac
               case "$docker_python" in
               "$expected_python") echo "Correct Python $docker_python for $container_name." ;;
