@@ -3,9 +3,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, TypedDict
 
 if TYPE_CHECKING:
+    import sys
     from asyncio import Protocol
     from os import PathLike
-    from typing import Any, Awaitable, Callable, Literal, Sequence, Type
+    from typing import Any, Literal, Sequence, Type
+
+    if sys.version_info < (3, 11):
+        from typing_extensions import Required
+    else:
+        from typing import Required
 
     from asgiref.typing import ASGIApplication
     from uvicorn.config import (
@@ -52,12 +58,10 @@ class UvicornOptions(TypedDict, total=False):
     """Type for options passed to `uvicorn.run` and `uvicorn.Config`.
     ---
 
-    Prior to Uvicorn 0.18.0, the arguments to `uvicorn.run()` didn't match
-    the arguments to `uvicorn.Config.__init__` ([encode/uvicorn#1423]), so
-    `uvicorn.Config.__init__.__annotations__` would be used instead. Even
-    after 0.18.0, the signatures of the two functions are not exactly the
-    same ([encode/uvicorn#1545]). Modifications would still be needed.
-    A separate type added to this package enables modifications to be made.
+    "Options" are positional or keyword arguments passed to `uvicorn.run()` or
+    `uvicorn.Config.__init__()`. The signatures of the two functions are not exactly
+    the same ([encode/uvicorn#1545]). This type is primarily intended to match the
+    arguments to `uvicorn.run()`.
 
     The `app` argument to `uvicorn.run()` accepts an un-parametrized `Callable`
     because Uvicorn tests use callables ([encode/uvicorn#1067]). It is not
@@ -90,7 +94,6 @@ class UvicornOptions(TypedDict, total=False):
     ([python/mypy#3932], [python/mypy#4128], [python/mypy#13940]).
 
     [encode/uvicorn#1067]: https://github.com/encode/uvicorn/pull/1067
-    [encode/uvicorn#1423]: https://github.com/encode/uvicorn/pull/1423
     [encode/uvicorn#1545]: https://github.com/encode/uvicorn/pull/1545
     [python/mypy#3932]: https://github.com/python/mypy/issues/3932
     [python/mypy#4128]: https://github.com/python/mypy/issues/4128
@@ -99,7 +102,7 @@ class UvicornOptions(TypedDict, total=False):
     [typing docs]: https://docs.python.org/3/library/typing.html#typing.TypedDict
     """
 
-    app: ASGIApplication | str
+    app: Required[ASGIApplication | str]
     host: str
     port: int
     uds: str | None
@@ -113,12 +116,11 @@ class UvicornOptions(TypedDict, total=False):
     ws_per_message_deflate: bool
     lifespan: LifespanType
     interface: InterfaceType
-    debug: bool  # TODO: debug removed in Uvicorn 0.19.0
     reload: bool
     reload_dirs: list[str] | str | None
     reload_includes: list[str] | str | None
     reload_excludes: list[str] | str | None
-    reload_delay: float | None  # TODO: changed to only float in Uvicorn 0.18.3
+    reload_delay: float
     workers: int | None
     env_file: str | PathLike[str] | None
     log_config: DictConfig | None
@@ -133,8 +135,6 @@ class UvicornOptions(TypedDict, total=False):
     backlog: int
     limit_max_requests: int | None
     timeout_keep_alive: int
-    timeout_notify: int
-    callback_notify: Callable[..., Awaitable[None]] | None
     ssl_keyfile: str | None
     ssl_certfile: str | PathLike[str] | None
     ssl_keyfile_password: str | None
@@ -146,4 +146,4 @@ class UvicornOptions(TypedDict, total=False):
     use_colors: bool | None
     app_dir: str | None
     factory: bool
-    # h11_max_incomplete_event_size: int  # TODO: added in Uvicorn 0.18.1
+    h11_max_incomplete_event_size: int

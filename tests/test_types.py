@@ -24,8 +24,9 @@ def test_type_checking_attrs() -> None:
         assert hasattr(inboard.types, attr)
 
 
-def test_uvicorn_options_type_matches_uvicorn_run_args() -> None:
-    """Test that fields in the inboard Uvicorn options type match `uvicorn.run()`.
+def test_uvicorn_options_type_matches_uvicorn_args() -> None:
+    """Test that fields in the inboard Uvicorn options type match arguments passed to
+    `uvicorn.run()` and `uvicorn.Config.__init__()`.
 
     The inboard Uvicorn options type can be used to type-check arguments passed
     to `uvicorn.run()`. `uvicorn.run()` then uses these arguments to instantiate
@@ -33,11 +34,16 @@ def test_uvicorn_options_type_matches_uvicorn_run_args() -> None:
 
     Prior to Uvicorn 0.18.0, `uvicorn.run()` didn't enumerate keyword arguments,
     but instead accepted `kwargs` and passed them to `uvicorn.Config.__init__()`
-    ([encode/uvicorn#1423]). This test therefore uses the annotations from the
-    `uvicorn.Config.__init__()` method instead of annotations from `uvicorn.run()`.
+    ([encode/uvicorn#1423]). Even after Uvicorn 0.18.0, the signatures of the two
+    functions are not exactly the same ([encode/uvicorn#1545]). This test normalizes
+    the differences.
 
-    Even after Uvicorn 0.18.0, the signatures of the two functions are not exactly
+    The signatures of `uvicorn.run()` and `uvicorn.Config.__init__()` are not exactly
     the same ([encode/uvicorn#1545]), so this test normalizes the differences.
+
+    `uvicorn.run()` is a function with a return type, so its `__annotations__` dict
+    will include an item `return` to specify its return type. The inboard Uvicorn
+    options type is not a function, so it will not have this `return` item.
 
     While it is straightforward to compare keys in the `__annotations__` dicts,
     it is less straightforward to compare the values (the type annotations).
@@ -47,11 +53,22 @@ def test_uvicorn_options_type_matches_uvicorn_run_args() -> None:
     [encode/uvicorn#1423]: https://github.com/encode/uvicorn/pull/1423
     [encode/uvicorn#1545]: https://github.com/encode/uvicorn/pull/1545
     """
-    args_for_run_only = ("app_dir",)
+    options_for_config_only = ("callback_notify", "timeout_notify")
+    options_for_run_only = ("app_dir",)
     inboard_keys = list(sorted(inboard.types.UvicornOptions.__annotations__.keys()))
-    uvicorn_keys = list(sorted(uvicorn.Config.__init__.__annotations__.keys()))
-    for arg in args_for_run_only:
-        assert arg in inboard_keys
-        assert arg not in uvicorn_keys
-        inboard_keys.remove(arg)
-    assert inboard_keys == uvicorn_keys
+    uvicorn_config_keys = list(sorted(uvicorn.Config.__init__.__annotations__.keys()))
+    uvicorn_run_keys = list(sorted(uvicorn.run.__annotations__.keys()))
+    if "return" in uvicorn_run_keys:
+        uvicorn_run_keys.remove("return")
+    for option in options_for_config_only:
+        assert option not in inboard_keys
+        assert option in uvicorn_config_keys
+        assert option not in uvicorn_run_keys
+        uvicorn_config_keys.remove(option)
+    for option in options_for_run_only:
+        assert option in inboard_keys
+        assert option not in uvicorn_config_keys
+        assert option in uvicorn_run_keys
+        inboard_keys.remove(option)
+        uvicorn_run_keys.remove(option)
+    assert inboard_keys == uvicorn_config_keys == uvicorn_run_keys

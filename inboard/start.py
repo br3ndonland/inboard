@@ -38,7 +38,9 @@ def run_pre_start_script(logger: logging.Logger = logging.getLogger()) -> str:
 def set_app_module(logger: logging.Logger = logging.getLogger()) -> str:
     """Set the name of the Python module with the app instance to run."""
     try:
-        app_module = str(os.getenv("APP_MODULE"))
+        app_module = os.getenv("APP_MODULE")
+        if not app_module:
+            raise ValueError("Please set the APP_MODULE environment variable")
         if not importlib.util.find_spec((module := app_module.split(sep=":")[0])):
             raise ImportError(f"Unable to find or import {module}")
         logger.debug(f"App module set to {app_module}.")
@@ -67,22 +69,22 @@ def _split_uvicorn_option(option: str) -> list[str] | None:
 
 def _update_uvicorn_options(uvicorn_options: UvicornOptions) -> UvicornOptions:
     if uvicorn.__version__ >= "0.15.0":
-        reload_delay = float(value) if (value := os.getenv("RELOAD_DELAY")) else None
+        reload_delay = float(value) if (value := os.getenv("RELOAD_DELAY")) else 0.25
         reload_excludes = _split_uvicorn_option("RELOAD_EXCLUDES")
         reload_includes = _split_uvicorn_option("RELOAD_INCLUDES")
-        uvicorn_options_015: UvicornOptions = dict(
-            reload_delay=reload_delay,
-            reload_excludes=reload_excludes,
-            reload_includes=reload_includes,
-        )
-        uvicorn_options.update(uvicorn_options_015)
+        uvicorn_options["reload_delay"] = reload_delay
+        uvicorn_options["reload_includes"] = reload_includes
+        uvicorn_options["reload_excludes"] = reload_excludes
     if value := os.getenv("UVICORN_CONFIG_OPTIONS"):
-        uvicorn_options_json: UvicornOptions = json.loads(value)
+        uvicorn_options_json = json.loads(value)
         uvicorn_options.update(uvicorn_options_json)
     return uvicorn_options
 
 
-def set_uvicorn_options(log_config: DictConfig | None = None) -> UvicornOptions:
+def set_uvicorn_options(
+    app_module: str,
+    log_config: DictConfig | None = None,
+) -> UvicornOptions:
     """Set options for running the Uvicorn server."""
     host = os.getenv("HOST", "0.0.0.0")
     port = int(os.getenv("PORT", "80"))
@@ -90,6 +92,7 @@ def set_uvicorn_options(log_config: DictConfig | None = None) -> UvicornOptions:
     reload_dirs = _split_uvicorn_option("RELOAD_DIRS")
     use_reload = bool((value := os.getenv("WITH_RELOAD")) and value.lower() == "true")
     uvicorn_options: UvicornOptions = dict(
+        app=app_module,
         host=host,
         port=port,
         log_config=log_config,
@@ -115,9 +118,9 @@ def start_server(
         elif process_manager == "uvicorn":
             logger.debug("Running Uvicorn without Gunicorn.")
             uvicorn_options: UvicornOptions = set_uvicorn_options(
-                log_config=logging_conf_dict
+                app_module, log_config=logging_conf_dict
             )
-            uvicorn.run(app_module, **uvicorn_options)
+            uvicorn.run(**uvicorn_options)  # type: ignore[arg-type]
         else:
             raise NameError("Process manager needs to be either uvicorn or gunicorn")
     except Exception as e:

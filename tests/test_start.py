@@ -156,6 +156,21 @@ class TestSetAppModule:
             start.set_app_module(logger=logger)
         assert mocker.call(f"{logger_error_msg}: ImportError {incorrect_module_msg}.")
 
+    def test_set_app_module_when_environment_variable_not_set(
+        self,
+        mocker: MockerFixture,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Test `start.set_app_module` when the environment variable
+        `APP_MODULE` is not set.
+        """
+        logger = mocker.patch.object(logging, "root", autospec=True)
+        logger_error_msg = "Error when setting app module"
+        missing_value_msg = "Please set the APP_MODULE environment variable"
+        with pytest.raises(ValueError):
+            start.set_app_module(logger=logger)
+        assert mocker.call(f"{logger_error_msg}: ImportError {missing_value_msg}.")
+
 
 class TestSetGunicornOptions:
     """Test Gunicorn configuration options method.
@@ -218,6 +233,7 @@ class TestSetUvicornOptions:
     """
 
     uvicorn_options_custom_environment_variables = (
+        ("APP_MODULE", "inboard.app.main_fastapi:app"),
         ("LOG_LEVEL", "debug"),
         ("WITH_RELOAD", "true"),
         ("RELOAD_DELAY", "0.5"),
@@ -233,7 +249,7 @@ class TestSetUvicornOptions:
     ) -> None:
         """Test default Uvicorn server options."""
         monkeypatch.setenv("WITH_RELOAD", "false")
-        result = start.set_uvicorn_options()
+        result = start.set_uvicorn_options("inboard.app.main_base:app")
         assert result == uvicorn_options_default
 
     def test_set_uvicorn_options_custom(
@@ -246,7 +262,9 @@ class TestSetUvicornOptions:
         for environment_variable in self.uvicorn_options_custom_environment_variables:
             key, value = environment_variable
             monkeypatch.setenv(key, value)
-        result = start.set_uvicorn_options(log_config=logging_conf_dict)
+        result = start.set_uvicorn_options(
+            "inboard.app.main_fastapi:app", log_config=logging_conf_dict
+        )
         assert result == uvicorn_options_custom
 
     def test_set_uvicorn_options_default_from_json(
@@ -258,12 +276,12 @@ class TestSetUvicornOptions:
         when the `UVICORN_CONFIG_OPTIONS` environment variable is also set.
         """
         uvicorn_options_json = (
-            '{"host": "0.0.0.0", "port": 80, "log_config": null, '
-            '"log_level": "info", "reload": false}'
+            '{"app": "inboard.app.main_base:app", "host": "0.0.0.0", "port": 80, '
+            '"log_config": null, "log_level": "info", "reload": false}'
         )
         monkeypatch.setenv("UVICORN_CONFIG_OPTIONS", uvicorn_options_json)
         monkeypatch.setenv("WITH_RELOAD", "true")
-        result = start.set_uvicorn_options()
+        result = start.set_uvicorn_options("inboard.app.main_fastapi:app")
         assert result == uvicorn_options_default
 
     def test_set_uvicorn_options_custom_from_json(
@@ -286,7 +304,7 @@ class TestSetUvicornOptions:
         uvicorn_options_json = json.dumps(uvicorn_options_custom)
         monkeypatch.setenv("UVICORN_CONFIG_OPTIONS", uvicorn_options_json)
         monkeypatch.setenv("WITH_RELOAD", "false")
-        result = start.set_uvicorn_options()
+        result = start.set_uvicorn_options("inboard.app.main_base:app")
         assert result == uvicorn_options_custom
 
 
@@ -329,7 +347,7 @@ class TestStartServer:
             log_config=logging_conf_dict,
             log_level="info",
             reload=False,
-            reload_delay=None,
+            reload_delay=0.25,
             reload_dirs=None,
             reload_excludes=None,
             reload_includes=None,

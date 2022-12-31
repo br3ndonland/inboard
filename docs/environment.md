@@ -206,7 +206,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
     -   `"inboard"` (one directory)
     -   `"inboard, tests"` (two directories)
-    -   `"inboard, tests, Dockerfile"` (two directories and a file)
+    -   `"inboard, tests, Dockerfile"` (two directories and a file) _(watching non-Python files requires `watchfiles`, installed with the `inboard[uvicorn-standard]` extra)_
 
     !!! note
 
@@ -229,7 +229,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 -   Glob pattern indicating files to exclude when watching for changes, formatted as comma-separated string.
 -   Default: not set (the value is set by `uvicorn.config.Config`)
--   Custom: `"*[Dd]ockerfile"`
+-   Custom: `"*[Dd]ockerfile"` _(watching non-Python files requires `watchfiles`, installed with the `inboard[uvicorn-standard]` extra)_
 
     !!! note
 
@@ -241,7 +241,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 -   Glob pattern indicating files to include when watching for changes, formatted as comma-separated string.
 -   Default: not set (the value is set by `uvicorn.config.Config`)
--   Custom: `"*.py, *.md"`
+-   Custom: `"*.py, *.md"` _(watching non-Python files requires `watchfiles`, installed with the `inboard[uvicorn-standard]` extra)_
 
     !!! note
 
@@ -251,7 +251,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 `UVICORN_CONFIG_OPTIONS` _(advanced usage, new in inboard 0.11)_
 
--   JSON-formatted string containing additional keyword arguments ("kwargs") to pass directly to Uvicorn.
+-   JSON-formatted string containing arguments to pass directly to Uvicorn.
 -   Default: not set
 -   Custom: `UVICORN_CONFIG_OPTIONS='{"reload": true, "reload_delay": null}'`
 

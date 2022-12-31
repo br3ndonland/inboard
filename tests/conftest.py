@@ -206,12 +206,13 @@ def pre_start_script_error(request: pytest.FixtureRequest, tmp_path: Path) -> Pa
 def uvicorn_options_default() -> UvicornOptions:
     """Return default options used by `uvicorn.run()` for use in test assertions."""
     return dict(
+        app="inboard.app.main_base:app",
         host="0.0.0.0",
         port=80,
         log_config=None,
         log_level="info",
         reload=False,
-        reload_delay=None,
+        reload_delay=0.25,
         reload_dirs=None,
         reload_excludes=None,
         reload_includes=None,
@@ -222,6 +223,7 @@ def uvicorn_options_default() -> UvicornOptions:
 def uvicorn_options_custom(logging_conf_dict: DictConfig) -> UvicornOptions:
     """Return custom options used by `uvicorn.run()` for use in test assertions."""
     return dict(
+        app="inboard.app.main_fastapi:app",
         host="0.0.0.0",
         port=80,
         log_config=logging_conf_dict,
