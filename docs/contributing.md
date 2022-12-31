@@ -25,8 +25,6 @@
 
 This project uses [Hatch](https://hatch.pypa.io/latest/) for dependency management and packaging.
 
-**Install project with all dependencies: `hatch env create`**.
-
 #### Highlights
 
 -   **Automatic virtual environment management**: [Hatch automatically manages the application environment](https://hatch.pypa.io/latest/environment/).
@@ -37,6 +35,8 @@ This project uses [Hatch](https://hatch.pypa.io/latest/) for dependency manageme
 #### Installation
 
 [Hatch can be installed with Homebrew or `pipx`](https://hatch.pypa.io/latest/install/).
+
+**Install project with all dependencies: `hatch env create`**.
 
 #### Key commands
 
