@@ -2,6 +2,37 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.38.0-alpha.2 - 2023-01-01
+
+Changes:
+
+**Add Python 3.11 support** (#62)
+
+-   inboard will now run tests with Python 3.11, in addition to 3.8-3.10
+-   inboard will now build and publish its PyPI package using Python 3.11
+-   inboard will now include a Python 3.11 classifier in its PyPI package
+-   inboard will now ship Docker images running Python 3.11, in addition
+    to 3.8-3.10, and Docker images tagged with `latest` will now use 3.11
+
+Commits:
+
+-   Bump version from 0.38.0-alpha.1 to 0.38.0-alpha.2 (98c834e)
+-   Add Python 3.11 support (#62) (5716eff)
+-   Update changelog for version 0.38.0-alpha.1 (#61) (971b593)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-01-01 11:34:42 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQCH6Vh/nyNz9L+QuZwt02ljrP/X6oOA0q8Vx+yhns/vQHLgJqK4xdbW0U+dGhPtZzf
+hC1kw2q08TAFZkwF0K/Q0=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.38.0-alpha.1 - 2022-12-31
 
 Changes:
