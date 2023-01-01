@@ -1,5 +1,129 @@
 # Changelog
 
+## 0.38.0-alpha.1 - 2022-12-31
+
+Changes:
+
+**Update to Uvicorn 0.20.0** (13cd921)
+
+This commit will update/upgrade to Uvicorn 0.20.0.
+
+https://github.com/encode/uvicorn/releases/tag/0.20.0
+
+Uvicorn 0.20.0 will be pinned exactly to avoid problematic or breaking
+changes in future patch releases.
+
+Uvicorn 0.18 was skipped for the following reasons:
+
+- As of Uvicorn 0.18.0, Uvicorn now prioritizes `watchfiles` instead of
+  `watchgod`. `watchfiles` uses Rust binary extensions, which can have
+  issues on Alpine Linux and macOS with Apple Silicon (M1/M2), and the
+  evaluation process took some time. It does appear that `watchfiles` is
+  now publishing wheels with `musllinux` tags, so Alpine Linux should be
+  generally compatible. Apple Silicon Macs should be compatible as of
+  `watchfiles` 0.16.
+- The `h11_max_incomplete_event_size` setting was added in 0.18.0 with
+  an incorrect default, then updated in 0.18.1 with a correct default.
+- A temporary breaking change was made to the Uvicorn logging module.
+  It was renamed from `uvicorn.logging` to `uvicorn._logging` in 0.18.0
+  (a breaking change that was not mentioned in the release notes), then
+  reverted back to `uvicorn.logging` in 0.18.2. A change to the logging
+  module path could break inboard `LOG_FORMAT=uvicorn`.
+- A temporary breaking change was made to the Uvicorn logging config.
+  The logging config default was changed from `LOGGING_CONFIG` to `None`
+  in 0.18.0, which resulted in logs not being shown at all. The default
+  was then reverted to `LOGGING_CONFIG` in 0.18.2.
+- The type annotation and default value for the `reload_delay` config
+  setting were changed in 0.18.3. The type annotation on `reload_delay`
+  was changed from `Optional[float]` (`float | None`) to `float`, and
+  the default value was changed from `None` to `float`. `reload_delay`
+  is only used in one place, in the `uvicorn.supervisors.basereload`
+  module, in `BaseReload().pause()`. `BaseReload().pause()` runs
+  `threading.Event().wait()`, which uses `None` as its default. It would
+  therefore be fine for reloading to pass in `reload_delay=None`, so the
+  change in Uvicorn to requiring `float` was confusing and unnecessary.
+
+https://github.com/encode/uvicorn/releases/tag/0.18.3
+
+Uvicorn 0.19 was less problematic, but did include some noteworthy
+changes. inboard will be updated accordingly. Notes:
+
+- The `debug` setting was removed from `uvicorn.config.Config`.
+- As of 0.19.0, Uvicorn now ships with a PEP 563 `py.typed` file,
+  marking the package as type-annotated. `type: ignore` comments on
+  `import uvicorn` lines can be removed.
+- Type annotation updates are needed to match the new type information
+  from Uvicorn. The `inboard.types.UvicornOptions` type added in 2cbc99c
+  will be updated to more closely match arguments to `uvicorn.run()`,
+  particularly by making the `app` field required and removing `debug`.
+- **BREAKING CHANGE**: a new required positional argument `app_module`
+  will be added to `inboard.start.set_uvicorn_options`. `inboard.start`
+  will be updated accordingly, so this change is not likely to affect
+  end users. It is technically a change to inboard's public API, so it
+  is listed here as a breaking change. This change does have the benefit
+  of making the arguments to `inboard.start.set_uvicorn_options` more
+  similar to the arguments to `inboard.start.set_gunicorn_options`.
+
+https://github.com/encode/uvicorn/releases/tag/0.19.0
+
+**Break up `uvicorn[standard]` optional dependencies** (#60)
+
+Uvicorn lumps several optional dependencies into a "standard" extra:
+
+- `colorama` (for Windows)
+- `httptools`
+- `python-dotenv`
+- `pyyaml`
+- `uvloop`
+- `watchgod`/`watchfiles` (`watchgod` was renamed to `watchfiles`)
+- `websockets`
+
+There has been some discussion about the drawbacks of this approach:
+
+- encode/uvicorn#219
+- encode/uvicorn#1274
+- encode/uvicorn#1547
+
+inboard has previously installed the "standard" extra by default. This
+commit will change the default to installing Uvicorn without "standard."
+This is a **BREAKING CHANGE** to inboard's dependencies.
+
+A new `inboard[uvicorn-fast]` extra will be added for dependencies from
+`uvicorn[standard]` related to web server performance, and can be
+installed by specifying the extra when installing inboard, like
+`python -m pip install 'inboard[fastapi,uvicorn-fast]'`:
+
+- `httptools`
+- `uvloop`
+- `websockets`
+
+For users who still need all the `uvicorn[standard]` extras, a new
+`inboard[uvicorn-standard]` extra will be added to the inboard package,
+and can be installed by specifying the extra when installing inboard,
+like `python -m pip install 'inboard[fastapi,uvicorn-standard]'`.
+
+Commits:
+
+- Bump version from 0.38.0-alpha.0 to 0.38.0-alpha.1 (b1debfa)
+- Move `pyproject.toml` repo URL to `[project.urls]` (8644d42)
+- Organize Hatch install info in contributing.md (8deae55)
+- Update to Uvicorn 0.20.0 (13cd921)
+- Break up `uvicorn[standard]` optional dependencies (#60) (01ad352)
+- Update changelog for version 0.38.0-alpha.0 (#59) (49d3b96)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2022-12-31 18:59:49 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQBhe/frXRYxcFQZPOc/5KEPt2TiJyLgBlHoWE/bvOYJRNfaIUd4OuLdpDh+8vjaxZk
+Qo+n22YhuYnxv0pEeuxg8=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.38.0-alpha.0 - 2022-12-30
 
 Changes:
