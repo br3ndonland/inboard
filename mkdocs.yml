@@ -2,6 +2,10 @@ edit_uri: ""
 markdown_extensions:
   - admonition
   - pymdownx.inlinehilite
+  - pymdownx.magiclink:
+      user: br3ndonland
+      repo: inboard
+      repo_url_shorthand: true
   - pymdownx.snippets
   - pymdownx.superfences
   - toc:
