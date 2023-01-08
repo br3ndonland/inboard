@@ -161,13 +161,17 @@ The _Dockerfile_ could look like this:
     # Install Python requirements
     COPY pyproject.toml README.md /app/
     WORKDIR /app
-    RUN hatch env create production
+    RUN hatch env prune && hatch env create production
 
     # Install Python app
     COPY package_name /app/package_name
 
     # RUN command already included in base image
     ```
+
+!!! tip "Syncing dependencies with Hatch"
+
+    Hatch does not have a direct command for syncing dependencies, and `hatch env create` won't always sync dependencies if they're being installed into the same virtual environment directory (as they would be in a Docker image). Running `hatch env prune && hatch env create <env_name>` should do the trick.
 
 For a standard `pip` install:
 
