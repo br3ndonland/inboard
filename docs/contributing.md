@@ -43,11 +43,11 @@ This project uses [Hatch](https://hatch.pypa.io/latest/) for dependency manageme
 ```sh
 # Basic usage: https://hatch.pypa.io/latest/cli/reference/
 hatch env create  # create virtual environment and install dependencies
-hatch version  # list or update version of this package
-hatch shell  # activate the virtual environment, like source venv/bin/activate
-hatch run COMMAND  # run a command within the virtual environment
 hatch env find  # show path to virtual environment
 hatch env show  # show info about available virtual environments
+hatch run COMMAND  # run a command within the virtual environment
+hatch shell  # activate the virtual environment, like source venv/bin/activate
+hatch version  # list or update version of this package
 export HATCH_ENV_TYPE_VIRTUAL_PATH=.venv  # install virtualenvs into .venv
 ```
 
