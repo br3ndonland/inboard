@@ -35,7 +35,7 @@ requires-python = ">=3.8.1,<4"
 [project.optional-dependencies]
 checks = [
   "asgiref==3.6.0",
-  "black>=22,<23",
+  "black>=23,<24",
   "flake8>=6,<7",
   "isort>=5,<6",
   "mypy==0.991",

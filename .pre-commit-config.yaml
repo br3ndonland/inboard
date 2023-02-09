@@ -2,7 +2,7 @@ minimum_pre_commit_version: 2.8.0
 default_stages: [commit, push, manual]
 repos:
   - repo: https://github.com/psf/black
-    rev: 22.12.0
+    rev: 23.1.0
     hooks:
       - id: black
   - repo: https://github.com/pycqa/flake8
