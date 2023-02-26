@@ -1,5 +1,227 @@
 # Changelog
 
+## 0.38.0 - 2023-02-26
+
+### Changes
+
+**Add Python 3.11 support** (#62)
+
+- inboard will now run tests with Python 3.11, in addition to 3.8-3.10
+- inboard will now build and publish its PyPI package using Python 3.11
+- inboard will now include a Python 3.11 classifier in its PyPI package
+- inboard will now ship Docker images running Python 3.11, in addition
+  to 3.8-3.10, and Docker images tagged with `latest` will now use 3.11
+
+**Update to Uvicorn 0.20.0** (13cd921)
+
+This commit will update/upgrade from
+[Uvicorn 0.17.6](https://github.com/encode/uvicorn/releases/tag/0.17.6)
+to
+[Uvicorn 0.20.0](https://github.com/encode/uvicorn/releases/tag/0.20.0).
+
+Uvicorn 0.20.0 will be pinned exactly to avoid problematic or breaking
+changes in future patch releases.
+
+[Uvicorn 0.18](https://github.com/encode/uvicorn/releases/tag/0.18.3)
+was skipped for the following reasons:
+
+- As of Uvicorn 0.18.0, Uvicorn now prioritizes `watchfiles` instead of
+  `watchgod`. `watchfiles` uses Rust binary extensions, which can have
+  issues on Alpine Linux and macOS with Apple Silicon (M1/M2), and the
+  evaluation process took some time. It does appear that `watchfiles` is
+  now publishing wheels with `musllinux` tags, so Alpine Linux should be
+  generally compatible. Apple Silicon Macs should be compatible as of
+  `watchfiles` 0.16.
+- The `h11_max_incomplete_event_size` setting was added in 0.18.0 with
+  an incorrect default, then updated in 0.18.1 with a correct default.
+- A temporary breaking change was made to the Uvicorn logging module.
+  It was renamed from `uvicorn.logging` to `uvicorn._logging` in 0.18.0
+  (a breaking change that was not mentioned in the release notes), then
+  reverted back to `uvicorn.logging` in 0.18.2. A change to the logging
+  module path could break inboard `LOG_FORMAT=uvicorn`.
+- A temporary breaking change was made to the Uvicorn logging config.
+  The logging config default was changed from `LOGGING_CONFIG` to `None`
+  in 0.18.0, which resulted in logs not being shown at all. The default
+  was then reverted to `LOGGING_CONFIG` in 0.18.2.
+- The type annotation and default value for the `reload_delay` config
+  setting were changed in 0.18.3. The type annotation on `reload_delay`
+  was changed from `Optional[float]` (`float | None`) to `float`, and
+  the default value was changed from `None` to `float`. `reload_delay`
+  is only used in one place, in the `uvicorn.supervisors.basereload`
+  module, in `BaseReload().pause()`. `BaseReload().pause()` runs
+  `threading.Event().wait()`, which uses `None` as its default. It would
+  therefore be fine for reloading to pass in `reload_delay=None`, so the
+  change in Uvicorn to requiring `float` was confusing and unnecessary.
+
+Changes related to
+[Uvicorn 0.19](https://github.com/encode/uvicorn/releases/tag/0.19.0)
+include:
+
+- The `debug` setting was removed from `uvicorn.config.Config`.
+- As of 0.19.0, Uvicorn now ships with a PEP 563 `py.typed` file,
+  marking the package as type-annotated. `type: ignore` comments on
+  `import uvicorn` lines can be removed.
+- Type annotation updates are needed to match the new type information
+  from Uvicorn. The `inboard.types.UvicornOptions` type added in 2cbc99c
+  will be updated to more closely match arguments to `uvicorn.run()`,
+  particularly by making the `app` field required and removing `debug`.
+- **BREAKING CHANGE**: a new required positional argument `app_module`
+  will be added to `inboard.start.set_uvicorn_options`. `inboard.start`
+  will be updated accordingly, so this change is not likely to affect
+  end users. It is technically a change to inboard's public API, so it
+  is listed here as a breaking change. This change does have the benefit
+  of making the arguments to `inboard.start.set_uvicorn_options` more
+  similar to the arguments to `inboard.start.set_gunicorn_options`.
+
+**Break up `uvicorn[standard]` optional dependencies** (#60)
+
+Uvicorn lumps several optional dependencies into a "standard" extra:
+
+- `colorama` (for Windows)
+- `httptools`
+- `python-dotenv`
+- `pyyaml`
+- `uvloop`
+- `watchgod`/`watchfiles` (`watchgod` was renamed to `watchfiles`)
+- `websockets`
+
+There has been some discussion about the drawbacks of this approach:
+
+- encode/uvicorn#219
+- encode/uvicorn#1274
+- encode/uvicorn#1547
+
+inboard has previously installed the "standard" extra by default. This
+commit will change the default to installing Uvicorn without "standard."
+This is a **BREAKING CHANGE** to inboard's dependencies.
+
+A new `inboard[uvicorn-fast]` extra will be added for dependencies from
+`uvicorn[standard]` related to web server performance, and can be
+installed by specifying the extra when installing inboard, like
+`python -m pip install 'inboard[fastapi,uvicorn-fast]'`:
+
+- `httptools`
+- `uvloop`
+- `websockets`
+
+For users who still need all the `uvicorn[standard]` extras, a new
+`inboard[uvicorn-standard]` extra will be added to the inboard package,
+and can be installed by specifying the extra when installing inboard,
+like `python -m pip install 'inboard[fastapi,uvicorn-standard]'`.
+
+**Migrate from Poetry 1.1 to Hatch** (#56, #58, 8deae55, 8644d42, 53e2abb)
+
+inboard has been migrated to [Hatch](https://hatch.pypa.io/latest/).
+See br3ndonland/inboard#56 for further explanation.
+
+Projects using inboard are not required to migrate to Hatch. The Docker
+images will retain Poetry 1.1 for backwards compatibility for now.
+Poetry 1.1 is unmaintained, so it will eventually need to be removed.
+Notice will be given at least one minor version prior to removal. If
+projects using inboard require `poetry>1.2`, they can add
+`pipx upgrade poetry` or `pipx install poetry>1.2 --force` to their
+Dockerfiles as described in the
+[updated docs](https://inboard.bws.bio/docker#docker-and-poetry)
+(on the Docker page, under "Docker and Poetry").
+
+The Python package version will now be available at `inboard.__version__`.
+
+**Auto-generate changelog from Git tags** (b15efff, e6e0490)
+
+A changelog will now be provided at
+[CHANGELOG.md](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
+for viewing on GitHub, and
+[in the docs at the `/changelog` endpoint](https://inboard.bws.bio/changelog).
+
+**Update Docker tag syntax for inboard releases** (5617084)
+
+Originally, inboard just provided three Docker images, tagged with
+`base`, `fastapi`, and `starlette` based on the dependencies installed,
+and appended inboard version numbers when Git tags were pushed.
+
+Appending version numbers to Docker tags can result in confusing syntax.
+For example, `ghcr.io/br3ndonland/inboard:fastapi-0.37-alpine` refers to
+inboard 0.37, but some users could interpret this as FastAPI 0.37.
+
+The inboard version number will now be added to the beginning of all
+Docker tags to avoid this confusion.
+
+- Old: `ghcr.io/br3ndonland/inboard:fastapi-0.38-alpine`
+- New: `ghcr.io/br3ndonland/inboard:0.38-fastapi-alpine`
+
+The old syntax will remain supported for backwards compatibility,
+so either the old or new syntax shown above will work.
+
+**Enable mypy strict mode** (2cbc99c)
+
+Mypy will run in strict mode on all Python code (source code and tests).
+In terms of user-facing improvements, this update will:
+
+- Add a new `inboard.types` module, with a `DictConfig` type that can be
+  used to type-annotate logging configuration dictionaries, and a
+  `UvicornOptions` type for options (positional and keyword arguments)
+  passed to `uvicorn.run()`
+- Update the base ASGI application in `inboard.app.main_base` to ASGI3
+- Update `contributing.md` with type annotation info and instructions
+
+### Commits
+
+`0.37.0..0.38.0`
+
+- Bump version from 0.38.0-beta.0 to 0.38.0 (4e8d8cb)
+- Update to mypy 1 (4630f8a)
+- Pin Gunicorn to 20.1.0 (7cc175a)
+- Update to Black 23 (1fea27e)
+- Update isort to avoid poetry-core breaking change (b289ee9)
+- Fix upper bound on HTTPX optional dependency (53e2abb)
+- Add note on syncing dependencies with Hatch (029c07f)
+- Alphabetize Hatch commands in contributing.md (f617e14)
+- Update pre-commit dependencies (7fbde3e)
+- Enable `pymdownx.magiclink` (5271a30)
+- Update changelog for version 0.38.0-beta.0 (#64) (9968f6f)
+- Bump version from 0.38.0-alpha.2 to 0.38.0-beta.0 (fdeae75)
+- Update changelog for version 0.38.0-alpha.2 (#63) (19da840)
+- Bump version from 0.38.0-alpha.1 to 0.38.0-alpha.2 (98c834e)
+- Add Python 3.11 support (#62) (5716eff)
+- Update changelog for version 0.38.0-alpha.1 (#61) (971b593)
+- Bump version from 0.38.0-alpha.0 to 0.38.0-alpha.1 (b1debfa)
+- Move `pyproject.toml` repo URL to `[project.urls]` (8644d42)
+- Organize Hatch install info in contributing.md (8deae55)
+- Update to Uvicorn 0.20.0 (13cd921)
+- Break up `uvicorn[standard]` optional dependencies (#60) (01ad352)
+- Update changelog for version 0.38.0-alpha.0 (#59) (49d3b96)
+- Bump version from 0.37.0 to 0.38.0-alpha.0 (e9348b0)
+- Merge pull request #58 from br3ndonland/hatch (78be3c2)
+- Update docs for Hatch (ec344ad)
+- Update GitHub Actions workflows for Hatch (9285efb)
+- Update Dockerfile for Hatch (93d9e0a)
+- Update configuration files for Hatch (5bd4ff5)
+- Update to actions/setup-python@v4 (8840873)
+- Add required `trailers` key for `asgiref==3.6.0` (d729fdf)
+- Update to `asgiref==3.6.0` (d534de8)
+- Move changelog updates to PRs (e6e0490)
+- Auto-generate changelog from Git tags (b15efff)
+- Remove unused `.prettierrc` (ef25ea0)
+- Add spell check with CSpell (7361702)
+- Remove GitHub issue templates (3797b2d)
+- Update GitHub Actions Git tag syntax (c8a0638)
+- Update Docker tag syntax for inboard releases (5617084)
+- Remove redundant GitHub Actions workflows (4d19501)
+- Enable mypy strict mode (2cbc99c)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-02-26 13:08:29 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQJERVesEeNy9tR1qbY8ZKLJHDPJ2G+azHwKEaNa5/Gp4T85uGfUhLoRYbmAcn/Yrta
+Bu0/3JRpbcNA8yN5QI6gA=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.38.0-beta.0 - 2023-01-02
 
 ### Changes
