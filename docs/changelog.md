@@ -2,6 +2,44 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.39.0 - 2023-03-01
+
+### Changes
+
+**Update to FastAPI 0.89** (7f5e76d)
+
+This release will update/upgrade to
+[FastAPI 0.89](https://github.com/tiangolo/fastapi/releases).
+This is a minor release to align with FastAPI's versioning strategy.
+
+Note that, as of FastAPI 0.89, FastAPI can now infer the response model
+from an API endpoint function's return type, so there is no longer need
+for the `response_model` argument in most cases. See the
+[updated docs](https://fastapi.tiangolo.com/tutorial/response-model/)
+for further info.
+
+### Commits
+
+`0.38.0..0.39.0`
+
+-   Bump version from 0.38.0 to 0.39.0 (e80f7de)
+-   Remove `response_model` usage (0ec39d9)
+-   Update to FastAPI 0.89 (7f5e76d)
+-   Update changelog for version 0.38.0 (#66) (c437fd8)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-03-01 20:49:55 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQLW5+w8I2L72+rEa2a2czxhc0lxD5eWA8khMLA0lgx7T7PhPapsoN5jEU5uiff/vIw
+QatgDmaLZ/+gOSwZ054Qc=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.38.0 - 2023-02-26
 
 ### Changes
