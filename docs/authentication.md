@@ -42,7 +42,7 @@ FastAPI is built on Starlette, so a FastAPI app can be configured with middlewar
     app = FastAPI(title="Example FastAPI app")
 
 
-    @app.get("/health", response_model=GetStatus, status_code=status.HTTP_200_OK)
+    @app.get("/health", status_code=status.HTTP_200_OK)
     async def get_health(auth: str = Depends(fastapi_basic_auth)) -> GetHealth:
         return GetHealth(application=app.title, status="active")
     ```

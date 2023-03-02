@@ -41,17 +41,17 @@ app.add_middleware(
 )
 
 
-@app.get("/", response_model=GetRoot, status_code=status.HTTP_200_OK)
+@app.get("/", status_code=status.HTTP_200_OK)
 async def get_root() -> GetRoot:
     return GetRoot()
 
 
-@app.get("/health", response_model=GetStatus, status_code=status.HTTP_200_OK)
+@app.get("/health", status_code=status.HTTP_200_OK)
 async def get_health(auth: str = Depends(basic_auth)) -> GetStatus:
     return GetStatus(application=app.title, status="active")
 
 
-@app.get("/status", response_model=GetStatus, status_code=status.HTTP_200_OK)
+@app.get("/status", status_code=status.HTTP_200_OK)
 async def get_status(auth: str = Depends(basic_auth)) -> GetStatus:
     return GetStatus(
         application=app.title,
@@ -60,6 +60,6 @@ async def get_status(auth: str = Depends(basic_auth)) -> GetStatus:
     )
 
 
-@app.get("/users/me", response_model=GetUser, status_code=status.HTTP_200_OK)
+@app.get("/users/me", status_code=status.HTTP_200_OK)
 async def get_current_user(username: str = Depends(basic_auth)) -> GetUser:
     return GetUser(username=username)
