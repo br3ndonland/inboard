@@ -7,6 +7,7 @@ from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse
+from starlette.routing import Route
 
 from inboard.app.utilities_starlette import BasicAuth
 
@@ -25,7 +26,35 @@ def on_auth_error(request: Request, e: Exception) -> JSONResponse:
     )
 
 
-app = Starlette()
+async def get_root(request: Request) -> JSONResponse:
+    return JSONResponse({"Hello": "World"})
+
+
+@requires("authenticated")
+async def get_health(request: Request) -> JSONResponse:
+    return JSONResponse({"application": "inboard", "status": "active"})
+
+
+@requires("authenticated")
+async def get_status(request: Request) -> JSONResponse:
+    message = f"Hello World, from {server}, Starlette, and Python {version}!"
+    return JSONResponse(
+        {"application": "inboard", "status": "active", "message": message}
+    )
+
+
+@requires("authenticated")
+async def get_current_user(request: Request) -> JSONResponse:
+    return JSONResponse({"username": request.user.display_name})
+
+
+routes = [
+    Route("/", endpoint=get_root),
+    Route("/health", endpoint=get_health),
+    Route("/status", endpoint=get_status),
+    Route("/users/me", endpoint=get_current_user),
+]
+app = Starlette(routes=routes)
 app.add_middleware(
     AuthenticationMiddleware,
     backend=BasicAuth(),
@@ -38,29 +67,3 @@ app.add_middleware(
     allow_methods=["*"],
     allow_origin_regex=origin_regex,
 )
-
-
-@app.route("/")
-async def get_root(request: Request) -> JSONResponse:
-    return JSONResponse({"Hello": "World"})
-
-
-@app.route("/health")
-@requires("authenticated")
-async def get_health(request: Request) -> JSONResponse:
-    return JSONResponse({"application": "inboard", "status": "active"})
-
-
-@app.route("/status")
-@requires("authenticated")
-async def get_status(request: Request) -> JSONResponse:
-    message = f"Hello World, from {server}, Starlette, and Python {version}!"
-    return JSONResponse(
-        {"application": "inboard", "status": "active", "message": message}
-    )
-
-
-@app.route("/users/me")
-@requires("authenticated")
-async def get_current_user(request: Request) -> JSONResponse:
-    return JSONResponse({"username": request.user.display_name})
