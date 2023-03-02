@@ -1,5 +1,44 @@
 # Changelog
 
+## 0.40.0 - 2023-03-02
+
+### Changes
+
+**Update to FastAPI 0.90 and Starlette 0.23** (89caa66)
+
+This release will update/upgrade to FastAPI 0.90 and Starlette 0.23.
+This is a minor release to align with FastAPI and Starlette versioning.
+
+[Starlette 0.23](https://github.com/encode/starlette/releases/tag/0.23.0)
+begins a deprecation process for some of the `Router` and `Starlette`
+decorators like `route`, as described in the
+[Starlette routing docs](https://www.starlette.io/routing/).
+
+Use of the `@app.route` decorator in the inboard example Starlette app
+will be replaced with the recommended approach.
+
+### Commits
+
+`0.39.0..0.40.0`
+
+- Bump version from 0.39.0 to 0.40.0 (30c9794)
+- Remove deprecated Starlette `route` decorators (44ad641)
+- Update to FastAPI 0.90 and Starlette 0.23 (89caa66)
+- Update changelog for version 0.39.0 (#67) (544c8d5)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-03-02 00:12:35 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQLnCn0RoJl32W0QCGgISftL7HZLL5BLtYm2obtagd8dvDPGRdZcQciMWyYY8wJaZnu
++VUWcsS36YU0hKx+kDYwU=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.39.0 - 2023-03-01
 
 ### Changes
