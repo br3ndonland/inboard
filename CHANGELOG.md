@@ -1,5 +1,49 @@
 # Changelog
 
+## 0.41.0 - 2023-03-05
+
+### Changes
+
+**Update to FastAPI 0.91 and Starlette 0.24** (1474fa9)
+
+This release will update/upgrade to FastAPI 0.91 and Starlette 0.24.
+This is a minor release to align with FastAPI and Starlette versioning.
+
+Starlette 0.24 improves handling of middleware stacks
+(encode/starlette#2017).
+
+Starlette is no longer documenting (but not yet deprecating) the
+`app.add_middleware` syntax in favor of passing a middleware list
+as a kwarg to `Starlette()` (`Starlette(middleware=middleware)`)
+(encode/starlette#1481). The recommended syntax allows for more
+predictable ordering of middleware lists, so that they are added to the
+Starlette app and initialized in expected order (encode/starlette#1490).
+
+Use of the `app.add_middleware` syntax in the inboard example Starlette
+and FastAPI apps will be replaced with the recommended approach.
+
+### Commits
+
+`0.40.0..0.41.0`
+
+- Bump version from 0.40.0 to 0.41.0 (6ba5a5c)
+- Update to recommended Starlette middleware syntax (ec752d2)
+- Update to FastAPI 0.91 and Starlette 0.24 (1474fa9)
+- Update changelog for version 0.40.0 (#68) (26565af)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-03-05 12:40:27 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQAoc+1yAEqIvV/Lkx83SlsA+FDvOsaeLgCNcMQCM8NHcU6vwFA5idfXFLFhXN8UaGZ
+UmawDEgUHdFm/wiogEawo=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.40.0 - 2023-03-02
 
 ### Changes
