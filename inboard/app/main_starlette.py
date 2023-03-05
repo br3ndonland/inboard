@@ -3,6 +3,7 @@ import sys
 
 from starlette.applications import Starlette
 from starlette.authentication import requires
+from starlette.middleware import Middleware
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
@@ -48,22 +49,24 @@ async def get_current_user(request: Request) -> JSONResponse:
     return JSONResponse({"username": request.user.display_name})
 
 
+middleware = [
+    Middleware(
+        AuthenticationMiddleware,
+        backend=BasicAuth(),
+        on_error=on_auth_error,
+    ),
+    Middleware(
+        CORSMiddleware,
+        allow_credentials=True,
+        allow_headers=["*"],
+        allow_methods=["*"],
+        allow_origin_regex=origin_regex,
+    ),
+]
 routes = [
     Route("/", endpoint=get_root),
     Route("/health", endpoint=get_health),
     Route("/status", endpoint=get_status),
     Route("/users/me", endpoint=get_current_user),
 ]
-app = Starlette(routes=routes)
-app.add_middleware(
-    AuthenticationMiddleware,
-    backend=BasicAuth(),
-    on_error=on_auth_error,
-)
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_headers=["*"],
-    allow_methods=["*"],
-    allow_origin_regex=origin_regex,
-)
+app = Starlette(middleware=middleware, routes=routes)

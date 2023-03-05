@@ -3,6 +3,7 @@ import sys
 from typing import Optional
 
 from fastapi import Depends, FastAPI, status
+from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -31,14 +32,16 @@ class GetUser(BaseModel):
     username: str
 
 
-app = FastAPI(title="inboard")
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_headers=["*"],
-    allow_methods=["*"],
-    allow_origin_regex=origin_regex,
-)
+middleware = [
+    Middleware(
+        CORSMiddleware,
+        allow_credentials=True,
+        allow_headers=["*"],
+        allow_methods=["*"],
+        allow_origin_regex=origin_regex,
+    )
+]
+app = FastAPI(middleware=middleware, title="inboard")
 
 
 @app.get("/", status_code=status.HTTP_200_OK)
