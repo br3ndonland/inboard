@@ -1,5 +1,41 @@
 # Changelog
 
+## 0.42.0 - 2023-03-05
+
+### Changes
+
+**Update to FastAPI 0.92 and Starlette 0.25** (e8330ea)
+
+This release will update/upgrade to FastAPI 0.92 and Starlette 0.25.
+This is a minor release to align with FastAPI and Starlette versioning.
+
+[Starlette 0.25.0](https://github.com/encode/starlette/releases/tag/0.25.0)
+fixes a security vulnerability related to forms. The release notes don't
+really explain this fix, but the release notes for
+[FastAPI 0.92.0](https://github.com/tiangolo/fastapi/releases/tag/0.92.0)
+provide some additional explanation.
+
+### Commits
+
+`0.41.0..0.42.0`
+
+- Bump version from 0.41.0 to 0.42.0 (b36b277)
+- Update to FastAPI 0.92 and Starlette 0.25 (e8330ea)
+- Update changelog for version 0.41.0 (#69) (b370982)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-03-05 13:38:53 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQEyP2r0uHUQrMctSAE0wMZzS3ZiTa4rRgfYfzhV4wyRA1EkW2n6Cmn50kYsdYwFigr
+jc2aDef4dHviQTMp2V7QQ=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.41.0 - 2023-03-05
 
 ### Changes
