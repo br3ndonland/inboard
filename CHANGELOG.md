@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.43.0 - 2023-03-11
+
+### Changes
+
+**Update to FastAPI 0.93** (4a52ee2)
+
+This release will update/upgrade to FastAPI 0.93.
+This is a minor release to align with FastAPI versioning.
+
+FastAPI 0.93 introduces support for lifespan context managers, which are
+intended to supersede startup and shutdown events. See the
+[FastAPI docs](https://fastapi.tiangolo.com/advanced/events/) and
+[encode/starlette#2067](https://github.com/encode/starlette/discussions/2067)
+for more info.
+
+### Commits
+
+`0.42.0..0.43.0`
+
+- Bump version from 0.42.0 to 0.43.0 (631f67b)
+- Update to FastAPI 0.93 (4a52ee2)
+- Update to mypy 1.1.1 (127c28d)
+- Update changelog for version 0.42.0 (#70) (27d2b42)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-03-11 17:28:44 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQOG7MvohC/o0eWntYFDmC/a9+tccUDXYAYEw8PrO7gdIMjj10WmQ2zdxMRrYVcjWye
+d81tdbCy3+LE4DJK60eAY=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.42.0 - 2023-03-05
 
 ### Changes
