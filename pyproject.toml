@@ -38,7 +38,7 @@ checks = [
   "black>=23,<24",
   "flake8>=6,<7",
   "isort>=5,<6",
-  "mypy==1.0.1",
+  "mypy==1.1.1",
   "pre-commit>=2,<3",
 ]
 docs = [
