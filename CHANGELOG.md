@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.44.0 - 2023-03-11
+
+### Changes
+
+**Update to FastAPI 0.94 and Starlette 0.26** (f32d492)
+
+This release will update/upgrade to FastAPI 0.94 and Starlette 0.26.
+This is a minor release to align with FastAPI and Starlette versioning.
+
+FastAPI 0.94 and Starlette 0.26 introduce support for lifespan state.
+See the [FastAPI docs](https://fastapi.tiangolo.com/advanced/events/)
+and [Starlette docs](https://www.starlette.io/lifespan/) for more info.
+
+Starlette 0.26 deprecates `on_startup` and `on_shutdown` events. See
+[FastAPI 0.93](https://github.com/tiangolo/fastapi/releases/tag/0.93.0),
+the [FastAPI docs](https://fastapi.tiangolo.com/advanced/events/), and
+[encode/starlette#2067](https://github.com/encode/starlette/discussions/2067)
+for more info.
+
+### Commits
+
+`0.43.0..0.44.0`
+
+- Bump version from 0.43.0 to 0.44.0 (c289f24)
+- Update to FastAPI 0.94 and Starlette 0.26 (f32d492)
+- Update changelog for version 0.43.0 (#71) (133926c)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-03-11 17:52:04 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQKB4LPEz/W9pdK3fNXhqWAkrA1C+hbAx1WmfyZxGveNKrtOQyGRSZRku5iwQ6mkufK
+udwOlmNG6uL4vGvNyY/QE=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.43.0 - 2023-03-11
 
 ### Changes
