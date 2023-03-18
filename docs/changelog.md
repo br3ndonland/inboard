@@ -2,6 +2,41 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.45.0 - 2023-03-18
+
+### Changes
+
+**Update to Uvicorn 0.21.1** (768c95f)
+
+This release will update/upgrade to Uvicorn 0.21.1.
+This is a minor release to align with Uvicorn versioning.
+
+Uvicorn 0.21 introduces support for lifespan state.
+No docs or PR descriptions were provided to explain how this works. See
+the [FastAPI docs](https://fastapi.tiangolo.com/advanced/events/) and
+[Starlette docs](https://www.starlette.io/lifespan/) for further info.
+
+### Commits
+
+`0.44.0..0.45.0`
+
+-   Bump version from 0.44.0 to 0.45.0 (bdb5be4)
+-   Update to Uvicorn 0.21.1 (768c95f)
+-   Update changelog for version 0.44.0 (#72) (58800ce)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-03-18 14:18:15 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQCNBHs+qA9EuXbfGOyRMo/dnG2hA8nrgEbSsWvVPTWlJcnJbnTdbVfvO6KVOfbw9Cr
+LCGuj+m2APXBD+NLZXzwU=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.44.0 - 2023-03-11
 
 ### Changes
