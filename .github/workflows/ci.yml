@@ -52,7 +52,7 @@ jobs:
           *) echo "Hatch version incorrect." && exit 1 ;;
           esac
       - name: Install dependencies
-        run: hatch env create ci
+        run: hatch env create ${{ env.HATCH_ENV }}
       - name: Test virtualenv location
         run: |
           EXPECTED_VIRTUALENV_PATH=$GITHUB_WORKSPACE/.venv
@@ -83,11 +83,11 @@ jobs:
           incremental_files_only: false
           strict: true
       - name: Run pre-commit hooks
-        run: hatch run pre-commit run --all-files
+        run: hatch run ${{ env.HATCH_ENV }}:pre-commit run --all-files
       - name: Run tests
-        run: hatch run coverage run
+        run: hatch run ${{ env.HATCH_ENV }}:coverage run
       - name: Enforce test coverage
-        run: hatch run coverage report
+        run: hatch run ${{ env.HATCH_ENV }}:coverage report
       - name: Build Python package
         run: hatch build
       - name: Publish Python package to PyPI
