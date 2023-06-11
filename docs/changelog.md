@@ -2,6 +2,38 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.48.0 - 2023-06-11
+
+### Changes
+
+**Update to Uvicorn 0.22** (#74, 32a0ae8)
+
+This release will update/upgrade to Uvicorn 0.22.
+This is a minor release to align with Uvicorn versioning.
+
+[Uvicorn 0.22](https://github.com/encode/uvicorn/blob/HEAD/CHANGELOG.md)
+adds a `--timeout-graceful-shutdown` option and
+fixes the `--reload-delay` option when using `watchfiles`.
+
+### Commits
+
+-   Bump version from 0.47.0 to 0.48.0 (91aaa54)
+-   Update to Uvicorn 0.22 (#74) (32a0ae8) by @bodograumann
+-   Update changelog for version 0.47.0 (#76) (532553c)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-06-11 12:56:16 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQPF6NZXShLkK5G/aMfKDFkbJBj98adenYtMSMxHISlhVTBldfoF4pg/oWB8o9+m4Sd
+I41WXRci/2+J5Y+tQ9nQE=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.47.0 - 2023-06-11
 
 ### Changes
