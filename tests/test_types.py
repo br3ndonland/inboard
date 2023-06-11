@@ -36,10 +36,9 @@ def test_uvicorn_options_type_matches_uvicorn_args() -> None:
     but instead accepted `kwargs` and passed them to `uvicorn.Config.__init__()`
     ([encode/uvicorn#1423]). Even after Uvicorn 0.18.0, the signatures of the two
     functions are not exactly the same ([encode/uvicorn#1545]). This test normalizes
-    the differences.
-
-    The signatures of `uvicorn.run()` and `uvicorn.Config.__init__()` are not exactly
-    the same ([encode/uvicorn#1545]), so this test normalizes the differences.
+    the differences, by also considering which options are only in the config.
+    This should match with the upstream test `test_run_match_config_params`
+    ([uvicorn/testmain]).
 
     `uvicorn.run()` is a function with a return type, so its `__annotations__` dict
     will include an item `return` to specify its return type. The inboard Uvicorn
@@ -52,6 +51,7 @@ def test_uvicorn_options_type_matches_uvicorn_args() -> None:
 
     [encode/uvicorn#1423]: https://github.com/encode/uvicorn/pull/1423
     [encode/uvicorn#1545]: https://github.com/encode/uvicorn/pull/1545
+    [uvicorn/testmain]: https://github.com/encode/uvicorn/blob/master/tests/test_main.py
     """
     options_for_config_only = ("callback_notify", "timeout_notify")
     options_for_run_only = ("app_dir",)
