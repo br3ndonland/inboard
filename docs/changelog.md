@@ -2,6 +2,40 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.47.0 - 2023-06-11
+
+### Changes
+
+**Update to FastAPI 0.96** (a83bd71)
+
+This release will update/upgrade to
+[FastAPI 0.96](https://fastapi.tiangolo.com/release-notes/).
+This is a minor release to align with FastAPI versioning.
+
+FastAPI 0.96 improves the performance of `create_cloned_field`, which is
+used by FastAPI internally when instantiating API routes. See FastAPI
+[discussions](https://github.com/tiangolo/fastapi/discussions/8609) for
+further info.
+
+### Commits
+
+-   Bump version from 0.46.0 to 0.47.0 (dc258df)
+-   Update to FastAPI 0.96 (a83bd71)
+-   Update changelog for version 0.46.0 (#75) (c22f101)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-06-11 12:19:44 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQCAcAGisg7HPa0lz8jaCT+/7yVm38R39K6ymsACfg0jNeXX0/+gOOJpHy9peL73ul0
+2Bsp802N/DDPvOntc5dgY=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.46.0 - 2023-06-11
 
 ### Changes
