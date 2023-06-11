@@ -1,11 +1,19 @@
 import os
 import secrets
+import sys
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
+if sys.version_info < (3, 9):  # pragma: no cover
+    from typing_extensions import Annotated
+else:  # pragma: no cover
+    from typing import Annotated
 
-async def basic_auth(credentials: HTTPBasicCredentials = Depends(HTTPBasic())) -> str:
+HTTPBasicCredentialsDependency = Annotated[HTTPBasicCredentials, Depends(HTTPBasic())]
+
+
+async def basic_auth(credentials: HTTPBasicCredentialsDependency) -> str:
     """Authenticate a FastAPI request with HTTP Basic auth."""
     basic_auth_username = os.getenv("BASIC_AUTH_USERNAME")
     basic_auth_password = os.getenv("BASIC_AUTH_PASSWORD")

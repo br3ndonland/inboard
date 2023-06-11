@@ -7,8 +7,14 @@ from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from inboard.app.utilities_fastapi import basic_auth
+from inboard.app.utilities_fastapi import basic_auth as fastapi_basic_auth
 
+if sys.version_info < (3, 9):  # pragma: no cover
+    from typing_extensions import Annotated
+else:  # pragma: no cover
+    from typing import Annotated
+
+BasicAuth = Annotated[str, Depends(fastapi_basic_auth)]
 origin_regex = r"^(https?:\/\/)(localhost|([\w\.]+\.)?br3ndon.land)(:[0-9]+)?$"
 server = (
     "Uvicorn"
@@ -50,12 +56,12 @@ async def get_root() -> GetRoot:
 
 
 @app.get("/health", status_code=status.HTTP_200_OK)
-async def get_health(auth: str = Depends(basic_auth)) -> GetStatus:
+async def get_health(auth: BasicAuth) -> GetStatus:
     return GetStatus(application=app.title, status="active")
 
 
 @app.get("/status", status_code=status.HTTP_200_OK)
-async def get_status(auth: str = Depends(basic_auth)) -> GetStatus:
+async def get_status(auth: BasicAuth) -> GetStatus:
     return GetStatus(
         application=app.title,
         status="active",
@@ -64,5 +70,5 @@ async def get_status(auth: str = Depends(basic_auth)) -> GetStatus:
 
 
 @app.get("/users/me", status_code=status.HTTP_200_OK)
-async def get_current_user(username: str = Depends(basic_auth)) -> GetUser:
-    return GetUser(username=username)
+async def get_current_user(auth: BasicAuth) -> GetUser:
+    return GetUser(username=auth)

@@ -282,6 +282,8 @@ CSpell is not currently used with pre-commit in this project because behavior of
 
 ## Maintainers
 
+### Merges
+
 -   **The default branch is `develop`.**
 -   **PRs should be merged into `develop`.** Head branches are deleted automatically after PRs are merged.
 -   **The only merges to `main` should be fast-forward merges from `develop`.**
@@ -295,6 +297,10 @@ CSpell is not currently used with pre-commit in this project because behavior of
         -   Include administrators
         -   Do not allow force pushes
         -   Require status checks to pass before merging (commits must have previously been pushed to `develop` and passed all checks)
+
+### Releases
+
+-   **Each minor version release of FastAPI or Uvicorn should get its own corresponding minor version release of inboard.** FastAPI depends on Starlette, so any updates to the Starlette version required by FastAPI should be included with updates to the FastAPI version.
 -   **To create a release:**
     -   Bump the version number in `inboard.__version__` with `hatch version` and commit the changes to `develop`.
         -   Follow [SemVer](https://semver.org/) guidelines when choosing a version number. Note that [PEP 440](https://peps.python.org/pep-0440/) Python version specifiers and SemVer version specifiers differ, particularly with regard to specifying prereleases. Use syntax compatible with both.
