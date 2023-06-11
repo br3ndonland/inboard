@@ -51,7 +51,7 @@ starlette = [
   "starlette>=0.26,<0.27",
 ]
 tests = [
-  "coverage[toml]>=6,<7",
+  "coverage[toml]>=7,<8",
   "httpx>=0.23,<0.24",
   "pytest>=7,<8",
   "pytest-mock>=3,<4",
