@@ -1,5 +1,59 @@
 # Changelog
 
+## 0.46.0 - 2023-06-11
+
+### Changes
+
+**Update to FastAPI 0.95 and Starlette 0.27** (e6280fb)
+
+This release will update/upgrade to FastAPI 0.95 and Starlette 0.27.
+This is a minor release to align with FastAPI and Starlette versioning.
+
+[FastAPI 0.95](https://fastapi.tiangolo.com/release-notes/) introduces
+`Annotated` for
+[dependencies](https://fastapi.tiangolo.com/tutorial/dependencies/).
+`Annotated` sets up a dependency for easier reuse. This provides some
+benefits when specifying dependencies as function arguments because
+dependencies don't need to be specified in endpoint function default
+arguments. `Annotated` is part of the
+[`typing`](https://docs.python.org/3/library/typing.html)
+standard library package starting in Python 3.9.
+
+[Starlette 0.27](https://www.starlette.io/release-notes/)
+resolves a low-severity security
+[vulnerability](https://github.com/encode/starlette/security/advisories/GHSA-v5gw-mw7f-84px)
+related to the [`StaticFiles`](https://www.starlette.io/staticfiles/)
+class.
+
+### Commits
+
+- Bump version from 0.45.0 to 0.46.0 (8068c53)
+- Update to FastAPI 0.95 and Starlette 0.27 (e6280fb)
+- Relate inboard, FastAPI, and Uvicorn versions (e413a04)
+- Update to `hatch==1.7.0` (6addfac)
+- Remove Sourcery configuration file (d8d8c67)
+- Update Black in pre-commit (307789a)
+- Update to `mypy==1.3.0` (2bffd80)
+- Update to pytest-timeout 2 (e79cec3)
+- Update to coverage 7 (68a95d1)
+- Use `urllib3<2` for HTTPie `DEFAULT_CIPHERS` (0f76e62)
+- Prepend `$HATCH_ENV` in GitHub Actions workflow (93e1c40)
+- Update to `pipx==1.2.0` (0a50baa)
+- Update changelog for version 0.45.0 (#73) (b05c6d4)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-06-11 11:39:11 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQPeicGEzi2rV33fZJpwPkoEgu1JnDudtNwgdyKzzcqlJiQbieC3rbeIRBG/R3ubS2X
+EGsMwYSOJJxe05obOITAE=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.45.0 - 2023-03-18
 
 ### Changes
