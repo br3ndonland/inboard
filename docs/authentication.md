@@ -26,11 +26,12 @@ FastAPI is built on Starlette, so a FastAPI app can be configured with middlewar
 !!!example "Example of HTTP Basic auth with a FastAPI dependency"
 
     ```py
-    from typing import Optional
+    from typing import Annotated, Optional
 
     from fastapi import Depends, FastAPI, status
-    from inboard import fastapi_basic_auth
     from pydantic import BaseModel
+
+    from inboard import fastapi_basic_auth
 
 
     class GetHealth(BaseModel):
@@ -39,11 +40,12 @@ FastAPI is built on Starlette, so a FastAPI app can be configured with middlewar
         message: Optional[str]
 
 
+    BasicAuth = Annotated[str, Depends(fastapi_basic_auth)]
     app = FastAPI(title="Example FastAPI app")
 
 
     @app.get("/health", status_code=status.HTTP_200_OK)
-    async def get_health(auth: str = Depends(fastapi_basic_auth)) -> GetHealth:
+    async def get_health(auth: BasicAuth) -> GetHealth:
         return GetHealth(application=app.title, status="active")
     ```
 
