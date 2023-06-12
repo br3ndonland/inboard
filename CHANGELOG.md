@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.49.0 - 2023-06-12
+
+### Changes
+
+**Update to FastAPI 0.97** (438e4e1)
+
+This release will update/upgrade to FastAPI 0.97.
+This is a minor release to align with FastAPI versioning.
+[FastAPI 0.97](https://fastapi.tiangolo.com/release-notes/)
+adds support for dependencies in WebSocket routes.
+
+### Commits
+
+- Bump version from 0.48.0 to 0.49.0 (cc49fa0)
+- Update to FastAPI 0.97 (438e4e1)
+- Update changelog for version 0.48.0 (#77) (edef011)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-06-12 08:27:56 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQNx0m6uq+6v5P8lZYB8pvTyyHlbwIgqNYVP7kck092h/N6jCeYE+7y8y7Sgpaibvpl
+dbzX9Iuxpx3pRCR0vOqAc=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.48.0 - 2023-06-11
 
 ### Changes
