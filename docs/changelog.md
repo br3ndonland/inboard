@@ -2,6 +2,37 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.50.0 - 2023-06-22
+
+### Changes
+
+**Update to FastAPI 0.98** (0484e11)
+
+This release will update/upgrade to
+[FastAPI 0.98](https://fastapi.tiangolo.com/release-notes/).
+This is a minor release to align with FastAPI versioning.
+
+FastAPI 0.98 adds support for an app-level `redirect_slashes` argument.
+
+### Commits
+
+-   Bump version from 0.49.0 to 0.50.0 (174e02c)
+-   Update to FastAPI 0.98 (0484e11)
+-   Update changelog for version 0.49.0 (#78) (a9670c1)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-06-22 19:12:15 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQBsAeIUdwCMuOWMCI8UMu/v8FiRnP3qzwe7rJrLnbYhGs7y/x1HmQNkVJf9BdipqMK
+bBBOoUsyGmpLO3WH26jgU=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.49.0 - 2023-06-12
 
 ### Changes
