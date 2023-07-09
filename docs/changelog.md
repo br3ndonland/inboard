@@ -2,6 +2,91 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.51.0 - 2023-07-09
+
+### Changes
+
+**Update to FastAPI 0.99** (19be870)
+
+This release will update/upgrade to
+[FastAPI 0.99](https://fastapi.tiangolo.com/release-notes/).
+This is a minor release to align with FastAPI versioning.
+
+FastAPI 0.99 adds support for OpenAPI 3.1.0, which allows webhooks to be
+documented as described in the
+[FastAPI docs](https://fastapi.tiangolo.com/advanced/openapi-webhooks/).
+
+FastAPI 0.99 is also the last minor version before introducing support
+for Pydantic 2.
+
+**UPCOMING BREAKING CHANGE**: Update to FastAPI 0.100 and Pydantic 2
+
+The next minor release of inboard will update to
+[FastAPI 0.100](https://fastapi.tiangolo.com/release-notes/).
+FastAPI 0.100 includes support for
+[Pydantic 2](https://docs.pydantic.dev/2.0/migration/)
+and installs Pydantic 2 by default, which can be a breaking change
+depending on each project's usage of Pydantic.
+
+How to deal with this breaking change:
+
+-   First, update requirements files with `"pydantic==1.*"` to avoid
+    automatically updating to Pydantic 2.
+-   Next, remove `"pydantic==1.*"` from requirements files,
+    install Pydantic 2, and follow the
+    [Pydantic 2 migration guide](https://docs.pydantic.dev/2.0/migration/).
+
+**UPCOMING BREAKING CHANGE**: Remove Poetry 1.1 from Docker images
+
+As described in the changelog entry for
+[inboard 0.38](https://inboard.bws.bio/changelog#0380-2023-02-26) and
+the [inboard docs](https://inboard.bws.bio/docker#docker-and-poetry),
+inboard switched its dependency management and packaging from Poetry 1.1
+to Hatch. Poetry 1.1 was retained in the inboard Docker images for
+backwards compatibility, but Poetry 1.1 is unmaintained and so it must
+eventually be removed.
+
+The next minor release of inboard will remove Poetry 1.1 from the
+inboard Docker images.
+
+How to deal with this breaking change:
+
+-   If you are not using Poetry there are no changes needed.
+-   If you are still using Poetry add `RUN pipx install poetry`
+    to your Dockerfile.
+
+**Note about automatic update to Debian bookworm**
+
+On 2023-06-14, Docker updated the default Debian Linux version in its
+Python official images from Debian bullseye to Debian bookworm
+(https://github.com/docker-library/official-images/pull/14854).
+As inboard uses the default Debian Linux version from the Docker Python
+official images, this meant that the next release of inboard
+(0.50.0 - 2023-06-22) automatically updated to bookworm. There have been
+[some issues](https://github.com/docker-library/python/issues?q=bookworm)
+noted by the community after this update. Thanks to @bodograumann for
+pointing this out in the related
+[discussion](https://github.com/br3ndonland/inboard/discussions/80).
+
+### Commits
+
+-   Bump version from 0.50.0 to 0.51.0 (be5c444)
+-   Update to FastAPI 0.99 (19be870)
+-   Update changelog for version 0.50.0 (#79) (a38228a)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-07-09 17:29:02 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQNOcjc4cqdPs/U4UBsp8YSXLn7D6L+vntLOPbcRPYwrh1LcfmsJiTTksFpSH1/Txdj
++dCD3poVckre2P0PqqXQo=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.50.0 - 2023-06-22
 
 ### Changes
