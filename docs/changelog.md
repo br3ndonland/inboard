@@ -2,6 +2,68 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.52.0 - 2023-08-20
+
+### Changes
+
+**Update to FastAPI 0.100** (de4d583)
+
+This release will update/upgrade to
+[FastAPI 0.100](https://fastapi.tiangolo.com/release-notes/).
+This is a minor release to align with FastAPI versioning.
+
+FastAPI 0.100 includes support for
+[Pydantic 2](https://docs.pydantic.dev/2.0/migration/)
+and installs Pydantic 2 by default, which can be a **BREAKING CHANGE**
+depending on each project's usage of Pydantic.
+
+How to deal with this breaking change:
+
+-   First, update requirements files with `"pydantic==1.*"` to avoid
+    automatically updating to Pydantic 2.
+-   Next, remove `"pydantic==1.*"` from requirements files,
+    install Pydantic 2, and follow the
+    [Pydantic 2 migration guide](https://docs.pydantic.dev/2.0/migration/).
+
+**Remove Poetry 1.1 from Docker images** (b36b351)
+
+As described in the changelog entry for
+[inboard 0.38](https://inboard.bws.bio/changelog#0380-2023-02-26) and
+the [inboard docs](https://inboard.bws.bio/docker#docker-and-poetry),
+inboard switched its dependency management and packaging from Poetry 1.1
+to Hatch. Poetry 1.1 was retained in the inboard Docker images for
+backwards compatibility, but Poetry 1.1 is unmaintained and so it must
+eventually be removed.
+
+This release will remove Poetry 1.1 from the inboard Docker images.
+This is a **BREAKING CHANGE**.
+
+How to deal with this breaking change:
+
+-   If you are not using Poetry there are no changes needed.
+-   If you are still using Poetry add `RUN pipx install poetry`
+    to your Dockerfile.
+
+### Commits
+
+-   Bump version from 0.51.0 to 0.52.0 (be3c16c)
+-   Update to FastAPI 0.100 (de4d583)
+-   Remove Poetry 1.1 from Docker images (b36b351)
+-   Update changelog for version 0.51.0 (#81) (fbda899)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-08-20 16:40:57 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQDtnqxHqpV4mf/QSxERfC1ypdVPb8cpDp6TpvBGcxM1iDQ/a62BbMgZ0ja7JpKRTIT
+cZZYkLRlZyJEmV85IzVwE=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.51.0 - 2023-07-09
 
 ### Changes
