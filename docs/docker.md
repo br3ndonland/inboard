@@ -273,7 +273,7 @@ With this approach:
 
 ## Docker and Poetry
 
-This project now uses Hatch for Python dependency management and packaging. Poetry 1.1 was used before Hatch, and Poetry 1.1 is still included in the Docker images for backwards compatibility. If you have a downstream project using the inboard Docker images with a newer version of Poetry, you can add `RUN pipx upgrade poetry` or `RUN pipx install poetry>1.2 --force` to your Dockerfile to upgrade Poetry for your project.
+This project now uses Hatch for Python dependency management and packaging. Poetry 1.1 was used before Hatch. If you have a downstream project using the inboard Docker images with Poetry, you can add `RUN pipx install poetry` to your Dockerfile to install Poetry for your project.
 
 As explained in [python-poetry/poetry#1879](https://github.com/python-poetry/poetry/discussions/1879#discussioncomment-346113), there were two conflicting conventions to consider when working with Poetry in Docker:
 

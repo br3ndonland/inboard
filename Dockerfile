@@ -10,8 +10,7 @@ LABEL org.opencontainers.image.url="https://github.com/br3ndonland/inboard/pkgs/
 ARG \
   HATCH_VERSION=1.7.0 \
   LINUX_VERSION \
-  PIPX_VERSION=1.2.0 \
-  POETRY_VERSION=1.1.11
+  PIPX_VERSION=1.2.0
 ENV \
   HATCH_ENV_TYPE_VIRTUAL_PATH=.venv \
   HATCH_VERSION=$HATCH_VERSION \
@@ -20,7 +19,6 @@ ENV \
   PIPX_BIN_DIR=/opt/pipx/bin \
   PIPX_HOME=/opt/pipx/home \
   PIPX_VERSION=$PIPX_VERSION \
-  POETRY_VERSION=$POETRY_VERSION \
   PYTHONPATH=/app
 COPY --link pyproject.toml README.md /app/
 WORKDIR /app
@@ -36,7 +34,6 @@ elif [ "$LINUX_VERSION" = "slim" ]; then
 fi
 python -m pip install --no-cache-dir --upgrade pip "pipx==$PIPX_VERSION"
 pipx install "hatch==$HATCH_VERSION"
-pipx install "poetry==$POETRY_VERSION"
 HEREDOC
 COPY --link inboard /app/inboard
 ENTRYPOINT ["python"]
