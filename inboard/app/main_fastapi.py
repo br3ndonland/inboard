@@ -57,7 +57,7 @@ async def get_root() -> GetRoot:
 
 @app.get("/health", status_code=status.HTTP_200_OK)
 async def get_health(auth: BasicAuth) -> GetStatus:
-    return GetStatus(application=app.title, status="active")
+    return GetStatus(application=app.title, status="active", message=None)
 
 
 @app.get("/status", status_code=status.HTTP_200_OK)
