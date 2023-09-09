@@ -2,6 +2,54 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.53.0 - 2023-09-08
+
+### Changes
+
+**Update to FastAPI 0.101** (9d54839)
+
+This release will update/upgrade to
+[FastAPI 0.101](https://fastapi.tiangolo.com/release-notes/).
+
+FastAPI 0.101 adds support for
+[Pydantic computed fields](https://docs.pydantic.dev/latest/usage/computed_fields/)
+and alters responses to use
+[Pydantic serialization](https://docs.pydantic.dev/latest/usage/serialization/).
+The change to Pydantic serialization in FastAPI 0.101 separates input
+and output schemas, altering responses and OpenAPI schema generation.
+Due to the lack of backwards compatibility and the associated issues
+([tiangolo/fastapi#10011 (comment)](https://github.com/tiangolo/fastapi/pull/10011#issuecomment-1676624793),
+[tiangolo/fastapi#10019](https://github.com/tiangolo/fastapi/discussions/10019),
+[tiangolo/fastapi#10041](https://github.com/tiangolo/fastapi/discussions/10041)),
+the update to FastAPI 0.101 may be a **BREAKING CHANGE** for some users.
+
+How to deal with this breaking change:
+
+-   If this change affects your project adversely, skip FastAPI 0.101 and
+    update to FastAPI 0.102 (upcoming in the next inboard release).
+-   Set `separate_input_output_schemas=False` on the FastAPI app instance
+    (`app = FastAPI(separate_input_output_schemas=False)`) as shown in the
+    [FastAPI docs](https://fastapi.tiangolo.com/how-to/separate-openapi-schemas/).
+
+### Commits
+
+-   Bump version from 0.52.0 to 0.53.0 (825b08c)
+-   Update to FastAPI 0.101 (9d54839)
+-   Update changelog for version 0.52.0 (#82) (9c18aa0)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-09-08 21:12:24 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQDzobOTKnKOTl9Afrg6x4S0Bp5AQhi/LSHKb7DTDG9iQZj0AhrWcPB8H2oKoVtM4vS
+s629NlSWTlkwSktrP5hgU=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.52.0 - 2023-08-20
 
 ### Changes
