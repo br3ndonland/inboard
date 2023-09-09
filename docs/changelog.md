@@ -2,6 +2,56 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.54.0 - 2023-09-09
+
+### Changes
+
+**Update to FastAPI 0.102**
+
+This release will update/upgrade to
+[FastAPI 0.102](https://fastapi.tiangolo.com/release-notes/).
+This is a minor release to align with FastAPI versioning.
+
+FastAPI 0.101 added support for
+[Pydantic computed fields](https://docs.pydantic.dev/latest/usage/computed_fields/)
+and altered responses to use
+[Pydantic serialization](https://docs.pydantic.dev/latest/usage/serialization/).
+The change to Pydantic serialization in FastAPI 0.101 separated input
+and output schemas, altering responses and OpenAPI schema generation.
+Due to the lack of backwards compatibility and the associated issues
+([tiangolo/fastapi#10011 (comment)](https://github.com/tiangolo/fastapi/pull/10011#issuecomment-1676624793),
+[tiangolo/fastapi#10019](https://github.com/tiangolo/fastapi/discussions/10019),
+[tiangolo/fastapi#10041](https://github.com/tiangolo/fastapi/discussions/10041)),
+the update to FastAPI 0.101 may be a **BREAKING CHANGE** for some users.
+
+FastAPI 0.102 builds on the serialization changes introduced in 0.101 by
+adding docs explaining the serialization behavior and by adding a new
+optional keyword argument for disabling the new behavior.
+
+If the Pydantic serialization behavior affects your project adversely,
+disable it with `separate_input_output_schemas=False` on the FastAPI app
+(`app = FastAPI(separate_input_output_schemas=False)`) as shown in the
+[FastAPI docs](https://fastapi.tiangolo.com/how-to/separate-openapi-schemas/).
+
+### Commits
+
+-   Bump version from 0.53.0 to 0.54.0 (59a3dd0)
+-   Update changelog for version 0.53.0 (#83) (04dfec9)
+-   Update to FastAPI 0.102 (05abd20)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-09-09 01:38:29 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQNuHAVn5dYf9p58K567zJ9JKb+tGY5i7rBDBvRv4Wg95dzyQem2FJw86AAIKVeWbdI
++RTrFee2U+ob95nufGCAc=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.53.0 - 2023-09-08
 
 ### Changes
