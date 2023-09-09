@@ -2,6 +2,44 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.56.0 - 2023-09-09
+
+### Changes
+
+**Update to Uvicorn 0.23.2** (2590d8a)
+
+This release will update/upgrade from Uvicorn 0.22.0 to
+[Uvicorn 0.23.2](https://github.com/encode/uvicorn/blob/HEAD/CHANGELOG.md).
+This is a minor release to align with Uvicorn versioning.
+
+[Changes](https://github.com/encode/uvicorn/compare/0.22.0...0.23.2)
+to Uvicorn since 0.22.0 include:
+
+-   Drop support for Python 3.7
+-   Switch to a vendored copy of `asgiref.typing` at `uvicorn._types`
+-   Add a new option `--ws-max-queue`
+-   Make a small scope change in
+    `uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware`.
+
+### Commits
+
+-   Bump version from 0.55.0 to 0.56.0 (4b92cef)
+-   Update to Uvicorn 0.23.2 (2590d8a)
+-   Update changelog for version 0.55.0 (#85) (62ec752)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-09-09 02:49:44 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQMyogYm3InfkXujOKK1leXR8UvO+nhEvBkD9BYJQBAuvWDscvGw/2iWsOes9ed71z0
+eY0f7p7yvJTTChCKqZHgs=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.55.0 - 2023-09-09
 
 ### Changes
