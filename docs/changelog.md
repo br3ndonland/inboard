@@ -2,6 +2,41 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.55.0 - 2023-09-09
+
+### Changes
+
+**Update to FastAPI 0.103** (b6aef8b)
+
+This release will update/upgrade to
+[FastAPI 0.103](https://fastapi.tiangolo.com/release-notes/).
+This is a minor release to align with FastAPI versioning
+
+FastAPI 0.103 adds support for an `openapi_examples` keyword argument
+as described in the
+[docs](https://fastapi.tiangolo.com/tutorial/schema-extra-example/#openapi-specific-examples)
+and sets a temporary upper bound on AnyIO of `anyio>=3.7.1,<4.0.0`,
+separately from Starlette, to help with the update to Starlette 0.31.
+
+### Commits
+
+-   Bump version from 0.54.0 to 0.55.0 (f2acd2c)
+-   Update to FastAPI 0.103 (b6aef8b)
+-   Update changelog for version 0.54.0 (#84) (b348793)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-09-09 01:59:11 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQKnGlapkHaYsj2+BnN2iwPI/GhszOKudq0nULAQxlwm+lVm4kFiUDadbzPjZLQyp3j
+V94wCWuOsz1mQkj8XsTwI=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.54.0 - 2023-09-09
 
 ### Changes
