@@ -47,9 +47,9 @@ def basic_auth(
 def client_asgi() -> TestClient:
     """Instantiate test client with a plain ASGI app instance.
 
-    Note that, while Uvicorn uses `asgiref.typing`, Starlette does not.
+    Note that Uvicorn and Starlette use different types.
     The type signature expected by the Starlette/FastAPI `TestClient`
-    therefore does not match `asgiref.typing.ASGIApplication`. A mypy
+    therefore does not match `uvicorn._types.ASGIApplication`. A mypy
     `type: ignore[arg-type]` comment is used to resolve this difference.
 
     https://asgi.readthedocs.io/en/stable/specs/main.html#applications

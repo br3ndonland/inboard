@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     else:
         from typing import Required
 
-    from asgiref.typing import ASGIApplication
+    from uvicorn._types import ASGIApplication
     from uvicorn.config import (
         HTTPProtocolType,
         InterfaceType,
@@ -110,6 +110,7 @@ class UvicornOptions(TypedDict, total=False):
     loop: LoopSetupType
     http: Type[Protocol] | HTTPProtocolType
     ws: Type[Protocol] | WSProtocolType
+    ws_max_queue: int
     ws_max_size: int
     ws_ping_interval: float | None
     ws_ping_timeout: float | None
