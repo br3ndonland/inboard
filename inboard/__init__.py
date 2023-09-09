@@ -23,4 +23,4 @@ __all__ = (
     "fastapi_basic_auth",
 )
 
-__version__ = "0.55.0"
+__version__ = "0.56.0"
