@@ -10,7 +10,7 @@ Please see [inboard Git tags](https://github.com/br3ndonland/inboard/tags), [inb
 
 !!! example "Example Docker tags"
 
-    ```sh
+    ```{ .sh .no-copy }
     # Pull latest FastAPI image (Docker automatically appends the `latest` tag)
     docker pull ghcr.io/br3ndonland/inboard
 

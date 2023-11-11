@@ -53,15 +53,19 @@ FastAPI is built on Starlette, so a FastAPI app can be configured with middlewar
 
 As described in the [environment variable reference](environment.md) and [contribution guide](contributing.md), when starting the inboard server, the environment variables `BASIC_AUTH_USERNAME` and `BASIC_AUTH_PASSWORD` can be set. The values of these variables can then be passed in with client requests to authenticate.
 
+Server:
+
 ```sh
-# server
 docker pull ghcr.io/br3ndonland/inboard
 docker run -d -p 80:80 \
   -e "BASIC_AUTH_USERNAME=test_user" \
   -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
   ghcr.io/br3ndonland/inboard
+```
 
-# client: https://httpie.io/
+Client (using [HTTPie](https://httpie.io/)):
+
+```sh
 http :80/health -a "test_user":"r4ndom_bUt_memorable"
 ```
 

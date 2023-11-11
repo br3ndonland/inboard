@@ -18,14 +18,17 @@ One of the primary use cases for log message filters is health checks. When appl
 
 The `LOG_FILTERS` environment variable can be used to specify filters as a comma-separated string, like `LOG_FILTERS="/health, /heartbeat"`. To then add the filters to a class instance, the `LogFilter.set_filters()` method can produce the set of filters from the environment variable value.
 
-```py
+```{ .sh .no-copy }
 # start a REPL session in a venv in which inboard is installed
 .venv ❯ python
->>> import os
->>> import inboard
->>> os.environ["LOG_FILTERS"] = "/health, /heartbeat"
->>> inboard.LogFilter.set_filters()
-{'/heartbeat', '/health'}
+```
+
+```py
+import os
+import inboard
+os.environ["LOG_FILTERS"] = "/health, /heartbeat"
+inboard.LogFilter.set_filters()
+# {'/heartbeat', '/health'}
 ```
 
 inboard will do this automatically by reading the `LOG_FILTERS` environment variable.
@@ -49,7 +52,7 @@ docker run \
 docker logs -f $(docker ps -q -n 1)
 ```
 
-```log
+```{ .log .no-copy }
 DEBUG      Logging dict config loaded from inboard.logging_conf.
 DEBUG      Checking for pre-start script.
 DEBUG      No pre-start script specified.
@@ -73,7 +76,7 @@ Make a request to an endpoint that should be logged, using an HTTP client like [
 
 The request will be logged through `uvicorn.access`:
 
-```log
+```{ .log .no-copy }
 INFO       172.17.0.1:65026 - "GET / HTTP/1.1" 200
 ```
 

@@ -262,14 +262,14 @@ The idea here is to allow a catch-all Uvicorn config variable in the spirit of `
 !!! example "Example of how to format `UVICORN_CONFIG_OPTIONS` as valid JSON"
 
     ```py
-    >>> import json
-    >>> import os
-    >>> uvicorn_config_dict = dict(host="0.0.0.0", port=80, log_config=None, log_level="info", reload=False)
-    >>> json.dumps(uvicorn_config_dict)
-    '{"host": "0.0.0.0", "port": 80, "log_config": null, "log_level": "info", "reload": false}'
-    >>> os.environ["UVICORN_CONFIG_OPTIONS"] = json.dumps(uvicorn_config_dict)
-    >>> json.loads(os.environ["UVICORN_CONFIG_OPTIONS"]) == uvicorn_config_dict
-    True
+    import json
+    import os
+    uvicorn_config_dict = dict(host="0.0.0.0", port=80, log_config=None, log_level="info", reload=False)
+    json.dumps(uvicorn_config_dict)
+    # '{"host": "0.0.0.0", "port": 80, "log_config": null, "log_level": "info", "reload": false}'
+    os.environ["UVICORN_CONFIG_OPTIONS"] = json.dumps(uvicorn_config_dict)
+    json.loads(os.environ["UVICORN_CONFIG_OPTIONS"]) == uvicorn_config_dict
+    # True
     ```
 
 !!! warning
@@ -279,11 +279,11 @@ The idea here is to allow a catch-all Uvicorn config variable in the spirit of `
     In the example below, `reload` will be passed through with the correct type (because it was formatted with the correct JSON type initially), but `access_log` will have an incorrect type (because it was formatted as a string instead of as a Boolean).
 
     ```py
-    >>> import json
-    >>> import os
-    >>> os.environ["UVICORN_CONFIG_OPTIONS_INCORRECT"] = '{"access_log": "false", "reload": true}'
-    >>> json.loads(os.environ["UVICORN_CONFIG_OPTIONS_INCORRECT"])
-    {'access_log': "false", 'reload': True}
+    import json
+    import os
+    os.environ["UVICORN_CONFIG_OPTIONS_INCORRECT"] = '{"access_log": "false", "reload": true}'
+    json.loads(os.environ["UVICORN_CONFIG_OPTIONS_INCORRECT"])
+    # {'access_log': "false", 'reload': True}
     ```
 
 ## Logging
@@ -329,7 +329,7 @@ The idea here is to allow a catch-all Uvicorn config variable in the spirit of `
 
     !!!example "Example log message in different formats"
 
-        ```log
+        ```{ .log .no-copy }
         # simple
         INFO       Started server process [19012]
 
