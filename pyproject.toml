@@ -41,7 +41,7 @@ checks = [
   "pre-commit>=2,<3",
 ]
 docs = [
-  "mkdocs-material>=8,<9",
+  "mkdocs-material>=9,<10",
 ]
 fastapi = [
   "fastapi>=0.103,<0.104",
