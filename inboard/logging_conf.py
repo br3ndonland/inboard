@@ -45,7 +45,7 @@ def configure_logging(
         else:
             logging_conf_path = logging_conf
             logging_conf_dict = find_and_load_logging_conf(logging_conf_path)
-        logging.config.dictConfig(logging_conf_dict)
+        logging.config.dictConfig(logging_conf_dict)  # type: ignore[arg-type]
         logger.debug(f"Logging dict config loaded from {logging_conf_path}.")
         return logging_conf_dict
     except Exception as e:
