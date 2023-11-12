@@ -1,6 +1,6 @@
 {
   "ignorePaths": ["CHANGELOG.md", "**/*changelog.md"],
-  "ignoreRegExpList": ["/(```+)\\s?[a-z][\\s\\S]+?\\1/g", "/`([\\s\\S]+?)`/g"],
+  "ignoreRegExpList": ["/(`{3})[\\s\\S]+?\\1/g", "/`([\\s\\S]+?)`/g"],
   "languageSettings": [
     {
       "languageId": "python",
