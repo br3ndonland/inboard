@@ -319,3 +319,14 @@ CSpell is not currently used with pre-commit in this project because behavior of
         -   Example: `git tag -a -s 1.0.0`
     -   Push the tag. GitHub Actions will build and push the Python package and Docker images, and open a PR to update the changelog.
     -   Squash and merge the changelog PR, removing any [`Co-authored-by` trailers](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors) before merging.
+
+### Deployments
+
+Documentation is built with [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/), deployed on [Vercel](https://vercel.com/), and available at [inboard.bws.bio](https://inboard.bws.bio) and [inboard.vercel.app](https://inboard.vercel.app).
+
+[Vercel build configuration](https://vercel.com/docs/build-step):
+
+-   Build command: `python3 -m pip install 'mkdocs-material>=9,<10' && mkdocs build --site-dir public`. **The version of `mkdocs-material` installed on Vercel is independent of the version listed in _pyproject.toml_. If the version of `mkdocs-material` is updated in _pyproject.toml_, it must also be updated in the Vercel build configuration**.
+-   Output directory: `public` (default)
+
+[Vercel site configuration](https://vercel.com/docs/configuration) is specified in _vercel.json_.
