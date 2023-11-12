@@ -81,7 +81,6 @@ The _pyproject.toml_ could look like this:
       "flake8",
       "isort",
       "mypy",
-      "pre-commit",
     ]
     docs = [
       "mkdocs-material",
