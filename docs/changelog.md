@@ -2,6 +2,51 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.56.1 - 2023-11-12
+
+### Changes
+
+**Fix `uvicorn[standard]` version** (be409c4)
+
+Uvicorn was updated to version 0.23.2 in 2590d8a and 0.56.0, but the
+version number for `uvicorn[standard]` was not updated correspondingly.
+This release will update `uvicorn[standard]` to 0.23.2.
+
+**Update to Material for MkDocs 9** (ab692a3, 90f75b0)
+
+Docs will now be built with
+[Material for MkDocs 9](https://squidfunk.github.io/mkdocs-material/changelog/).
+The most notable user-facing change is the new dark theme color palette,
+which has undergone a few small changes since its release in version
+9.4.0 (https://github.com/squidfunk/mkdocs-material/issues/6061).
+Code block copy behavior has undergone some small changes as well. Code
+blocks in the documentation have been reformatted for easier copying.
+
+### Commits
+
+-   Bump version from 0.56.0 to 0.56.1 (0dba457)
+-   Fix `uvicorn[standard]` version (be409c4)
+-   Add docs deployment info to contributing.md (141d8e5)
+-   Remove Material for MkDocs version from README (b415bf4)
+-   Configure Material for MkDocs code block copy (90f75b0)
+-   Update to Material for MkDocs 9 (ab692a3)
+-   Relax upper bound on HTTPX (f49d205)
+-   Update to `mypy==1.7.0` (140dac6)
+-   Update changelog for version 0.56.0 (#86) (18f2052)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-11-12 16:12:24 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQL6WBwGZdDVKFstxw3kQbhFNhbF+veYd9SUL2/Ow96kSl+4IHdtP2Bt0Q/fHUTGWTN
+myCfgotFST8FYZrUXVXg4=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.56.0 - 2023-09-09
 
 ### Changes
