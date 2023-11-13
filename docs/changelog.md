@@ -2,6 +2,53 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.57.0 - 2023-11-12
+
+### Changes
+
+**Update to FastAPI 0.104** (882084c)
+
+This release will update/upgrade to
+[FastAPI 0.104](https://fastapi.tiangolo.com/release-notes/).
+This is a minor release to align with FastAPI versioning.
+
+FastAPI 0.104 drops support for Python 3.7 and adds API reference docs
+available [here](https://fastapi.tiangolo.com/reference/).
+
+**Switch from pre-commit to Hatch scripts** (#89, 1a5450b)
+
+pre-commit runs Git hooks. It can run on different Git events like
+`pre-push` and can also easily run on CI (continuous integration)
+platforms like GitHub Actions. These pre-commit hooks are often related
+to code quality and help ensure code quality checks are continuously
+enforced. While it is helpful for continuously running code quality
+checks, pre-commit also has some downsides as detailed in #89.
+
+This project was previously migrated from Poetry to Hatch in version
+0.38.0 - 2023-02-26. As of this release, the project's code quality
+checks will be migrated from pre-commit to Hatch scripts.
+
+### Commits
+
+-   Bump version from 0.56.1 to 0.57.0 (a500ab1)
+-   Update to FastAPI 0.104 (882084c)
+-   Switch from pre-commit to Hatch scripts (#89) (1a5450b)
+-   Add attribute lists to CSpell `ignoreRegExpList` (03ac3f7)
+-   Update changelog for version 0.56.1 (#88) (1006821)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-11-12 19:24:40 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQBGlGdZ8YJ3lb8amnXO8qCufA0VAHXk7ah6NVYP7+JKdp8whnd5eSesgbq/h0hpGcx
+OP/GebwS7COFBVDRLtcAU=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.56.1 - 2023-11-12
 
 ### Changes
