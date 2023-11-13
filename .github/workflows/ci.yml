@@ -31,13 +31,6 @@ jobs:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
           restore-keys: ${{ runner.os }}-pip-
-      - name: Set up pre-commit cache
-        if: runner.os == 'Linux'
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pre-commit
-          key: ${{ runner.os }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
-          restore-keys: ${{ runner.os }}-pre-commit-
       - name: Install pipx for Python ${{ matrix.python-version }}
         run: python -m pip install "pipx==$PIPX_VERSION"
       - name: Install Hatch
@@ -75,15 +68,8 @@ jobs:
           else
             echo "Versions do not match." && exit 1
           fi
-      - name: Run spell check
-        uses: streetsidesoftware/cspell-action@v2
-        with:
-          check_dot_files: true
-          files: "**/*.md"
-          incremental_files_only: false
-          strict: true
-      - name: Run pre-commit hooks
-        run: hatch run ${{ env.HATCH_ENV }}:pre-commit run --all-files
+      - name: Run Hatch script for code quality checks
+        run: hatch run ${{ env.HATCH_ENV }}:check
       - name: Run tests
         run: hatch run ${{ env.HATCH_ENV }}:coverage run
       - name: Enforce test coverage

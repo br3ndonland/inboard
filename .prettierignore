@@ -1,2 +1,5 @@
 *cache*
 *venv*
+htmlcov
+public
+site
