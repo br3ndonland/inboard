@@ -194,6 +194,13 @@ Change the port numbers to run multiple containers simultaneously (`-p 81:80`).
 
 ## Code quality
 
+### Running code quality checks
+
+Code quality checks can be run using the Hatch scripts in _pyproject.toml_.
+
+-   Check: `hatch run check`
+-   Format: `hatch run format`
+
 ### Code style
 
 -   **Python code is formatted with [Black](https://black.readthedocs.io/en/stable/)**. Configuration for Black is stored in _[pyproject.toml](https://github.com/br3ndonland/inboard/blob/HEAD/pyproject.toml)_.
