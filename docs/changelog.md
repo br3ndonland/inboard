@@ -2,6 +2,58 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.59.0 - 2023-12-30
+
+### Changes
+
+**Update to FastAPI 0.106** (e3ece81)
+
+This release will update/upgrade to
+[FastAPI 0.106](https://fastapi.tiangolo.com/release-notes/).
+This is a minor release to align with FastAPI versioning.
+
+In FastAPI 0.74 (released in inboard 0.18.0 - 2022-03-05), the internal
+`AsyncExitStack` was updated so that dependencies with `yield` could
+catch exceptions like `HTTPException`.
+
+FastAPI 0.106 builds on the 0.74 updates by introducing the ability to
+raise exceptions after `yield`. This update includes a BREAKING CHANGE
+because objects from dependencies with `yield` can no longer be used in
+background tasks. The recommendation in the
+[FastAPI docs](https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/)
+for updating background tasks is:
+
+> If you used to rely on this behavior, now you should create the
+> resources for background tasks inside the background task itself, and
+> use internally only data that doesn't depend on the resources of
+> dependencies with `yield`.
+>
+> For example, instead of using the same database session, you would
+> create a new database session inside of the background task, and you
+> would obtain the objects from the database using this new session. And
+> then instead of passing the object from the database as a parameter to
+> the background task function, you would pass the ID of that object and
+> then obtain the object again inside the background task function.
+
+### Commits
+
+-   Bump version from 0.58.0 to 0.59.0 (893fa7e)
+-   Update to FastAPI 0.106 (e3ece81)
+-   Update changelog for version 0.58.0 (#91) (0997ad3)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-12-30 20:19:49 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQPv4ymxbUuQV59Uuk606UuL6939xE/imK4T3T4VW5rTzgBd8ENkoG2e0wGaRVU8rH2
+7Dj65ChjO8eaaJ1mu9Ags=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.58.0 - 2023-12-30
 
 ### Changes
