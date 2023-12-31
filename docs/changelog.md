@@ -2,6 +2,43 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.62.0 - 2023-12-30
+
+### Changes
+
+**Update to Uvicorn 0.24.0** (65883a9, 0d5ec23)
+
+This release will update/upgrade to
+[Uvicorn 0.24.0](https://github.com/encode/uvicorn/releases).
+This is a minor release to align with Uvicorn versioning.
+
+Uvicorn 0.24.0 adds support for Python 3.12 and for setting the app
+instance with the environment variable `UVICORN_APP`. inboard already
+has an environment variable for this purpose, `APP_MODULE`. Either
+`APP_MODULE` or `UVICORN_APP` can be used to set the app module for
+inboard, with precedence given to `APP_MODULE` for backward
+compatibility.
+
+### Commits
+
+-   Bump version from 0.61.0 to 0.62.0 (2270900)
+-   Support `UVICORN_APP` (0d5ec23)
+-   Update to Uvicorn 0.24.0 (65883a9)
+-   Update changelog for version 0.61.0 (#94) (665eaca)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-12-30 22:54:49 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQIyrvP6/M9MJfPIZnj6b/mOjUqg8ccL62HkThr4Qc+mHrVU9MzUUXEjviQ79QWdgep
+sdduXo2l+rS6LRTlNiKAE=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.61.0 - 2023-12-30
 
 ### Changes
