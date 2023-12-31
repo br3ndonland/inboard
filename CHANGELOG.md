@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.64.0 - 2023-12-30
+
+### Changes
+
+**Update to Gunicorn 21.2.0** (7993e61)
+
+This release will update/upgrade to Gunicorn 21.2.0. See the Gunicorn
+[docs](https://docs.gunicorn.org/en/stable/2023-news.html) and
+[GitHub repo](https://github.com/benoitc/gunicorn/compare/20.1.0...21.2.0)
+for more details on the changes since 20.1.0.
+
+### Commits
+
+- Bump version from 0.63.0 to 0.64.0 (384907b)
+- Update to Gunicorn 21.2.0 (7993e61)
+- Update changelog for version 0.63.0 (#96) (3bd8be1)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-12-30 23:52:09 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQIS/5tugCWRCJ1Ea6v+ULmsSD31Y6yc+CDAdvmQ8V8ToWGtHo5wHXv09lqPxlczwP+
+HrsHdXn9qPiXB+V6tPpgA=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.63.0 - 2023-12-30
 
 ### Changes
