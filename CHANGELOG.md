@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.63.0 - 2023-12-30
+
+### Changes
+
+**Update to Uvicorn 0.25.0** (4cc018b)
+
+This release will update/upgrade to
+[Uvicorn 0.25.0](https://github.com/encode/uvicorn/releases).
+This is a minor release to align with Uvicorn versioning.
+
+Uvicorn 0.25.0 adds support for the WebSocket Denial Response ASGI
+extension. This is used in certain cases in which a WebSocket app needs
+to reject a connection and return a custom response.
+
+Uvicorn 0.25.0 also includes some corrections to the type annotations on
+`uvicorn.run()`. `inboard.types.UvicornOptions` already included correct
+type annotations that match these corrections, so no changes are needed.
+
+### Commits
+
+- Bump version from 0.62.0 to 0.63.0 (634d094)
+- Update to Uvicorn 0.25.0 (4cc018b)
+- Update changelog for version 0.62.0 (#95) (a1cfb84)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-12-30 23:32:52 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQAF3qFeNTp+kyvuT1TShVDDEiVFHX1Q8awRvEOUeWvVWwwqbMG16SQRpa0IZTqS0su
+rNjK8+Q4ehjpIdJf9ZHQo=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.62.0 - 2023-12-30
 
 ### Changes
