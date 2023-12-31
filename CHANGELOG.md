@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.61.0 - 2023-12-30
+
+### Changes
+
+**Update to FastAPI 0.108 and Starlette 0.32** (738d54a)
+
+This release will update/upgrade to
+[FastAPI 0.108](https://fastapi.tiangolo.com/release-notes/)
+and
+[Starlette 0.32](https://www.starlette.io/release-notes/).
+This is a minor release to align with FastAPI versioning.
+
+Changes to Starlette between 0.29 and 0.32 include dropping support for
+Python 3.7, and adding support for Python 3.12 and AnyIO 4.
+
+### Commits
+
+- Bump version from 0.60.0 to 0.61.0 (ccc7bf2)
+- Update to FastAPI 0.108 and Starlette 0.32 (738d54a)
+- Update changelog for version 0.60.0 (#93) (b0d4a4a)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-12-30 21:45:18 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQPVNYaXJu4GQ4XkLI6QdfR3Hu+cW9wCtUhMa/mx5TwTKNG/LJFa/tN70EkqjFhYChW
+dvle3+y/ats0Pbx+orKQ8=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.60.0 - 2023-12-30
 
 ### Changes
