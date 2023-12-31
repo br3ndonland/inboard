@@ -2,6 +2,41 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.60.0 - 2023-12-30
+
+### Changes
+
+**Update to FastAPI 0.107 and Starlette 0.28** (7d19e10)
+
+This release will update/upgrade to
+[FastAPI 0.107](https://fastapi.tiangolo.com/release-notes/)
+and
+[Starlette 0.28](https://www.starlette.io/release-notes/).
+This is a minor release to align with FastAPI and Starlette versioning.
+
+FastAPI 0.107 updates to Starlette 0.28. Starlette 0.28 moves exception
+handling to the `Route` class and adds an error message if `TestClient`
+runs without HTTPX installed.
+
+### Commits
+
+-   Bump version from 0.59.0 to 0.60.0 (2be52ab)
+-   Update to FastAPI 0.107 and Starlette 0.28 (7d19e10)
+-   Update changelog for version 0.59.0 (#92) (92d281d)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-12-30 20:39:34 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQFWl5oLrbNwp0Xp0koktWi0MZppIjuyGbW1KSKlCrKllRhVRDWQyQ/hDoxZEw+TvKZ
+s69MTHJ0xnrBSHYpeoewg=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.59.0 - 2023-12-30
 
 ### Changes
