@@ -20,11 +20,11 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 ## General
 
-`APP_MODULE`
+`APP_MODULE`/`UVICORN_APP`
 
 -   Python module with app instance.
 -   Default: The appropriate app module from inboard.
--   Custom: For a module at `/app/package/custom/module.py` and app instance object `api`, `APP_MODULE="package.custom.module:api"`
+-   Custom: For a module at `/app/package/custom/module.py` and app instance object `api`, either `APP_MODULE` (like `APP_MODULE="package.custom.module:api"`) or `UVICORN_APP` (like `UVICORN_APP="package.custom.module:api"`, _new in inboard 0.62_)
 
     !!!example "Example of a custom FastAPI app module"
 
@@ -188,6 +188,8 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
     These settings are mostly used for local development.
 
+    [Uvicorn supports environment variables named with the `UVICORN_` prefix](https://www.uvicorn.org/settings/) (via the [Click `auto_envvar_prefix` feature](https://click.palletsprojects.com/en/7.x/options/#dynamic-defaults-for-prompts)), but these environment variables are only read when running from the CLI. inboard runs Uvicorn programmatically with `uvicorn.run()` instead of running with the CLI, so most of these variables will not apply. The exception is `UVICORN_APP`, as explained in the [general section](#general).
+
 `WITH_RELOAD`
 
 -   Configure the [Uvicorn auto-reload setting](https://www.uvicorn.org/settings/).
@@ -248,6 +250,11 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
         - Parsed into a list of strings in the same manner as for `RELOAD_DIRS`.
         - `uvicorn.run` equivalent: `reload_includes`
         - Uvicorn CLI equivalent: `--reload-include`
+
+`UVICORN_APP` _(new in inboard 0.62)_
+
+-   `UVICORN_APP` can be used interchangeably with `APP_MODULE`.
+-   See the [general section](#general) for further details.
 
 `UVICORN_CONFIG_OPTIONS` _(advanced usage, new in inboard 0.11)_
 

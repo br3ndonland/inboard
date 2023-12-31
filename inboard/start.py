@@ -38,7 +38,7 @@ def run_pre_start_script(logger: logging.Logger = logging.getLogger()) -> str:
 def set_app_module(logger: logging.Logger = logging.getLogger()) -> str:
     """Set the name of the Python module with the app instance to run."""
     try:
-        app_module = os.getenv("APP_MODULE")
+        app_module = os.getenv("APP_MODULE") or os.getenv("UVICORN_APP")
         if not app_module:
             raise ValueError("Please set the APP_MODULE environment variable")
         if not importlib.util.find_spec((module := app_module.split(sep=":")[0])):

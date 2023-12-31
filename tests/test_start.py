@@ -128,17 +128,19 @@ class TestSetAppModule:
         assert mocker.call(f"App module set to inboard.app.main_{module}:app.")
 
     @pytest.mark.parametrize("module", ("base", "fastapi", "starlette"))
+    @pytest.mark.parametrize("module_variable_name", ("APP_MODULE", "UVICORN_APP"))
     def test_set_app_module_custom(
         self,
         app_module_tmp_path: Path,
         module: str,
+        module_variable_name: str,
         mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.set_app_module` with custom module path."""
         logger = mocker.patch.object(logging, "root", autospec=True)
         monkeypatch.syspath_prepend(app_module_tmp_path)
-        monkeypatch.setenv("APP_MODULE", f"tmp_app.main_{module}:app")
+        monkeypatch.setenv(module_variable_name, f"tmp_app.main_{module}:app")
         start.set_app_module(logger=logger)
         assert mocker.call(f"App module set to tmp_app.main_{module}:app.")
 
