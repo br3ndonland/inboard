@@ -63,11 +63,9 @@ class UvicornOptions(TypedDict, total=False):
     the same ([encode/uvicorn#1545]). This type is primarily intended to match the
     arguments to `uvicorn.run()`.
 
-    The `app` argument to `uvicorn.run()` accepts an un-parametrized `Callable`
-    because Uvicorn tests use callables ([encode/uvicorn#1067]). It is not
-    necessary for other packages to accept `Callable`, and it would need to be
-    parametrized to pass mypy strict mode anyway. For these reasons, `Callable`
-    is not accepted in the `app` field of this type.
+    The `app` argument to `uvicorn.run()` accepts a `Callable` because Uvicorn tests use
+    callables ([encode/uvicorn#1067]). It is not necessary for other packages to accept
+    `Callable`, so `Callable` is not accepted in the `app` field of this type.
 
     The `log_config` argument in this type uses the inboard `DictConfig` type
     instead of `dict[str, Any]` for stricter type checking.
