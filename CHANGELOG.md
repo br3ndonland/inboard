@@ -1,5 +1,41 @@
 # Changelog
 
+## 0.58.0 - 2023-12-30
+
+### Changes
+
+**Update to FastAPI 0.105** (5bc3013)
+
+This release will update/upgrade to
+[FastAPI 0.105](https://fastapi.tiangolo.com/release-notes/).
+This is a minor release to align with FastAPI versioning.
+
+FastAPI 0.105 adds support for `Annotated` dependencies with multiple
+type annotations.
+
+### Commits
+
+- Bump version from 0.57.0 to 0.58.0 (e3eee4d)
+- Update to FastAPI 0.105 (5bc3013)
+- Update to `mypy==1.8.0` (2529780)
+- Update to `hatch==1.9.1` (65e7363)
+- Update to `pipx==1.4.0` (66f9560)
+- Update to `pipx==1.3.3` (fb08b72)
+- Update changelog for version 0.57.0 (#90) (f867910)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2023-12-30 19:19:38 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQOC/dNO7Uw4WziT5porc2n4a6QNN39T+tXWg4MNhcNNcnkmNbQDG+q4ousjb7tB/Kd
+lWhXlwyzqZKqV/LsyTtQw=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.57.0 - 2023-11-12
 
 ### Changes
