@@ -68,6 +68,7 @@
     "prettier",
     "prettierignore",
     "pydantic",
+    "pypa",
     "pypi",
     "pypoetry",
     "pyproject",
