@@ -105,6 +105,9 @@ The _pyproject.toml_ could look like this:
     [tool.hatch.build.targets.sdist]
     include = ["/package_name"]
 
+    [tool.hatch.build.targets.wheel]
+    packages = ["package_name"]
+
     [tool.hatch.envs.ci]
     dev-mode = false
     features = [

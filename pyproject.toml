@@ -82,6 +82,9 @@ source = ["inboard", "tests"]
 [tool.hatch.build.targets.sdist]
 include = ["/inboard"]
 
+[tool.hatch.build.targets.wheel]
+packages = ["inboard"]
+
 [tool.hatch.envs.base]
 dev-mode = false
 features = []
