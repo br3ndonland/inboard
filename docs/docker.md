@@ -155,20 +155,21 @@ The _Dockerfile_ could look like this:
 !!! example "Example _Dockerfile_ for Hatch project"
 
     ```dockerfile
+    # syntax=docker/dockerfile:1
     FROM ghcr.io/br3ndonland/inboard:fastapi
 
     # Set environment variables
     ENV APP_MODULE=package_name.main:app
 
-    # Install Python requirements
-    COPY pyproject.toml README.md /app/
+    # Install Python app
+    COPY --link pyproject.toml README.md /app/
+    COPY --link package_name /app/package_name
     WORKDIR /app
+
+    # Install Hatch environment
     RUN hatch env prune && hatch env create production
 
-    # Install Python app
-    COPY package_name /app/package_name
-
-    # RUN command already included in base image
+    # ENTRYPOINT and CMD already included in base image
     ```
 
 !!! tip "Syncing dependencies with Hatch"
@@ -202,20 +203,21 @@ The _Dockerfile_ could look like this:
 !!! example "Example _Dockerfile_ for `pip` project"
 
     ```dockerfile
+    # syntax=docker/dockerfile:1
     FROM ghcr.io/br3ndonland/inboard:fastapi
 
     # Set environment variables
     ENV APP_MODULE=package_name.main:app
 
-    # Install Python requirements
-    COPY requirements.txt /app/
+    # Install Python app
+    COPY --link requirements.txt /app/
+    COPY --link package_name /app/package_name
     WORKDIR /app
+
+    # Install Python requirements
     RUN python -m pip install -r requirements.txt
 
-    # Install Python app
-    COPY package_name /app/package_name
-
-    # RUN command already included in base image
+    # ENTRYPOINT and CMD already included in base image
     ```
 
 Organizing the _Dockerfile_ this way helps [leverage the Docker build cache](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#leverage-build-cache). Files and commands that change most frequently are added last to the _Dockerfile_. Next time the image is built, Docker will skip any layers that didn't change, speeding up builds.
@@ -321,7 +323,8 @@ The basic build dependencies used by inboard include `gcc`, `libc-dev`, and `mak
     ARG INBOARD_DOCKER_TAG=fastapi-alpine
     FROM ghcr.io/br3ndonland/inboard:${INBOARD_DOCKER_TAG}
     ENV APP_MODULE=mypackage.main:app
-    COPY pyproject.toml README.md /app/
+    COPY --link pyproject.toml README.md /app/
+    COPY --link mypackage /app/mypackage
     WORKDIR /app
     RUN <<HEREDOC
 
@@ -340,7 +343,6 @@ The basic build dependencies used by inboard include `gcc`, `libc-dev`, and `mak
     fi
 
     HEREDOC
-    COPY mypackage /app/mypackage
     ```
 
 !!! info "Alpine Linux virtual packages"
@@ -372,7 +374,8 @@ A _Dockerfile_ equivalent to the Alpine Linux example might look like the follow
     ARG INBOARD_DOCKER_TAG=fastapi-slim
     FROM ghcr.io/br3ndonland/inboard:${INBOARD_DOCKER_TAG}
     ENV APP_MODULE=mypackage.main:app
-    COPY pyproject.toml README.md /app/
+    COPY --link pyproject.toml README.md /app/
+    COPY --link mypackage /app/mypackage
     WORKDIR /app
     ARG INBOARD_DOCKER_TAG
     RUN <<HEREDOC
@@ -393,7 +396,6 @@ A _Dockerfile_ equivalent to the Alpine Linux example might look like the follow
     fi
 
     HEREDOC
-    COPY mypackage /app/mypackage
     ```
 
 !!! info "Redeclaring Docker build arguments"
