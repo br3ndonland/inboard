@@ -176,6 +176,8 @@ The _Dockerfile_ could look like this:
 
     Hatch does not have a direct command for syncing dependencies, and `hatch env create` won't always sync dependencies if they're being installed into the same virtual environment directory (as they would be in a Docker image). Running `hatch env prune && hatch env create <env_name>` should do the trick.
 
+    For further info, see [pypa/hatch#650](https://github.com/pypa/hatch/issues/650) and [pypa/hatch#1094](https://github.com/pypa/hatch/pull/1094).
+
 For a standard `pip` install:
 
 -   `repo/`
