@@ -82,8 +82,9 @@ As explained in the [VSCode docs](https://code.visualstudio.com/docs/containers/
     -   A **container** is a running image.
     -   The **[Dockerfile](https://docs.docker.com/engine/reference/builder/)** tells Docker how to build the container.
 -   To [get started with Docker](https://www.docker.com/get-started):
-    -   Ubuntu Linux: follow the [instructions for Ubuntu Linux](https://docs.docker.com/install/linux/docker-ce/ubuntu/), making sure to follow the [postinstallation steps](https://docs.docker.com/install/linux/linux-postinstall/) to activate the Docker daemon.
-    -   macOS and Windows: install [Docker Desktop](https://www.docker.com/products/docker-desktop) (available [via Homebrew](https://formulae.brew.sh/cask/docker) with `brew install --cask docker`).
+    -   Linux: follow the [Docker Engine installation instructions](https://docs.docker.com/engine/install/), making sure to follow the [postinstallation steps](https://docs.docker.com/engine/install/linux-postinstall/) to activate the Docker daemon.
+    -   macOS: install [Docker Desktop](https://www.docker.com/products/docker-desktop) (available [via Homebrew](https://formulae.brew.sh/cask/docker) with `brew install --cask docker`) or an alternative like [OrbStack](https://orbstack.dev/) (available [via Homebrew](https://formulae.brew.sh/cask/orbstack) with `brew install --cask orbstack`).
+    -   Windows: install [Docker Desktop](https://www.docker.com/products/docker-desktop).
 
 <details><summary>Expand this details element for more <a href="https://docs.docker.com/engine/reference/commandline/cli/">useful Docker commands</a>.</summary>
 
@@ -126,7 +127,7 @@ docker cp [container_name]:/path/to/file destination.file
 
 ### Building development images
 
-Note that Docker builds use BuildKit. See the [BuildKit docs](https://github.com/moby/buildkit/blob/HEAD/frontend/dockerfile/docs/syntax.md) and [Docker docs](https://docs.docker.com/develop/develop-images/build_enhancements/).
+Note that Docker builds use BuildKit. See the [BuildKit docs](https://github.com/moby/buildkit/blob/HEAD/frontend/dockerfile/docs/reference.md) and [Docker docs](https://docs.docker.com/build/buildkit/).
 
 To build the Docker images for each stage:
 

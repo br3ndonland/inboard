@@ -220,7 +220,7 @@ The _Dockerfile_ could look like this:
     # ENTRYPOINT and CMD already included in base image
     ```
 
-Organizing the _Dockerfile_ this way helps [leverage the Docker build cache](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#leverage-build-cache). Files and commands that change most frequently are added last to the _Dockerfile_. Next time the image is built, Docker will skip any layers that didn't change, speeding up builds.
+Organizing the _Dockerfile_ this way helps [leverage the Docker build cache](https://docs.docker.com/build/cache/). Files and commands that change most frequently are added last to the _Dockerfile_. Next time the image is built, Docker will skip any layers that didn't change, speeding up builds.
 
 The image could then be built with:
 
@@ -409,8 +409,7 @@ A _Dockerfile_ equivalent to the Alpine Linux example might look like the follow
     For more info, see:
 
     -   [br3ndonland/inboard#54](https://github.com/br3ndonland/inboard/pull/54)
-    -   [BuildKit docs: Dockerfile frontend syntaxes](https://github.com/moby/buildkit/blob/HEAD/frontend/dockerfile/docs/syntax.md)
+    -   [BuildKit docs: Dockerfile frontend syntaxes](https://github.com/moby/buildkit/blob/HEAD/frontend/dockerfile/docs/reference.md)
     -   [BuildKit releases: dockerfile/1.4.0](https://github.com/moby/buildkit/releases/tag/dockerfile%2F1.4.0)
     -   [Docker blog 2021-07-30: Introduction to heredocs in Dockerfiles](https://www.docker.com/blog/introduction-to-heredocs-in-dockerfiles/)
-    -   [Docker docs: Develop with Docker - Build images with BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/)
-    -   [Docker docs: Dockerfile reference - BuildKit](https://docs.docker.com/engine/reference/builder/#buildkit)
+    -   [Docker docs: BuildKit](https://docs.docker.com/build/buildkit/)
