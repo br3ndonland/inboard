@@ -77,10 +77,8 @@ The _pyproject.toml_ could look like this:
 
     [project.optional-dependencies]
     checks = [
-      "black",
-      "flake8",
-      "isort",
       "mypy",
+      "ruff",
     ]
     docs = [
       "mkdocs-material",
@@ -133,10 +131,6 @@ The _pyproject.toml_ could look like this:
     [tool.hatch.version]
     path = "package_name/__init__.py"
 
-    [tool.isort]
-    profile = "black"
-    src_paths = ["package_name", "tests"]
-
     [tool.mypy]
     files = ["**/*.py"]
     plugins = "pydantic.mypy"
@@ -147,6 +141,16 @@ The _pyproject.toml_ could look like this:
     addopts = "-q"
     minversion = "6.0"
     testpaths = ["tests"]
+
+    [tool.ruff]
+    extend-select = ["I"]
+    src = ["package_name", "tests"]
+
+    [tool.ruff.format]
+    docstring-code-format = true
+
+    [tool.ruff.lint.isort]
+    known-first-party = ["package_name", "tests"]
 
     ```
 

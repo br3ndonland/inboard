@@ -204,15 +204,7 @@ Code quality checks can be run using the Hatch scripts in _pyproject.toml_.
 
 ### Code style
 
--   **Python code is formatted with [Black](https://black.readthedocs.io/en/stable/)**. Configuration for Black is stored in _[pyproject.toml](https://github.com/br3ndonland/inboard/blob/HEAD/pyproject.toml)_.
--   **Python imports are organized automatically with [isort](https://pycqa.github.io/isort/)**.
-    -   The isort package organizes imports in three sections:
-        1. Standard library
-        2. Dependencies
-        3. Project
-    -   Within each of those groups, `import` statements occur first, then `from` statements, in alphabetical order.
-    -   You can run isort from the command line with `hatch run isort .`.
-    -   Configuration for isort is stored in _[pyproject.toml](https://github.com/br3ndonland/inboard/blob/HEAD/pyproject.toml)_.
+-   Python code is formatted with [Ruff](https://docs.astral.sh/ruff/). Ruff configuration is stored in _pyproject.toml_.
 -   Other web code (JSON, Markdown, YAML) is formatted with [Prettier](https://prettier.io/).
 
 ### Static type checking

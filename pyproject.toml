@@ -34,10 +34,8 @@ requires-python = ">=3.8.1,<4"
 
 [project.optional-dependencies]
 checks = [
-  "black>=23,<24",
-  "flake8>=6,<7",
-  "isort>=5,<6",
   "mypy==1.8.0",
+  "ruff>=0.1,<0.2",
 ]
 docs = [
   "mkdocs-material>=9,<10",
@@ -113,16 +111,15 @@ path = ".venv"
 
 [tool.hatch.envs.default.scripts]
 check = [
-  "black --check --diff .",
-  "isort --check --diff .",
-  "flake8 --extend-exclude=.venv,bin,build,cache,dist,lib --max-line-length=88",
+  "ruff check",
+  "ruff format --check",
   "mypy",
   "npx -s -y prettier@'^2' . --check",
   "npx -s -y cspell --dot --gitignore *.md **/*.md",
 ]
 format = [
-  "black .",
-  "isort .",
+  "ruff check --fix",
+  "ruff format",
   "npx -s -y prettier@'^2' . --write",
 ]
 
@@ -149,10 +146,6 @@ path = ".venv"
 [tool.hatch.version]
 path = "inboard/__init__.py"
 
-[tool.isort]
-profile = "black"
-src_paths = ["inboard", "tests"]
-
 [tool.mypy]
 files = ["**/*.py"]
 plugins = "pydantic.mypy"
@@ -163,3 +156,13 @@ strict = true
 addopts = "-q"
 minversion = "6.0"
 testpaths = ["tests"]
+
+[tool.ruff]
+extend-select = ["I"]
+src = ["inboard", "tests"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint.isort]
+known-first-party = ["inboard", "tests"]
