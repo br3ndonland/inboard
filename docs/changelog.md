@@ -2,6 +2,60 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.65.0 - 2024-01-13
+
+### Changes
+
+**Update to FastAPI 0.109 and Starlette 0.35** (b68b991)
+
+This release will update/upgrade to
+[FastAPI 0.109](https://fastapi.tiangolo.com/release-notes/)
+and
+[Starlette 0.35](https://www.starlette.io/release-notes/).
+This is a minor release to align with FastAPI and Starlette versioning.
+FastAPI 0.109 adds Python 3.12 support. Changes to Starlette between
+0.32 and 0.35 include support for middleware in `Router`, `Route`, and
+`WebSocketRoute`, and updates to `Middleware` args.
+
+**Use Ruff for linting and formatting** (#99, 35e37a7)
+
+[Ruff](https://docs.astral.sh/ruff/) is a Python linter and formatter
+that has gained popularity due to its high performance and numerous
+capabilities. Now that Ruff has released its
+[first minor version series](https://astral.sh/blog/ruff-v0.1.0) (0.1)
+and has a [versioning policy](https://docs.astral.sh/ruff/versioning/),
+it's a good time to consider adopting it.
+
+As of this release, the project's Python linting and formatting checks
+will be migrated from the previous tools (Black, Flake8, isort) to Ruff.
+See br3ndonland/inboard#99 for further details.
+
+### Commits
+
+-   Bump version from 0.64.0 to 0.65.0 (ca0a10b)
+-   Update to FastAPI 0.109 and Starlette 0.35 (b68b991)
+-   Use Ruff for linting and formatting (#99) (35e37a7)
+-   Add "pypa" to CSpell words (696c43d)
+-   Add references on syncing dependencies with Hatch (1e9512a)
+-   Update Docker links in docs (e3ad60b)
+-   Avoid `metadata-generation-failed` in Dockerfiles (a231b11)
+-   Add wheel build target to avoid Hatch `ValueError` (c1328ee)
+-   Update to `pipx==1.4.1` (f902387)
+-   Update changelog for version 0.64.0 (#97) (78adc33)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2024-01-13 21:22:20 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQN0NsHI0NRGFnLFF3MDZW5nez8ULCLwCIs+Eq+ipQz6tDvcHfSnRp4Fqo5S7m+4WiB
+1dSCVYc/TnXiM0rgZrPgI=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.64.0 - 2023-12-30
 
 ### Changes
