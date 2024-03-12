@@ -1,5 +1,59 @@
 # Changelog
 
+## 0.66.0 - 2024-03-11
+
+### Changes
+
+**Update to FastAPI 0.110 and Starlette 0.36** (dfa4822)
+
+This release will update/upgrade to
+[FastAPI 0.110](https://fastapi.tiangolo.com/release-notes/)
+and
+[Starlette 0.36](https://www.starlette.io/release-notes/).
+This is a minor release to align with FastAPI and Starlette versioning.
+
+FastAPI 0.110 makes a change to dependencies with `yield` and `except`.
+Dependencies must now raise exceptions after `except`, like this:
+
+```py
+def my_dep():
+    try:
+        yield
+    except SomeException:
+        raise
+```
+
+This change addresses memory leak issues and may be a breaking change in
+some projects if dependencies with `yield` and `except` used `pass`
+instead of `raise`. See the
+[FastAPI docs](https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/)
+for further info.
+
+Changes to Starlette between 0.35 and 0.36 include exception handling
+updates and AnyIO compatibility updates. Note that FastAPI updated the
+Starlette minor version from 0.35 to 0.36 in the 0.109.2 patch release.
+
+### Commits
+
+- Bump version from 0.65.0 to 0.66.0 (ae160a0)
+- Update to FastAPI 0.110 and Starlette 0.36 (dfa4822)
+- Update to `peter-evans/create-pull-request@v5` (2f9b88f)
+- Update to `actions/checkout@v4` (8d888d0)
+- Update changelog for version 0.65.0 (#100) (8725661)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2024-03-11 20:49:50 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQL32WdiYCJC7uWy4e0Dgpl8E9aqQz+pDZTAY2BeUFt1fFi3m8A9wQEXasq7ypEosw1
+SIp2yAPLd0+Bl5Fl7LMAw=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.65.0 - 2024-01-13
 
 ### Changes
