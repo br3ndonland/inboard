@@ -24,4 +24,5 @@ jobs:
       - uses: github/codeql-action/init@v3
         with:
           languages: python
+          setup-python-dependencies: false
       - uses: github/codeql-action/analyze@v3
