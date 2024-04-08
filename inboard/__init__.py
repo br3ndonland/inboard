@@ -4,6 +4,7 @@ Docker images and utilities to power your Python APIs and help you ship faster.
 
 https://github.com/br3ndonland/inboard
 """
+
 # FastAPI and Starlette are optional, and will raise ImportErrors if not installed.
 try:
     from .app.utilities_fastapi import basic_auth as fastapi_basic_auth
