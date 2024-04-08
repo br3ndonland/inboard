@@ -8,7 +8,7 @@ LABEL org.opencontainers.image.source="https://github.com/br3ndonland/inboard"
 LABEL org.opencontainers.image.title="inboard"
 LABEL org.opencontainers.image.url="https://github.com/br3ndonland/inboard/pkgs/container/inboard"
 ARG \
-  HATCH_VERSION=1.7.0 \
+  HATCH_VERSION=1.9.4 \
   LINUX_VERSION \
   PIPX_VERSION=1.5.0
 ENV \
