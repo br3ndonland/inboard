@@ -11,7 +11,7 @@ env:
   DOCKER_BUILDKIT: "1"
   HATCH_ENV: "ci"
   HATCH_VERSION: "1.9.1"
-  PIPX_VERSION: "1.4.1"
+  PIPX_VERSION: "1.5.0"
 
 jobs:
   python:
