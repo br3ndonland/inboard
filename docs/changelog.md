@@ -2,6 +2,118 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.66.1 - 2024-04-09
+
+### Changes
+
+**Publish to PyPI with OIDC trusted publisher** (59ec546)
+
+This release will update Python package publishing to the newest format
+recommended by PyPI. This project previously published packages with the
+`hatch publish` command and a project-scoped PyPI API token (token only
+valid for this project) stored in GitHub Secrets. The project will now
+publish packages using a
+[PyPI OIDC](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-pypi)
+(OpenID Connect)
+[trusted publisher](https://docs.pypi.org/trusted-publishers/) with the
+[pypa/gh-action-pypi-publish](https://github.com/pypa/gh-action-pypi-publish)
+action. This is the method that Hatch itself uses (pypa/hatch#891)
+(Hatch does not "dogfood" its own `hatch publish` feature).
+
+The advantage to OIDC is that authentication is performed with temporary
+API tokens (only valid for 15 minutes) instead of persistent tokens that
+must be manually generated on PyPI and pasted into GitHub Secrets. The
+disadvantage is that authentication is more complicated.
+
+To use PyPI OIDC, a
+[trusted publisher](https://docs.pypi.org/trusted-publishers/) was set
+up for the PyPI project. Next, a dedicated
+[GitHub Actions deployment environment](https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment)
+was created for PyPI with protection rules that only allow use of the
+environment with Git tags. The environment protection rules combine with
+tag protection rules in the existing
+[GitHub rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets)
+to ensure PyPI packages can only be published if a maintainer triggers a
+workflow run with a Git tag ref.
+
+The GitHub Actions workflow will be updated to use the deployment
+environment. Deployment environments must be selected at the job level
+before the job begins, so a setup job will be added that selects the
+appropriate deployment environment and passes it to the PyPI job.
+Each use of a deployment environment creates a deployment that can be
+either active or inactive. GitHub Actions auto-inactivates deployments,
+and although this behavior is not configurable or documented, there are
+some possible workarounds/hacks suggested by a community discussion
+[comment](https://github.com/orgs/community/discussions/67982#discussioncomment-7086962).
+The workaround used here will be to provide each deployment with its own
+unique URL.
+
+To publish the Python package to PyPI, `hatch build` will output package
+build files to the `dist/` directory, then pypa/gh-action-pypi-publish
+will authenticate and upload the files. pypa/gh-action-pypi-publish
+provides exact version tags like pypa/gh-action-pypi-publish@v1.8.14 and
+branches for major and minor version numbers like
+pypa/gh-action-pypi-publish@release/v1.8.
+
+**Update to FastAPI 0.110.1 and Starlette 0.37.2** (73eaadd)
+
+This release will update/upgrade to
+[FastAPI 0.110.1](https://fastapi.tiangolo.com/release-notes/)
+and
+[Starlette 0.37.2](https://www.starlette.io/release-notes/).
+FastAPI 0.110 makes a change to dependencies with `yield` and `except`.
+Dependencies must now raise exceptions after `except`. This change is
+intended to address memory leak issues and may be a breaking change in
+some projects if dependencies with `yield` and `except` used `pass`
+instead of `raise`. See the
+[FastAPI docs](https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/)
+for further info. FastAPI 0.110.1 makes a small type annotation change
+to the `Depends` dependency class.
+
+Starlette 0.37 modifies the exception handling behavior of the `Config`
+class used for application settings. The `Config` class accepts an
+`env_file` arg that can be used to load environment variables from a
+"dotenv" (`.env`) file. Previously, if the file was not found, the
+`Config` class would silently pass without any exception. In 0.36, the
+`Config` class was updated to raise a `FileNotFoundError` exception if
+`env_file` was not not found. This was a breaking change but was not
+documented as such (encode/starlette#2422, encode/starlette#2446).
+In 0.37, the exception handling behavior has been changed again to raise
+a warning instead of an exception (encode/starlette#2485), which could
+also be a breaking change if users had rewritten their code to catch the
+`FileNotFoundError`.
+See the [fastenv docs](https://fastenv.bws.bio/comparisons#starlette)
+for a detailed description of the Starlette `Config` class. Note that
+FastAPI updated the Starlette minor version from 0.36 to 0.37 in the
+0.110.1 patch release.
+
+### Commits
+
+-   Bump version from 0.66.0 to 0.66.1 (474c722)
+-   Publish to PyPI with OIDC trusted publisher (59ec546)
+-   Update to `peter-evans/create-pull-request@v6` (5b499a3)
+-   Update to Ruff 0.3 (e42213c)
+-   Update to `mypy==1.9.0` (1cd64a7)
+-   Update to `hatch==1.9.4` (38a4e58)
+-   Update to `pipx==1.5.0` (8dfb90b)
+-   Update to FastAPI 0.110.1 and Starlette 0.37.2 (73eaadd)
+-   Disable CodeQL `setup-python-dependencies` (507c68c)
+-   Update to Node.js 20 actions (6972c7b)
+-   Update changelog for version 0.66.0 (#102) (7f4ff4e)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2024-04-09 05:58:15 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQKS6kAq3o+Spoc+d2rYpLAJVY67L7NYQNGlSzlkn5ZRyvwlJxgmvBxrpvs0BSh7O5a
+FqS78jcq4EBq+uUpo+xg8=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.66.0 - 2024-03-11
 
 ### Changes
