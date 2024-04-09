@@ -6,6 +6,11 @@ on:
     branches: [develop, main]
     tags: ["[0-9]+.[0-9]+.[0-9]+*"]
   workflow_dispatch:
+    inputs:
+      environment:
+        description: GitHub Actions deployment environment
+        required: false
+        type: environment
 
 env:
   DOCKER_BUILDKIT: "1"
@@ -14,8 +19,39 @@ env:
   PIPX_VERSION: "1.5.0"
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      environment-name: ${{ steps.set-env.outputs.environment-name }}
+      environment-url: ${{ steps.set-env.outputs.environment-url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set GitHub Actions deployment environment
+        id: set-env
+        run: |
+          if ${{ github.event_name == 'workflow_dispatch' }}; then
+            environment_name=${{ inputs.environment }}
+          elif ${{ github.ref_type == 'tag' }}; then
+            environment_name="PyPI"
+          else
+            environment_name=""
+          fi
+          timestamp="$(date -Iseconds)"
+          url="https://api.github.com/repos/${{ github.repository }}/deployments"
+          environment_url="$url?timestamp=$timestamp"
+          echo "environment-name=$environment_name" >>"$GITHUB_OUTPUT"
+          echo "environment-url=$environment_url" >>"$GITHUB_OUTPUT"
+      - name: Create annotation for deployment environment
+        if: steps.set-env.outputs.environment-name != ''
+        run: echo "::notice::Deployment environment ${{ steps.set-env.outputs.environment-name }}"
   python:
     runs-on: ubuntu-latest
+    needs: [setup]
+    environment:
+      name: ${{ needs.setup.outputs.environment-name }}
+      url: ${{ needs.setup.outputs.environment-url }}&python=${{ matrix.python-version }}
+    permissions:
+      id-token: write
     strategy:
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
@@ -77,11 +113,14 @@ jobs:
       - name: Build Python package
         run: hatch build
       - name: Publish Python package to PyPI
-        if: github.ref_type == 'tag' && matrix.python-version == '3.11'
-        run: hatch publish -n -u __token__ -a ${{ secrets.PYPI_TOKEN }}
+        if: >
+          github.ref_type == 'tag' &&
+          matrix.python-version == '3.11' &&
+          needs.setup.outputs.environment-name == 'PyPI'
+        uses: pypa/gh-action-pypi-publish@release/v1.8
   docker:
     runs-on: ubuntu-latest
-    needs: [python]
+    needs: [setup, python]
     strategy:
       fail-fast: false
       matrix:
@@ -316,7 +355,7 @@ jobs:
           done
   changelog:
     if: github.ref_type == 'tag'
-    needs: [python, docker]
+    needs: [setup, python, docker]
     permissions:
       contents: write
       pull-requests: write
