@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-ARG PYTHON_VERSION=3.11 LINUX_VERSION=
+ARG PYTHON_VERSION=3.12 LINUX_VERSION=
 FROM python:${PYTHON_VERSION}${LINUX_VERSION:+-$LINUX_VERSION} AS builder
 LABEL org.opencontainers.image.authors="Brendon Smith <bws@bws.bio>"
 LABEL org.opencontainers.image.description="Docker images and utilities to power your Python APIs and help you ship faster."

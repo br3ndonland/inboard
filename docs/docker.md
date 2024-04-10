@@ -20,24 +20,24 @@ Please see [inboard Git tags](https://github.com/br3ndonland/inboard/tags), [inb
     docker pull ghcr.io/br3ndonland/inboard:starlette
 
     # Pull image from specific release
-    docker pull ghcr.io/br3ndonland/inboard:0.38.0-fastapi
+    docker pull ghcr.io/br3ndonland/inboard:0.67.0-fastapi
 
     # Pull image from latest minor version release (new in inboard 0.22.0)
-    docker pull ghcr.io/br3ndonland/inboard:0.38-fastapi
+    docker pull ghcr.io/br3ndonland/inboard:0.67-fastapi
 
     # Pull image with specific Python version
-    docker pull ghcr.io/br3ndonland/inboard:fastapi-python3.11
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-python3.12
 
     # Pull image from latest minor release and with specific Python version
-    docker pull ghcr.io/br3ndonland/inboard:0.38-fastapi-python3.11
+    docker pull ghcr.io/br3ndonland/inboard:0.67-fastapi-python3.12
 
     # Append `-alpine` to image tags for Alpine Linux (new in inboard 0.11.0)
     docker pull ghcr.io/br3ndonland/inboard:latest-alpine
-    docker pull ghcr.io/br3ndonland/inboard:0.38-fastapi-alpine
+    docker pull ghcr.io/br3ndonland/inboard:0.67-fastapi-alpine
 
     # Append `-slim` to any of the above for Debian slim (new in inboard 0.11.0)
     docker pull ghcr.io/br3ndonland/inboard:latest-slim
-    docker pull ghcr.io/br3ndonland/inboard:0.38-fastapi-slim
+    docker pull ghcr.io/br3ndonland/inboard:0.67-fastapi-slim
     ```
 
 ## Use images in a _Dockerfile_
