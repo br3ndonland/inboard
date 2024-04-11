@@ -1,5 +1,50 @@
 # Changelog
 
+## 0.67.1 - 2024-04-11
+
+### Changes
+
+**Fix Docker tags for specific Debian version** (e84fc8b24817acb3c8b7e0a96c4574ddb0f88d7d)
+
+PR br3ndonland/inboard#105 and
+commit br3ndonland/inboard@6a99cd09f04c000167432970b044b23623df887a
+introduced support for specifying the Debian version when building
+Docker images, ensuring that the version does not change unexpectedly.
+This change altered Docker tag syntax by adding the Debian version
+release name (currently "bookworm") to all Debian Docker images.
+For example, `ghcr.io/br3ndonland/inboard:latest` became
+`ghcr.io/br3ndonland/inboard:latest-bookworm`. inboard is not planning
+to support multiple Debian versions simultaneously. inboard will update
+to the next Debian version, Debian 13 ("trixie") when it is stable and
+will provide a new release after the update. This means there is no need
+to add the Debian version release name to the Docker tags.
+
+This commit will update the code in the GitHub Actions workflow job and
+Dockerfile to match the previous tag syntax. The latest Debian image
+will return to `ghcr.io/br3ndonland/inboard:latest` and the latest
+Debian slim image to `ghcr.io/br3ndonland/inboard:latest-slim`.
+Syntax for Alpine Docker images remains unaltered, so tags like
+`ghcr.io/br3ndonland/inboard:latest-alpine` are still valid.
+
+### Commits
+
+- Bump version from 0.67.0 to 0.67.1 (2bfe218)
+- Fix Docker tags for specific Debian version (#105) (e84fc8b)
+- Update changelog for version 0.67.0 (#106) (1d20b7d)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2024-04-11 19:04:37 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQNksE9FyAppa86DBR/C92TCqCQkLpz4YZhv8tF8tK9scQYhVWEEVZZXSHv68VA7fUR
+uLpz3hNjvEzj/vuD3/lwo=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.67.0 - 2024-04-11
 
 ### Changes
