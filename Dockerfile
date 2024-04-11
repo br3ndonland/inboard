@@ -27,7 +27,7 @@ RUN <<HEREDOC
 if [ "$ID" = "alpine" ]; then
   apk add --no-cache --virtual .build-deps \
     gcc libc-dev libffi-dev make openssl-dev
-elif [ "$LINUX_VERSION" = "slim" ]; then
+elif [ "${LINUX_VERSION%%-*}" = "slim" ]; then
   apt-get update -qy
   apt-get install -qy --no-install-recommends \
     gcc libc-dev make wget
@@ -46,7 +46,7 @@ hatch env create base
 . /etc/os-release
 if [ "$ID" = "alpine" ]; then
   apk del .build-deps
-elif [ "$LINUX_VERSION" = "slim" ]; then
+elif [ "${LINUX_VERSION%%-*}" = "slim" ]; then
   apt-get purge --auto-remove -qy \
     gcc libc-dev make wget
 fi
@@ -59,7 +59,7 @@ hatch env create fastapi
 . /etc/os-release
 if [ "$ID" = "alpine" ]; then
   apk del .build-deps
-elif [ "$LINUX_VERSION" = "slim" ]; then
+elif [ "${LINUX_VERSION%%-*}" = "slim" ]; then
   apt-get purge --auto-remove -qy \
     gcc libc-dev make wget
 fi
@@ -72,7 +72,7 @@ hatch env create starlette
 . /etc/os-release
 if [ "$ID" = "alpine" ]; then
   apk del .build-deps
-elif [ "$LINUX_VERSION" = "slim" ]; then
+elif [ "${LINUX_VERSION%%-*}" = "slim" ]; then
   apt-get purge --auto-remove -qy \
     gcc libc-dev make wget
 fi

@@ -136,7 +136,9 @@ jobs:
         id: setup
         run: |
           LINUX_VERSION=${{ matrix.linux-version }}
-          LINUX_TAG=${LINUX_VERSION:+-$LINUX_VERSION}
+          linux_version_without_debian_release_name="${LINUX_VERSION/bookworm/}"
+          linux_tag="${linux_version_without_debian_release_name%-}"
+          LINUX_TAG="${linux_tag:+-$linux_tag}"
           PYTHON_VERSION=${{ matrix.python-version }}
           PYTHON_TAG="-python$PYTHON_VERSION"
           echo "LINUX_VERSION=$LINUX_VERSION" >> $GITHUB_ENV
