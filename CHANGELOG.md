@@ -1,5 +1,81 @@
 # Changelog
 
+## 0.67.0 - 2024-04-11
+
+### Changes
+
+**Specify Debian version** (#105, 6a99cd09f04c000167432970b044b23623df887a)
+
+On 2023-06-14, Docker updated the default Debian Linux version in its
+Python official images from Debian bullseye to Debian bookworm
+([docker-library/official-images#14854](https://github.com/docker-library/official-images/pull/14854)).
+As inboard uses the default Debian Linux version from the Docker Python
+official images, this meant that the next release of inboard
+(0.50.0 - 2023-06-22) automatically updated to bookworm. There were some
+[issues](https://github.com/docker-library/python/issues?q=bookworm)
+noted by the community after this update. This was noted in inboard
+[0.51.0 - 2023-07-09](https://inboard.bws.bio/changelog#0510-2023-07-09).
+Thanks to @bodograumann for pointing this out in the related discussion
+([br3ndonland/inboard#80](https://github.com/br3ndonland/inboard/discussions/80)).
+
+inboard will now specify the Debian version when building Docker images,
+ensuring that the version does not change unexpectedly.
+The current Debian version is still Debian 12 ("bookworm").
+The next Debian version, Debian 13 ("trixie") does not have a release
+date yet, but inboard will update to trixie when it is stable and will
+provide a new release after the update.
+
+**Add support for Python 3.12** (#104, ba83a67cafe94b9ce5c2306dfaad0f29c346b2f1)
+
+This release will add
+[Python 3.12](https://docs.python.org/3/whatsnew/3.12.html)
+support to inboard.
+
+- inboard will now run tests with Python 3.12, in addition to 3.8-3.11
+- inboard will now build and publish its PyPI package using Python 3.12
+- inboard will now include a Python 3.12 classifier in its PyPI package
+- inboard will now ship Docker images running Python 3.12, in addition
+  to 3.8-3.11, and Docker images tagged with `latest` will now use 3.12
+
+Related projects that have released support for Python 3.12 include:
+
+- AnyIO ([4.0.0 - 2023-08-30](https://github.com/agronholm/anyio/releases/tag/4.0.0))
+- FastAPI ([0.109.0 - 2024-01-11](https://github.com/tiangolo/fastapi/releases/tag/0.109.0))
+- Hatch ([1.8.0 - 2023-12-11](https://github.com/pypa/hatch/releases/tag/hatch-v1.8.0))
+- `pipx` ([1.3.0 - 2023-12-02](https://github.com/pypa/pipx/releases/tag/1.3.0))
+- Starlette ([0.31.0 - 2023-07-24](https://github.com/encode/starlette/releases/tag/0.31.0))
+- Uvicorn ([0.24.0 - 2023-11-04](https://github.com/encode/uvicorn/releases/tag/0.24.0))
+
+Related projects that have not released support for Python 3.12 include:
+
+- [Gunicorn](https://github.com/benoitc/gunicorn) (has not released
+  Python 3.12 support, but is testing with Python 3.12 in development)
+- [Pydantic](https://github.com/pydantic/pydantic) (extent of Python
+  3.12 support unclear, see
+  [pydantic/pydantic#6704](https://github.com/pydantic/pydantic/discussions/6704))
+
+### Commits
+
+- Bump version from 0.66.1 to 0.67.0 (325ed9b)
+- Update to pytest 8 (c462c90)
+- Specify Debian version (#105) (6a99cd0)
+- Add support for Python 3.12 (#104) (ba83a67)
+- Fix GitHub Actions badge in README (145313e)
+- Update changelog for version 0.66.1 (#103) (552ebaa)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2024-04-11 17:41:05 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQPlwcflQF/+WkcLYUk8CqDwrV9hDWCGSluKZTJ2rmw2SbU30RriTdumN1dX53rF4rb
+vKEZhZfa5UOLGcq9vz3AU=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.66.1 - 2024-04-09
 
 ### Changes
