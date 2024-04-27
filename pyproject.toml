@@ -23,7 +23,7 @@ classifiers = [
 ]
 dependencies = [
   "gunicorn==22.0.0",
-  "uvicorn==0.25.0",
+  "uvicorn==0.28.1",
 ]
 description = "Docker images and utilities to power your Python APIs and help you ship faster."
 dynamic = ["version"]
@@ -60,7 +60,7 @@ uvicorn-fast = [
   "websockets>=10.4",
 ]
 uvicorn-standard = [
-  "uvicorn[standard]==0.25.0",
+  "uvicorn[standard]==0.28.1",
 ]
 
 [project.urls]
