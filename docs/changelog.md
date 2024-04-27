@@ -2,6 +2,65 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.68.0 - 2024-04-26
+
+### Changes
+
+**Update to Uvicorn 0.28.1** (6166a668d9019fc90adc5f268041f9bc1dd6df43)
+
+This release will update/upgrade to Uvicorn 0.28.1.
+[Changes](https://github.com/encode/uvicorn/compare/0.25.0...0.28.1)
+to Uvicorn between 0.25.0 and 0.28.1 include updates to `root_path`/
+`--root-path` to comply with the ASGI spec, and fixes to `Keep-Alive`
+behavior to avoid timeouts and `h11.LocalProtocolError` exceptions that
+occur when processing pipelined requests.
+
+**Update to Gunicorn 22.0.0** (#108,
+bf4661ed83f09db7bf4dcb95ff0cedced14f92c4)
+
+This release will update/upgrade to
+[Gunicorn 22.0.0](https://docs.gunicorn.org/en/stable/news.html).
+Gunicorn 22.0.0 resolves a high-severity security vulnerability
+([CVE-2024-1135](https://nvd.nist.gov/vuln/detail/CVE-2024-1135),
+[GHSA-w3h3-4rj7-4ph4](https://github.com/advisories/GHSA-w3h3-4rj7-4ph4)):
+
+> Gunicorn fails to properly validate Transfer-Encoding headers, leading
+> to HTTP Request Smuggling (HRS) vulnerabilities. By crafting requests
+> with conflicting Transfer-Encoding headers, attackers can bypass
+> security restrictions and access restricted endpoints. This issue is
+> due to Gunicorn's handling of Transfer-Encoding headers, where it
+> incorrectly processes requests with multiple, conflicting
+> Transfer-Encoding headers, treating them as chunked regardless of the
+> final encoding specified. This vulnerability has been shown to allow
+> access to endpoints restricted by gunicorn. This issue has been
+> addressed in version 22.0.0.
+>
+> To be affected users must have a network path which does not filter
+> out invalid requests. These users are advised to block access to
+> restricted endpoints via a firewall or other mechanism if they are
+> unable to update.
+
+### Commits
+
+-   Bump version from 0.67.1 to 0.68.0 (3fc1f79)
+-   Quote `&` in GitHub Actions workflow YAML (0043237)
+-   Update to Uvicorn 0.28.1 (6166a66)
+-   Bump gunicorn from 21.2.0 to 22.0.0 (#108) (bf4661e)
+-   Update changelog for version 0.67.1 (#107) (9579bba)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2024-04-26 22:11:28 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQP3RzZnd8mb0DehzvdJSKrJPWcFzhL2yz6SOt3vPRmB5ZifcG29/9gAovSbvGxa8EC
+sSlxWxflkAIp2n05yk2QE=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.67.1 - 2024-04-11
 
 ### Changes
