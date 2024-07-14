@@ -39,7 +39,7 @@ COPY --link inboard /app/inboard
 ENTRYPOINT ["python"]
 CMD ["-m", "inboard.start"]
 
-FROM builder as base
+FROM builder AS base
 ENV APP_MODULE=inboard.app.main_base:app
 RUN <<HEREDOC
 hatch env create base
