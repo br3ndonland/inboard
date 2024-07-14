@@ -2,6 +2,38 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
 
+## 0.69.0 - 2024-07-14
+
+### Changes
+
+This release will update/upgrade to
+[FastAPI 0.111](https://fastapi.tiangolo.com/release-notes/).
+This is a minor release to align with FastAPI versioning.
+
+FastAPI 0.111.0 adds a `fastapi` CLI that is not relevant to inboard.
+FastAPI 0.111.1 removes `orjson` and `ujson` from default dependencies.
+Users who depend on `orjson` or `ujson` should add these dependencies to
+their requirements files.
+
+### Commits
+
+-   Bump version from 0.68.0 to 0.69.0 (af06254)
+-   Update to FastAPI 0.111 (5f9ee0a)
+-   Update changelog for version 0.68.0 (#109) (2416a23)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2024-07-14 14:40:56 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQKl8MnPlFZ51cBAk7RA5zd42Ggi6JwHyuV1G+l1m28l2naB1ZeG0Ubr/lGXqejiMku
+9lg73rNFFOXlrLkM4A4Ag=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.68.0 - 2024-04-26
 
 ### Changes
