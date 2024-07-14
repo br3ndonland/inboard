@@ -149,7 +149,7 @@ docker build . --rm --target starlette -t localhost/br3ndonland/inboard:starlett
 # Run Docker container with Uvicorn and reloading
 cd inboard
 
-docker run -d -p 80:80 \
+docker run -d -p 80:80 --platform linux/amd64 \
   -e "BASIC_AUTH_USERNAME=test_user" \
   -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
   -e "LOG_LEVEL=debug" \
@@ -157,7 +157,7 @@ docker run -d -p 80:80 \
   -e "WITH_RELOAD=true" \
   -v $(pwd)/inboard:/app/inboard localhost/br3ndonland/inboard:base
 
-docker run -d -p 80:80 \
+docker run -d -p 80:80 --platform linux/amd64 \
   -e "BASIC_AUTH_USERNAME=test_user" \
   -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
   -e "LOG_LEVEL=debug" \
@@ -165,7 +165,7 @@ docker run -d -p 80:80 \
   -e "WITH_RELOAD=true" \
   -v $(pwd)/inboard:/app/inboard localhost/br3ndonland/inboard:fastapi
 
-docker run -d -p 80:80 \
+docker run -d -p 80:80 --platform linux/amd64 \
   -e "BASIC_AUTH_USERNAME=test_user" \
   -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
   -e "LOG_LEVEL=debug" \
@@ -174,15 +174,15 @@ docker run -d -p 80:80 \
   -v $(pwd)/inboard:/app/inboard localhost/br3ndonland/inboard:starlette
 
 # Run Docker container with Gunicorn and Uvicorn
-docker run -d -p 80:80 \
+docker run -d -p 80:80 --platform linux/amd64 \
   -e "BASIC_AUTH_USERNAME=test_user" \
   -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
   localhost/br3ndonland/inboard:base
-docker run -d -p 80:80 \
+docker run -d -p 80:80 --platform linux/amd64 \
   -e "BASIC_AUTH_USERNAME=test_user" \
   -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
   localhost/br3ndonland/inboard:fastapi
-docker run -d -p 80:80 \
+docker run -d -p 80:80 --platform linux/amd64 \
   -e "BASIC_AUTH_USERNAME=test_user" \
   -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
   localhost/br3ndonland/inboard:starlette

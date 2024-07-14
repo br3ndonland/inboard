@@ -31,7 +31,7 @@ _Why use this project?_ You might want to try out inboard because it:
 
 ```sh
 docker pull ghcr.io/br3ndonland/inboard
-docker run -d -p 80:80 ghcr.io/br3ndonland/inboard
+docker run -d -p 80:80 --platform linux/amd64 ghcr.io/br3ndonland/inboard
 http :80  # HTTPie: https://httpie.io/
 ```
 

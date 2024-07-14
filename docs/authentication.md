@@ -57,7 +57,7 @@ Server:
 
 ```sh
 docker pull ghcr.io/br3ndonland/inboard
-docker run -d -p 80:80 \
+docker run -d -p 80:80 --platform linux/amd64 \
   -e "BASIC_AUTH_USERNAME=test_user" \
   -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
   ghcr.io/br3ndonland/inboard

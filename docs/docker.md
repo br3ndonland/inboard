@@ -232,24 +232,28 @@ The image could then be built with:
 
 ```sh
 cd /path/to/repo
-docker build . -t imagename:latest
+docker build --platform linux/amd64 -t imagename:latest .
 ```
 
-The final argument is the Docker image name (`imagename` in this example). Replace with your image name.
+Replace `imagename` with your image name.
+
+!!! info "Docker platforms"
+
+    [Docker supports multiple platforms](https://docs.docker.com/build/building/multi-platform/) (combinations of operating system and CPU architecture) that can be supplied to the Docker CLI with the `--platform` argument. inboard currently only builds for the `linux/amd64` platform, also known as `x86_64`. See [containerd/platforms](https://github.com/containerd/platforms) and [opencontainers/image-spec](https://github.com/opencontainers/image-spec/blob/036563a4a268d7c08b51a08f05a02a0fe74c7268/specs-go/v1/descriptor.go#L52-L72) for more details on available platforms.
 
 ## Run containers
 
 Run container:
 
 ```sh
-docker run -d -p 80:80 imagename
+docker run -d -p 80:80 --platform linux/amd64 imagename
 ```
 
 Run container with mounted volume and Uvicorn reloading for development:
 
 ```sh
 cd /path/to/repo
-docker run -d -p 80:80 \
+docker run -d -p 80:80 --platform linux/amd64 \
   -e "LOG_LEVEL=debug" -e "PROCESS_MANAGER=uvicorn" -e "WITH_RELOAD=true" \
   -v $(pwd)/package:/app/package imagename
 ```
