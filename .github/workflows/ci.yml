@@ -36,9 +36,14 @@ jobs:
           else
             environment_name=""
           fi
-          timestamp="$(date -Iseconds)"
-          url="https://api.github.com/repos/${{ github.repository }}/deployments"
-          environment_url="$url?timestamp=$timestamp"
+          if [ "$environment_name" = "PyPI" ]; then
+            url="https://pypi.org/project/${GITHUB_REPOSITORY##*/}/"
+            environment_url="$url$GITHUB_REF_NAME/"
+          else
+            timestamp="$(date -Iseconds)"
+            url="https://api.github.com/repos/$GITHUB_REPOSITORY/deployments"
+            environment_url="$url?timestamp=$timestamp"
+          fi
           echo "environment-name=$environment_name" >>"$GITHUB_OUTPUT"
           echo "environment-url=$environment_url" >>"$GITHUB_OUTPUT"
       - name: Create annotation for deployment environment
@@ -47,11 +52,6 @@ jobs:
   python:
     runs-on: ubuntu-latest
     needs: [setup]
-    environment:
-      name: ${{ needs.setup.outputs.environment-name }}
-      url: ${{ format('{0}&python={1}', needs.setup.outputs.environment-url, matrix.python-version) }}
-    permissions:
-      id-token: write
     strategy:
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
@@ -112,12 +112,16 @@ jobs:
         run: hatch run ${{ env.HATCH_ENV }}:coverage report
       - name: Build Python package
         run: hatch build
-      - name: Publish Python package to PyPI
+      - name: Upload Python package artifacts
         if: >
           github.ref_type == 'tag' &&
           matrix.python-version == '3.12' &&
           needs.setup.outputs.environment-name == 'PyPI'
-        uses: pypa/gh-action-pypi-publish@release/v1.8
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: error
+          name: inboard-${{ github.ref_name }}
+          path: dist
   docker:
     runs-on: ubuntu-latest
     needs: [setup, python]
@@ -355,9 +359,27 @@ jobs:
             docker push ghcr.io/br3ndonland/inboard:"$GIT_TAG-starlette$PYTHON_TAG$LINUX_TAG"
             docker push ghcr.io/br3ndonland/inboard:"$GIT_TAG-fastapi$PYTHON_TAG$LINUX_TAG"
           done
+  pypi:
+    environment:
+      name: ${{ needs.setup.outputs.environment-name }}
+      url: ${{ needs.setup.outputs.environment-url }}
+    if: github.ref_type == 'tag' && needs.setup.outputs.environment-name == 'PyPI'
+    needs: [setup, python, docker]
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Python package artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          name: inboard-${{ github.ref_name }}
+          path: dist
+      - name: Publish Python package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1.8
   changelog:
     if: github.ref_type == 'tag'
-    needs: [setup, python, docker]
+    needs: [setup, python, docker, pypi]
     permissions:
       contents: write
       pull-requests: write
