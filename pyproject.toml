@@ -36,7 +36,7 @@ requires-python = ">=3.8.1,<4"
 [project.optional-dependencies]
 checks = [
   "mypy==1.9.0",
-  "ruff>=0.3,<0.4",
+  "ruff>=0.5,<0.6",
 ]
 docs = [
   "mkdocs-material>=9,<10",
