@@ -24,11 +24,13 @@ jobs:
     outputs:
       environment-name: ${{ steps.set-env.outputs.environment-name }}
       environment-url: ${{ steps.set-env.outputs.environment-url }}
+      repo-name: ${{ steps.set-env.outputs.repo-name }}
     steps:
       - uses: actions/checkout@v4
       - name: Set GitHub Actions deployment environment
         id: set-env
         run: |
+          repo_name=${GITHUB_REPOSITORY##*/}
           if ${{ github.event_name == 'workflow_dispatch' }}; then
             environment_name=${{ inputs.environment }}
           elif ${{ github.ref_type == 'tag' }}; then
@@ -37,7 +39,7 @@ jobs:
             environment_name=""
           fi
           if [ "$environment_name" = "PyPI" ]; then
-            url="https://pypi.org/project/${GITHUB_REPOSITORY##*/}/"
+            url="https://pypi.org/project/$repo_name/"
             environment_url="$url$GITHUB_REF_NAME/"
           else
             timestamp="$(date -Iseconds)"
@@ -46,6 +48,7 @@ jobs:
           fi
           echo "environment-name=$environment_name" >>"$GITHUB_OUTPUT"
           echo "environment-url=$environment_url" >>"$GITHUB_OUTPUT"
+          echo "repo-name=$repo_name" >>"$GITHUB_OUTPUT"
       - name: Create annotation for deployment environment
         if: steps.set-env.outputs.environment-name != ''
         run: echo "::notice::Deployment environment ${{ steps.set-env.outputs.environment-name }}"
@@ -120,7 +123,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
-          name: inboard-${{ github.ref_name }}
+          name: ${{ needs.setup.outputs.repo-name }}-${{ github.ref_name }}
           path: dist
   docker:
     runs-on: ubuntu-latest
@@ -373,7 +376,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
-          name: inboard-${{ github.ref_name }}
+          name: ${{ needs.setup.outputs.repo-name }}-${{ github.ref_name }}
           path: dist
       - name: Publish Python package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1.8
@@ -396,7 +399,7 @@ jobs:
 
           echo '# Changelog
 
-          [View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
+          [View on GitHub](https://github.com/${{github.repository}}/blob/HEAD/CHANGELOG.md)
           ' >docs/changelog.md
 
           GIT_LOG_FORMAT='## %(subject) - %(taggerdate:short)
