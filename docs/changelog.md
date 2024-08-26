@@ -1,6 +1,84 @@
 # Changelog
 
-[View on GitHub](https://github.com/br3ndonland/inboard/blob/develop/CHANGELOG.md)
+[View on GitHub](https://github.com/br3ndonland/inboard/blob/HEAD/CHANGELOG.md)
+
+## 0.70.0 - 2024-08-26
+
+### Changes
+
+**Update to FastAPI 0.112 and Starlette 0.38**
+(b4cf65de8bbda51447cd30033b6c52d51b418d79)
+
+This release will update/upgrade to
+[FastAPI 0.112](https://fastapi.tiangolo.com/release-notes/)
+and
+[Starlette 0.38](https://www.starlette.io/release-notes/).
+This is a minor release to align with FastAPI and Starlette versioning.
+
+FastAPI 0.112 moves dependencies for the FastAPI CLI introduced in 0.111
+to an optional extra, `fastapi[standard]`. Although the FastAPI release
+notes consider this a breaking change, the FastAPI CLI was not used by
+inboard, so FastAPI 0.112 will likely not be breaking for inboard users.
+
+Starlette 0.38 makes various small changes, including removal of support
+for an ASGI extension called
+[path send](https://asgi.readthedocs.io/en/latest/extensions.html#path-send)
+(aka "path-send" or `pathsend`) that was introduced in Starlette 0.36.
+Support was removed because of issues with `BaseHTTPMiddleware`, though
+note that `BaseHTTPMiddleware` may eventually be deprecated
+([encode/starlette#2160](https://github.com/encode/starlette/discussions/2160),
+[encode/starlette#2654](https://github.com/encode/starlette/discussions/2654)).
+The Starlette release notes do not list this as a breaking change, but
+it could be breaking for users who have started working with path send.
+Note that FastAPI updated the Starlette minor version to allow 0.38 in
+the 0.112.1 patch release.
+
+**Use dedicated GitHub Actions job for PyPI**
+(08044c6034346b745f4a210cef928c7114497e78,
+180d353a9487afd003aa630ed14a24f4065b451f)
+
+This project uses pypa/gh-action-pypi-publish to publish Python packages
+to PyPI with an
+[OIDC trusted publisher](https://docs.pypi.org/trusted-publishers/)
+(59ec546cb39ea05cf8ac37c5f7fdbf8ac6bb289d).
+
+pypa/gh-action-pypi-publish is set up as a
+[Docker action](https://docs.github.com/en/actions/creating-actions/creating-a-docker-container-action)
+referencing its Dockerfile. The downside to using the Dockerfile for
+the action is that the Docker image must be built every time the action
+is used. This will hopefully change in the near future if Docker images
+are built and pushed to a registry (pypa/gh-action-pypi-publish#230).
+In the meantime, PyPI steps steps will be moved to a dedicated GitHub
+Actions job so that the Docker image is not built every time GitHub
+Actions jobs run.
+
+### Commits
+
+-   Bump version from 0.69.0 to 0.70.0 (01835ec)
+-   Update to FastAPI 0.112 and Starlette 0.38 (b4cf65d)
+-   Don't hard-code repo name in GitHub Actions jobs (180d353)
+-   Use dedicated GitHub Actions job for PyPI (08044c6)
+-   Update to `hatch==1.12.0` (f950d28)
+-   Update to `pipx==1.6.0` (8066be3)
+-   Update to `mypy==1.10.1` (08ba81a)
+-   Update to Ruff 0.5 (101fdb3)
+-   Update to Prettier 3 (67ee89d)
+-   Add `--platform` to Docker CLI examples in docs (dd3a53c)
+-   Fix Docker `FromAsCasing` warning (49914dd)
+-   Update changelog for version 0.69.0 (#110) (294e8c8)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2024-08-26 18:33:23 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQPqh0hb15zIfbXTdfFeM+AvzAeSakCjVg5z4IuCJN7kk1iViRXO3quKYJlmQNZJbGC
+gvCeG2qt49XexAso2TOQE=
+-----END SSH SIGNATURE-----
+```
 
 ## 0.69.0 - 2024-07-14
 
