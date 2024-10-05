@@ -1,5 +1,71 @@
 # Changelog
 
+## 0.71.0 - 2024-10-05
+
+### Changes
+
+**Update to FastAPI 0.115** (ee33487a8d750e4953fea5da89328b25c95aff40)
+
+This release will update/upgrade from FastAPI 0.112 to
+[FastAPI 0.115](https://fastapi.tiangolo.com/release-notes/).
+FastAPI 0.113, 0.114, and 0.115 are included in the same inboard release
+because the updates in each release are all similar.
+
+FastAPI 0.113-0.115 enable cookies, form fields, headers, and query
+parameters to be declared with Pydantic models. Query parameters, for
+example, have been
+[supported](https://fastapi.tiangolo.com/tutorial/query-params-str-validations/)
+for many versions now, but application developers usually had to encode
+them as "kwargs" (keyword arguments) in every API endpoint function,
+resulting in code duplication and the need for custom logic. Now that
+[query parameter models](https://fastapi.tiangolo.com/tutorial/query-param-models/)
+are supported, models can be declared once and reused multiple times.
+
+There are still gaps here - although FastAPI now supports reusing query
+parameters, it does not provide features for helping API endpoint
+functions work with those query parameters. Query parameters are
+often used to set up filter and sort clauses for relational databases.
+The construction of `SELECT` statements from these query parameters is
+still left up to application developers. The related package
+[SQLModel](https://github.com/fastapi/sqlmodel), while it does combine
+Pydantic and SQLAlchemy models, does not provide features for `SELECT`
+statement construction at this time either. Other third-party packages
+like [fastapi-filters](https://github.com/uriyyo/fastapi-filters) may be
+helpful.
+
+**Drop Python 3.8 support**
+(df6885d72b2d73e5226398eb61bb27592d0026f1,
+7ac105f85befb14d6a9cf0a03ee6c602c585e308)
+
+Python 3.8 is at [end-of-life](https://devguide.python.org/versions/).
+This release will drop support for Python 3.8. This could be a breaking
+change for users still running 3.8, so those users should consider
+updating to 3.9 or above.
+
+### Commits
+
+- Bump version from 0.70.0 to 0.71.0 (3cb5b60)
+- Upgrade syntax after dropping Python 3.8 (7ac105f)
+- Update to FastAPI 0.115 (ee33487)
+- Drop Python 3.8 support (df6885d)
+- Update to Ruff 0.6 (af5bae1)
+- Update to `mypy==1.11.2` (99bac5a)
+- Update to `pipx==1.7.1` (f74e09b)
+- Update changelog for version 0.70.0 (#111) (97d2d04)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2024-10-05 15:21:56 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQBKosxKPNQIPKxRK5ckfzKJlYu+UXIDgXZbFnZYWxG/E2OLu0koAltC0THPleLDFga
+S0DohWIVQ3jMB02NRBQww=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.70.0 - 2024-08-26
 
 ### Changes
