@@ -73,7 +73,7 @@ The _pyproject.toml_ could look like this:
     license = "MIT"
     name = "package-name"
     readme = "README.md"
-    requires-python = ">=3.8.1,<4"
+    requires-python = ">=3.9,<4"
 
     [project.optional-dependencies]
     checks = [

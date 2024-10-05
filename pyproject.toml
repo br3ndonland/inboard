@@ -8,7 +8,6 @@ classifiers = [
   "Framework :: FastAPI",
   "Natural Language :: English",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -31,7 +30,7 @@ keywords = ["asgi", "docker", "fastapi", "gunicorn", "uvicorn"]
 license = "MIT"
 name = "inboard"
 readme = "README.md"
-requires-python = ">=3.8.1,<4"
+requires-python = ">=3.9,<4"
 
 [project.optional-dependencies]
 checks = [
