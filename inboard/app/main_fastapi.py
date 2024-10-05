@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import Optional
+from typing import Annotated, Optional
 
 from fastapi import Depends, FastAPI, status
 from fastapi.middleware import Middleware
@@ -8,11 +8,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from inboard.app.utilities_fastapi import basic_auth as fastapi_basic_auth
-
-if sys.version_info < (3, 9):  # pragma: no cover
-    from typing_extensions import Annotated
-else:  # pragma: no cover
-    from typing import Annotated
 
 BasicAuth = Annotated[str, Depends(fastapi_basic_auth)]
 origin_regex = r"^(https?:\/\/)(localhost|([\w\.]+\.)?br3ndon.land)(:[0-9]+)?$"

@@ -41,7 +41,7 @@ def set_app_module(logger: logging.Logger = logging.getLogger()) -> str:
         app_module = os.getenv("APP_MODULE") or os.getenv("UVICORN_APP")
         if not app_module:
             raise ValueError("Please set the APP_MODULE environment variable")
-        if not importlib.util.find_spec((module := app_module.split(sep=":")[0])):
+        if not importlib.util.find_spec(module := app_module.split(sep=":")[0]):
             raise ImportError(f"Unable to find or import {module}")
         logger.debug(f"App module set to {app_module}.")
         return app_module

@@ -1,14 +1,9 @@
 import os
 import secrets
-import sys
+from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-
-if sys.version_info < (3, 9):  # pragma: no cover
-    from typing_extensions import Annotated
-else:  # pragma: no cover
-    from typing import Annotated
 
 HTTPBasicCredentialsDependency = Annotated[HTTPBasicCredentials, Depends(HTTPBasic())]
 

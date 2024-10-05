@@ -5,8 +5,9 @@ from typing import TYPE_CHECKING, TypedDict
 if TYPE_CHECKING:
     import sys
     from asyncio import Protocol
+    from collections.abc import Sequence
     from os import PathLike
-    from typing import Any, Literal, Sequence, Type
+    from typing import Any, Literal
 
     if sys.version_info < (3, 11):
         from typing_extensions import Required
@@ -106,8 +107,8 @@ class UvicornOptions(TypedDict, total=False):
     uds: str | None
     fd: int | None
     loop: LoopSetupType
-    http: Type[Protocol] | HTTPProtocolType
-    ws: Type[Protocol] | WSProtocolType
+    http: type[Protocol] | HTTPProtocolType
+    ws: type[Protocol] | WSProtocolType
     ws_max_queue: int
     ws_max_size: int
     ws_ping_interval: float | None

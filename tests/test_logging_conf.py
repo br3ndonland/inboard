@@ -84,7 +84,7 @@ class TestConfigureLogging:
         logger.error.assert_called_once_with(
             f"{logger_error_msg}: ImportError {import_error_msg}."
         )
-        with open(incorrect_logging_conf, "r") as f:
+        with open(incorrect_logging_conf) as f:
             contents = f.read()
             assert "This file doesn't have the correct extension" in contents
 
