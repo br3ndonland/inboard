@@ -193,7 +193,7 @@ class TestSetGunicornOptions:
         assert result == [
             "gunicorn",
             "-k",
-            "uvicorn.workers.UvicornWorker",
+            "inboard.gunicorn_workers.UvicornWorker",
             "-c",
             gunicorn_conf_path,
             app_module,
@@ -216,7 +216,7 @@ class TestSetGunicornOptions:
         assert result == [
             "gunicorn",
             "-k",
-            "uvicorn.workers.UvicornWorker",
+            "inboard.gunicorn_workers.UvicornWorker",
             "-c",
             str(gunicorn_conf_tmp_file_path),
             app_module,
@@ -445,7 +445,7 @@ class TestStartServer:
             [
                 "gunicorn",
                 "-k",
-                "uvicorn.workers.UvicornWorker",
+                "inboard.gunicorn_workers.UvicornWorker",
                 "-c",
                 gunicorn_conf_path,
                 app_module,
@@ -492,7 +492,7 @@ class TestStartServer:
             [
                 "gunicorn",
                 "-k",
-                "uvicorn.workers.UvicornWorker",
+                "inboard.gunicorn_workers.UvicornWorker",
                 "-c",
                 str(gunicorn_conf_tmp_file_path),
                 app_module,
