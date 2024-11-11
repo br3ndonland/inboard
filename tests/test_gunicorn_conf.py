@@ -94,7 +94,7 @@ class TestGunicornSettings:
             "-c",
             gunicorn_conf_path,
             "-k",
-            "uvicorn.workers.UvicornWorker",
+            "inboard.gunicorn_workers.UvicornWorker",
             app_module,
         ]
         subprocess.run(gunicorn_options)
@@ -138,7 +138,7 @@ class TestGunicornSettings:
             "-c",
             gunicorn_conf_path,
             "-k",
-            "uvicorn.workers.UvicornWorker",
+            "inboard.gunicorn_workers.UvicornWorker",
             app_module,
         ]
         subprocess.run(gunicorn_options)
