@@ -379,7 +379,7 @@ jobs:
           name: ${{ needs.setup.outputs.repo-name }}-${{ github.ref_name }}
           path: dist
       - name: Publish Python package to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1.8
+        uses: pypa/gh-action-pypi-publish@fb13cb306901256ace3dab689990e13a5550ffaa
   changelog:
     if: github.ref_type == 'tag'
     needs: [setup, python, docker, pypi]
