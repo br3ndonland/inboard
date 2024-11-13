@@ -2,6 +2,83 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/HEAD/CHANGELOG.md)
 
+## 0.71.1 - 2024-11-13
+
+### Changes
+
+**Update to `pypa/gh-action-pypi-publish` 1.11**
+(eaa41e3b06729e34f8439879a65e72f8aacbce09)
+
+After this update,
+[PEP 740 attestations](https://peps.python.org/pep-0740/)
+will be added automatically when publishing packages to PyPI.
+This release will also switch to referencing the action by the exact
+commit ID (Git SHA) for stability and security.
+
+For background on the updated OIDC Trusted Publishing workflow, see
+[br3ndonland/inboard@59ec546](https://github.com/br3ndonland/inboard/commit/59ec546),
+[br3ndonland/inboard@08044c6](https://github.com/br3ndonland/inboard/commit/08044c6),
+[pypa/gh-action-pypi-publish@v1.11.0](https://github.com/pypa/gh-action-pypi-publish/releases/tag/v1.11.0),
+and the [PyPI docs](https://docs.pypi.org/trusted-publishers/).
+
+**Update to FastAPI 0.115.5 and Starlette 0.41**
+(1bde85a8387820b5ae8635fec73d5093d2517096)
+
+This release will update/upgrade to
+[FastAPI 0.115.5](https://fastapi.tiangolo.com/release-notes/)
+and
+[Starlette 0.41](https://www.starlette.io/release-notes/). inboard was
+already on FastAPI 0.115, so this is a patch release to align with
+FastAPI versioning.
+
+FastAPI 0.115.3 updated Starlette to `"starlette>=0.40.0,<0.42.0"`.
+Changes to Starlette between 0.39 and 0.41 include a fix for a DoS
+(Denial of Service) security vulnerability released in Starlette 0.40.0
+([GHSA-f96h-pmfr-66vw](https://github.com/encode/starlette/security/advisories/GHSA-f96h-pmfr-66vw)).
+
+FastAPI has been repeatedly updating the minor version of Starlette in
+patch releases of FastAPI. Previously, inboard pinned FastAPI to the
+minor version (like `"fastapi>=0.115,<0.116"`), allowing patch version
+updates whenever the inboard project was installed. Unfortunately, it
+can result in version incompatibilities when FastAPI updates the
+Starlette minor version unexpectedly like this. For example, the inboard
+`pyproject.toml` previously specified `"fastapi>=0.115,<0.116"` and
+`"starlette>=0.37.2,<0.39.0"`. With the release of FastAPI 0.115.3,
+those two version specifiers are incompatible.
+
+It would be simpler if FastAPI released a minor version each time it
+updated the minor version of Starlette. As a stopgap, this release will
+pin the FastAPI version exactly (`"fastapi==0.115.5"`) so the versions
+of FastAPI and Starlette do not become unexpectedly incompatible. This
+of course means inboard will need to provide updates to FastAPI more
+frequently (for patch releases instead of for minor releases). As
+usual, the lack of attention to release practices in the open source
+community means more maintenance work for the inboard maintainer.
+
+### Commits
+
+-   Bump version from 0.71.0 to 0.71.1 (1a123f7)
+-   Align Prettier versions (461ca62)
+-   Update to `pypa/gh-action-pypi-publish` 1.11 (eaa41e3)
+-   Update to Hatch 1.13.0 and Hatchling 1.26 (d846eba)
+-   Update to Ruff 0.7 (317e7f9)
+-   Update to `mypy==1.13.0` (49181da)
+-   Update to FastAPI 0.115.5 and Starlette 0.41 (1bde85a)
+-   Update changelog for version 0.71.0 (#112) (351f19c)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2024-11-13 15:53:36 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQJYs2xmbdQQ22veajFiiCII+zt76+NGjV8S7pAXM4KD+72JV7zESl8edCsSh6khQ6Q
+7cDNK2Lb/Ko7YynY88rAY=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.71.0 - 2024-10-05
 
 ### Changes
