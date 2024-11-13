@@ -421,7 +421,7 @@ jobs:
           sed -Ei "$ESCAPE_DUNDERS" CHANGELOG.md
           sed -Ei "$ESCAPE_DUNDERS" docs/changelog.md
       - name: Format changelog with Prettier
-        run: npx -s -y prettier@'^2' --write CHANGELOG.md docs/changelog.md
+        run: npx -s -y prettier@'^3' --write CHANGELOG.md docs/changelog.md
       - name: Create pull request with updated changelog
         uses: peter-evans/create-pull-request@v6
         with:
