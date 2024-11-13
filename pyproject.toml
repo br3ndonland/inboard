@@ -1,6 +1,6 @@
 [build-system]
 build-backend = "hatchling.build"
-requires = ["hatchling<1.22"]
+requires = ["hatchling>1.22,<2"]
 
 [project]
 authors = [{email = "bws@bws.bio", name = "Brendon Smith"}]

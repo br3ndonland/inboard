@@ -15,7 +15,7 @@ on:
 env:
   DOCKER_BUILDKIT: "1"
   HATCH_ENV: "ci"
-  HATCH_VERSION: "1.12.0"
+  HATCH_VERSION: "1.13.0"
   PIPX_VERSION: "1.7.1"
 
 jobs:
