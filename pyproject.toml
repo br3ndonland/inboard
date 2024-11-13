@@ -41,10 +41,10 @@ docs = [
   "mkdocs-material>=9,<10",
 ]
 fastapi = [
-  "fastapi>=0.115,<0.116",
+  "fastapi==0.115.5",
 ]
 starlette = [
-  "starlette>=0.37.2,<0.39.0",
+  "starlette>=0.40.0,<0.42.0",
 ]
 tests = [
   "coverage[toml]>=7,<8",
