@@ -22,9 +22,10 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 `APP_MODULE`/`UVICORN_APP`
 
--   Python module with app instance.
--   Default: The appropriate app module from inboard.
--   Custom: For a module at `/app/package/custom/module.py` and app instance object `api`, either `APP_MODULE` (like `APP_MODULE="package.custom.module:api"`) or `UVICORN_APP` (like `UVICORN_APP="package.custom.module:api"`, _new in inboard 0.62_)
+<!-- prettier-ignore -->
+- Python module with app instance.
+- Default: The appropriate app module from inboard.
+- Custom: For a module at `/app/package/custom/module.py` and app instance object `api`, either `APP_MODULE` (like `APP_MODULE="package.custom.module:api"`) or `UVICORN_APP` (like `UVICORN_APP="package.custom.module:api"`, _new in inboard 0.62_)
 
     !!! example "Example of a custom FastAPI app module"
 
@@ -45,14 +46,15 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 `PRE_START_PATH`
 
--   Path to a pre-start script.
-    -   inboard optionally runs a pre-start script before starting the server. The path to a pre-start script can be specified with the environment variable `PRE_START_PATH`. If the environment variable is set to a nonzero value, inboard will run the script at the provided path, using the [`subprocess`](https://docs.python.org/3/library/subprocess.html) standard library package.
-    -   If the pre-start script exits with an error, inboard will not start the server.
--   Default: `"/app/inboard/prestart.py"` (provided with inboard)
--   Custom:
+<!-- prettier-ignore -->
+- Path to a pre-start script.
+    - inboard optionally runs a pre-start script before starting the server. The path to a pre-start script can be specified with the environment variable `PRE_START_PATH`. If the environment variable is set to a nonzero value, inboard will run the script at the provided path, using the [`subprocess`](https://docs.python.org/3/library/subprocess.html) standard library package.
+    - If the pre-start script exits with an error, inboard will not start the server.
+- Default: `"/app/inboard/prestart.py"` (provided with inboard)
+- Custom:
 
-    -   `PRE_START_PATH="/app/package/custom_script.sh"`
-    -   `PRE_START_PATH= ` (set to an empty value) to disable
+    - `PRE_START_PATH="/app/package/custom_script.sh"`
+    - `PRE_START_PATH= ` (set to an empty value) to disable
 
     !!! tip
 
@@ -60,9 +62,9 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 [`PYTHONPATH`](https://docs.python.org/3/using/cmdline.html#envvar-PYTHONPATH)
 
--   Python's search path for module files.
--   Default: `PYTHONPATH="/app"`
--   Custom: `PYTHONPATH="/app/custom"`
+- Python's search path for module files.
+- Default: `PYTHONPATH="/app"`
+- Custom: `PYTHONPATH="/app/custom"`
 
 ## Gunicorn
 
@@ -70,12 +72,12 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 `GUNICORN_CONF`
 
--   Path to a [Gunicorn configuration file](https://docs.gunicorn.org/en/latest/settings.html#config-file). Gunicorn accepts either file paths or module paths.
--   Default:
-    -   `"python:inboard.gunicorn_conf"` (provided with inboard)
--   Custom:
-    -   `GUNICORN_CONF="/app/package/custom_gunicorn_conf.py"` (file path)
-    -   `GUNICORN_CONF="python:package.custom_gunicorn_conf"` (module paths accepted with the `python:` prefix)
+- Path to a [Gunicorn configuration file](https://docs.gunicorn.org/en/latest/settings.html#config-file). Gunicorn accepts either file paths or module paths.
+- Default:
+    - `"python:inboard.gunicorn_conf"` (provided with inboard)
+- Custom:
+    - `GUNICORN_CONF="/app/package/custom_gunicorn_conf.py"` (file path)
+    - `GUNICORN_CONF="python:package.custom_gunicorn_conf"` (module paths accepted with the `python:` prefix)
 
 ### Process management
 
@@ -85,15 +87,15 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 `PROCESS_MANAGER`
 
--   Manager for Uvicorn worker processes.
--   Default: `"gunicorn"` (run Uvicorn with Gunicorn as the process manager)
--   Custom: `"uvicorn"` (run Uvicorn alone for local development)
+- Manager for Uvicorn worker processes.
+- Default: `"gunicorn"` (run Uvicorn with Gunicorn as the process manager)
+- Custom: `"uvicorn"` (run Uvicorn alone for local development)
 
 [`WORKER_CLASS`](https://docs.gunicorn.org/en/latest/settings.html#worker-processes)
 
--   Uvicorn worker class for Gunicorn to use.
--   Default: `uvicorn.workers.UvicornWorker`
--   Custom: For the [alternate Uvicorn worker](https://www.uvicorn.org/deployment/), `WORKER_CLASS="uvicorn.workers.UvicornH11Worker"` _(the H11 worker is provided for [PyPy](https://www.pypy.org/) and hasn't been tested)_
+- Uvicorn worker class for Gunicorn to use.
+- Default: `uvicorn.workers.UvicornWorker`
+- Custom: For the [alternate Uvicorn worker](https://www.uvicorn.org/deployment/), `WORKER_CLASS="uvicorn.workers.UvicornH11Worker"` _(the H11 worker is provided for [PyPy](https://www.pypy.org/) and hasn't been tested)_
 
 ### Worker process calculation
 
@@ -103,24 +105,25 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 `MAX_WORKERS`
 
--   Maximum number of workers, independent of number of CPU cores.
--   Default: not set (unlimited)
--   Custom: `MAX_WORKERS="24"`
+- Maximum number of workers, independent of number of CPU cores.
+- Default: not set (unlimited)
+- Custom: `MAX_WORKERS="24"`
 
 `WEB_CONCURRENCY`
 
--   Total number of workers, independent of number of CPU cores.
--   Default: not set
--   Custom: `WEB_CONCURRENCY="4"`
+- Total number of workers, independent of number of CPU cores.
+- Default: not set
+- Custom: `WEB_CONCURRENCY="4"`
 
 `WORKERS_PER_CORE`
 
--   Number of Gunicorn workers per CPU core. Overridden if `WEB_CONCURRENCY` is set.
--   Default: 1
--   Custom:
+<!-- prettier-ignore -->
+- Number of Gunicorn workers per CPU core. Overridden if `WEB_CONCURRENCY` is set.
+- Default: 1
+- Custom:
 
-    -   `WORKERS_PER_CORE="2"`: Run 2 worker processes per core (8 worker processes on a server with 4 cores).
-    -   `WORKERS_PER_CORE="0.5"` (floating point values permitted): Run 1 worker process for every 2 cores (2 worker processes on a server with 4 cores).
+    - `WORKERS_PER_CORE="2"`: Run 2 worker processes per core (8 worker processes on a server with 4 cores).
+    - `WORKERS_PER_CORE="0.5"` (floating point values permitted): Run 1 worker process for every 2 cores (2 worker processes on a server with 4 cores).
 
     !!! note
 
@@ -132,48 +135,48 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 [`GRACEFUL_TIMEOUT`](https://docs.gunicorn.org/en/stable/settings.html#graceful-timeout)
 
--   Number of seconds to wait for workers to finish serving requests before restart.
--   Default: `"120"`
--   Custom: `GRACEFUL_TIMEOUT="20"`
+- Number of seconds to wait for workers to finish serving requests before restart.
+- Default: `"120"`
+- Custom: `GRACEFUL_TIMEOUT="20"`
 
 [`TIMEOUT`](https://docs.gunicorn.org/en/stable/settings.html#timeout)
 
--   Workers silent for more than this many seconds are killed and restarted.
--   Default: `"120"`
--   Custom: `TIMEOUT="20"`
+- Workers silent for more than this many seconds are killed and restarted.
+- Default: `"120"`
+- Custom: `TIMEOUT="20"`
 
 [`KEEP_ALIVE`](https://docs.gunicorn.org/en/stable/settings.html#keepalive)
 
--   Number of seconds to wait for workers to finish serving requests on a Keep-Alive connection.
--   Default: `"5"`
--   Custom: `KEEP_ALIVE="20"`
+- Number of seconds to wait for workers to finish serving requests on a Keep-Alive connection.
+- Default: `"5"`
+- Custom: `KEEP_ALIVE="20"`
 
 ### Host networking
 
 `HOST`
 
--   Host IP address (inside of the container) where Gunicorn will listen for requests.
--   Default: `"0.0.0.0"`
--   Custom: n/a
+- Host IP address (inside of the container) where Gunicorn will listen for requests.
+- Default: `"0.0.0.0"`
+- Custom: n/a
 
 `PORT`
 
--   Port the container should listen on.
--   Default: `"80"`
--   Custom: `PORT="8080"`
+- Port the container should listen on.
+- Default: `"80"`
+- Custom: `PORT="8080"`
 
 [`BIND`](https://docs.gunicorn.org/en/latest/settings.html#server-socket)
 
--   The actual host and port passed to Gunicorn.
--   Default: `HOST:PORT` (`"0.0.0.0:80"`)
--   Custom: `BIND="0.0.0.0:8080"` (if custom `BIND` is set, overrides `HOST` and `PORT`)
+- The actual host and port passed to Gunicorn.
+- Default: `HOST:PORT` (`"0.0.0.0:80"`)
+- Custom: `BIND="0.0.0.0:8080"` (if custom `BIND` is set, overrides `HOST` and `PORT`)
 
 ### Runtime configuration
 
 `GUNICORN_CMD_ARGS`
 
--   Additional [command-line arguments for Gunicorn](https://docs.gunicorn.org/en/stable/settings.html). Gunicorn looks for the `GUNICORN_CMD_ARGS` environment variable automatically, and gives these settings precedence over other environment variables and Gunicorn config files.
--   Custom: To use a custom TLS certificate, copy or mount the certificate and private key into the Docker image, and set [`--keyfile` and `--certfile`](http://docs.gunicorn.org/en/latest/settings.html#ssl) to the location of the files.
+- Additional [command-line arguments for Gunicorn](https://docs.gunicorn.org/en/stable/settings.html). Gunicorn looks for the `GUNICORN_CMD_ARGS` environment variable automatically, and gives these settings precedence over other environment variables and Gunicorn config files.
+- Custom: To use a custom TLS certificate, copy or mount the certificate and private key into the Docker image, and set [`--keyfile` and `--certfile`](http://docs.gunicorn.org/en/latest/settings.html#ssl) to the location of the files.
 
     ```sh
     CERTS="--keyfile=/secrets/key.pem --certfile=/secrets/cert.pem"
@@ -192,9 +195,10 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 `WITH_RELOAD`
 
--   Configure the [Uvicorn auto-reload setting](https://www.uvicorn.org/settings/).
--   Default: `"false"` (don't auto-reload when files change)
--   Custom: `"true"` (watch files and auto-reload when files change).
+<!-- prettier-ignore -->
+- Configure the [Uvicorn auto-reload setting](https://www.uvicorn.org/settings/).
+- Default: `"false"` (don't auto-reload when files change)
+- Custom: `"true"` (watch files and auto-reload when files change).
 
     !!! note
 
@@ -202,13 +206,14 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 `RELOAD_DIRS` _(new in inboard 0.7)_
 
--   Directories and files to watch for changes, formatted as comma-separated string.
--   Default: watch all directories under project root.
--   Custom:
+<!-- prettier-ignore -->
+- Directories and files to watch for changes, formatted as comma-separated string.
+- Default: watch all directories under project root.
+- Custom:
 
-    -   `"inboard"` (one directory)
-    -   `"inboard, tests"` (two directories)
-    -   `"inboard, tests, Dockerfile"` (two directories and a file) _(watching non-Python files requires `watchfiles`, installed with the `inboard[uvicorn-standard]` extra)_
+    - `"inboard"` (one directory)
+    - `"inboard, tests"` (two directories)
+    - `"inboard, tests, Dockerfile"` (two directories and a file) _(watching non-Python files requires `watchfiles`, installed with the `inboard[uvicorn-standard]` extra)_
 
     !!! note
 
@@ -218,9 +223,10 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 `RELOAD_DELAY` _(new in inboard 0.11)_
 
--   Floating point value specifying the time, in seconds, to wait before reloading files.
--   Default: not set (the value is set by `uvicorn.config.Config`)
--   Custom: `"0.5"`
+<!-- prettier-ignore -->
+- Floating point value specifying the time, in seconds, to wait before reloading files.
+- Default: not set (the value is set by `uvicorn.config.Config`)
+- Custom: `"0.5"`
 
     !!! note
 
@@ -229,9 +235,10 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 `RELOAD_EXCLUDES` _(new in inboard 0.11)_
 
--   Glob pattern indicating files to exclude when watching for changes, formatted as comma-separated string.
--   Default: not set (the value is set by `uvicorn.config.Config`)
--   Custom: `"*[Dd]ockerfile"` _(watching non-Python files requires `watchfiles`, installed with the `inboard[uvicorn-standard]` extra)_
+<!-- prettier-ignore -->
+- Glob pattern indicating files to exclude when watching for changes, formatted as comma-separated string.
+- Default: not set (the value is set by `uvicorn.config.Config`)
+- Custom: `"*[Dd]ockerfile"` _(watching non-Python files requires `watchfiles`, installed with the `inboard[uvicorn-standard]` extra)_
 
     !!! note
 
@@ -241,9 +248,10 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 `RELOAD_INCLUDES` _(new in inboard 0.11)_
 
--   Glob pattern indicating files to include when watching for changes, formatted as comma-separated string.
--   Default: not set (the value is set by `uvicorn.config.Config`)
--   Custom: `"*.py, *.md"` _(watching non-Python files requires `watchfiles`, installed with the `inboard[uvicorn-standard]` extra)_
+<!-- prettier-ignore -->
+- Glob pattern indicating files to include when watching for changes, formatted as comma-separated string.
+- Default: not set (the value is set by `uvicorn.config.Config`)
+- Custom: `"*.py, *.md"` _(watching non-Python files requires `watchfiles`, installed with the `inboard[uvicorn-standard]` extra)_
 
     !!! note
 
@@ -253,14 +261,14 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 `UVICORN_APP` _(new in inboard 0.62)_
 
--   `UVICORN_APP` can be used interchangeably with `APP_MODULE`.
--   See the [general section](#general) for further details.
+- `UVICORN_APP` can be used interchangeably with `APP_MODULE`.
+- See the [general section](#general) for further details.
 
 `UVICORN_CONFIG_OPTIONS` _(advanced usage, new in inboard 0.11)_
 
--   JSON-formatted string containing arguments to pass directly to Uvicorn.
--   Default: not set
--   Custom: `UVICORN_CONFIG_OPTIONS='{"reload": true, "reload_delay": null}'`
+- JSON-formatted string containing arguments to pass directly to Uvicorn.
+- Default: not set
+- Custom: `UVICORN_CONFIG_OPTIONS='{"reload": true, "reload_delay": null}'`
 
 The idea here is to allow a catch-all Uvicorn config variable in the spirit of `GUNICORN_CMD_ARGS`, so that advanced users can specify the full range of Uvicorn options even if inboard has not directly implemented them. The `inboard.start` module will run the `UVICORN_CONFIG_OPTIONS` environment variable value through `json.loads()`, and then pass the resultant dictionary through to Uvicorn. If the same option is set with an individual environment variable (such as `WITH_RELOAD`) and with a JSON value in `UVICORN_CONFIG_OPTIONS`, the JSON value will take precedence.
 
@@ -297,42 +305,43 @@ The idea here is to allow a catch-all Uvicorn config variable in the spirit of `
 
 `LOGGING_CONF`
 
--   Python module containing a logging [configuration dictionary object](https://docs.python.org/3/library/logging.config.html) named `LOGGING_CONFIG`. Can be either a module path (`inboard.logging_conf`) or a file path (`/app/inboard/logging_conf.py`). The `LOGGING_CONFIG` dictionary will be loaded and passed to [`logging.config.dictConfig()`](https://docs.python.org/3/library/logging.config.html).
--   Default: `"inboard.logging_conf"` (the default module provided with inboard)
--   Custom: For a logging config module at `/app/package/custom_logging.py`, `LOGGING_CONF="package.custom_logging"` or `LOGGING_CONF="/app/package/custom_logging.py"`.
+- Python module containing a logging [configuration dictionary object](https://docs.python.org/3/library/logging.config.html) named `LOGGING_CONFIG`. Can be either a module path (`inboard.logging_conf`) or a file path (`/app/inboard/logging_conf.py`). The `LOGGING_CONFIG` dictionary will be loaded and passed to [`logging.config.dictConfig()`](https://docs.python.org/3/library/logging.config.html).
+- Default: `"inboard.logging_conf"` (the default module provided with inboard)
+- Custom: For a logging config module at `/app/package/custom_logging.py`, `LOGGING_CONF="package.custom_logging"` or `LOGGING_CONF="/app/package/custom_logging.py"`.
 
 `LOG_COLORS`
 
--   Whether or not to color log messages. Currently only supported for `LOG_FORMAT="uvicorn"`.
--   Default:
-    -   Auto-detected based on [`sys.stdout.isatty()`](https://docs.python.org/3/library/sys.html#sys.stdout).
--   Custom:
-    -   `LOG_COLORS="true"`
-    -   `LOG_COLORS="false"`
+- Whether or not to color log messages. Currently only supported for `LOG_FORMAT="uvicorn"`.
+- Default:
+    - Auto-detected based on [`sys.stdout.isatty()`](https://docs.python.org/3/library/sys.html#sys.stdout).
+- Custom:
+    - `LOG_COLORS="true"`
+    - `LOG_COLORS="false"`
 
 `LOG_FILTERS`
 
--   Comma-separated string identifying log records to filter out. The string will be split on commas and converted to a set. Each log message will then be checked for each filter in the set. If any matches are present in the log message, the logger will not log that message.
--   Default: `None` (don't filter out any log records, just log every record)
--   Custom: `LOG_FILTERS="/health, /heartbeat"` (filter out log messages that contain either the string `"/health"` or the string `"/heartbeat"`, to avoid logging health checks)
--   See also:
-    -   [AWS Builders' Library: Implementing health checks](https://aws.amazon.com/builders-library/implementing-health-checks/)
-    -   [AWS Elastic Load Balancing docs: Target groups - Health checks for your target groups](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html)
-    -   [benoitc/gunicorn#1781](https://github.com/benoitc/gunicorn/issues/1781)
-    -   [Python 3 docs: How-To - Logging Cookbook - Using Filters to impart contextual information](https://docs.python.org/3/howto/logging-cookbook.html#using-filters-to-impart-contextual-information)
-    -   [Python 3 docs: What's new in Python 3.2 - logging](https://docs.python.org/3/whatsnew/3.2.html#logging)
-    -   [Django 4.0 docs: Topics - Logging](https://docs.djangoproject.com/en/4.0/topics/logging/)
+- Comma-separated string identifying log records to filter out. The string will be split on commas and converted to a set. Each log message will then be checked for each filter in the set. If any matches are present in the log message, the logger will not log that message.
+- Default: `None` (don't filter out any log records, just log every record)
+- Custom: `LOG_FILTERS="/health, /heartbeat"` (filter out log messages that contain either the string `"/health"` or the string `"/heartbeat"`, to avoid logging health checks)
+- See also:
+    - [AWS Builders' Library: Implementing health checks](https://aws.amazon.com/builders-library/implementing-health-checks/)
+    - [AWS Elastic Load Balancing docs: Target groups - Health checks for your target groups](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html)
+    - [benoitc/gunicorn#1781](https://github.com/benoitc/gunicorn/issues/1781)
+    - [Python 3 docs: How-To - Logging Cookbook - Using Filters to impart contextual information](https://docs.python.org/3/howto/logging-cookbook.html#using-filters-to-impart-contextual-information)
+    - [Python 3 docs: What's new in Python 3.2 - logging](https://docs.python.org/3/whatsnew/3.2.html#logging)
+    - [Django 4.0 docs: Topics - Logging](https://docs.djangoproject.com/en/4.0/topics/logging/)
 
 `LOG_FORMAT`
 
--   [Python logging format](https://docs.python.org/3/library/logging.html#formatter-objects).
--   Default:
-    -   `"simple"`: Simply the log level and message.
--   Custom:
+<!-- prettier-ignore -->
+- [Python logging format](https://docs.python.org/3/library/logging.html#formatter-objects).
+- Default:
+    - `"simple"`: Simply the log level and message.
+- Custom:
 
-    -   `"verbose"`: The most informative format, with the first 80 characters providing metadata, and the remainder supplying the log message.
-    -   `"gunicorn"`: Gunicorn's default format.
-    -   `"uvicorn"`: Uvicorn's default format, similar to `simple`, with support for `LOG_COLORS`. Note that Uvicorn's `access` formatter is not supported here, because it frequently throws errors related to [ASGI scope](https://asgi.readthedocs.io/en/latest/specs/lifespan.html).
+    - `"verbose"`: The most informative format, with the first 80 characters providing metadata, and the remainder supplying the log message.
+    - `"gunicorn"`: Gunicorn's default format.
+    - `"uvicorn"`: Uvicorn's default format, similar to `simple`, with support for `LOG_COLORS`. Note that Uvicorn's `access` formatter is not supported here, because it frequently throws errors related to [ASGI scope](https://asgi.readthedocs.io/en/latest/specs/lifespan.html).
 
     !!! example "Example log message in different formats"
 
@@ -352,30 +361,30 @@ The idea here is to allow a catch-all Uvicorn config variable in the spirit of `
 
 `LOG_LEVEL`
 
--   Log level for [Gunicorn](https://docs.gunicorn.org/en/latest/settings.html#logging) or [Uvicorn](https://www.uvicorn.org/settings/#logging).
--   Default: `"info"`
--   Custom (organized from greatest to least amount of logging):
-    -   `LOG_LEVEL="debug"`
-    -   `LOG_LEVEL="info"`
-    -   `LOG_LEVEL="warning"`
-    -   `LOG_LEVEL="error"`
-    -   `LOG_LEVEL="critical"`
+- Log level for [Gunicorn](https://docs.gunicorn.org/en/latest/settings.html#logging) or [Uvicorn](https://www.uvicorn.org/settings/#logging).
+- Default: `"info"`
+- Custom (organized from greatest to least amount of logging):
+    - `LOG_LEVEL="debug"`
+    - `LOG_LEVEL="info"`
+    - `LOG_LEVEL="warning"`
+    - `LOG_LEVEL="error"`
+    - `LOG_LEVEL="critical"`
 
 `ACCESS_LOG`
 
--   Access log file to which to write.
--   Default: `"-"` (`stdout`, print in Docker logs)
--   Custom:
-    -   `ACCESS_LOG="./path/to/accesslogfile.txt"`
-    -   `ACCESS_LOG= ` (set to an empty value) to disable
+- Access log file to which to write.
+- Default: `"-"` (`stdout`, print in Docker logs)
+- Custom:
+    - `ACCESS_LOG="./path/to/accesslogfile.txt"`
+    - `ACCESS_LOG= ` (set to an empty value) to disable
 
 `ERROR_LOG`
 
--   Error log file to which to write.
--   Default: `"-"` (`stdout`, print in Docker logs)
--   Custom:
-    -   `ERROR_LOG="./path/to/errorlogfile.txt"`
-    -   `ERROR_LOG= ` (set to an empty value) to disable
+- Error log file to which to write.
+- Default: `"-"` (`stdout`, print in Docker logs)
+- Custom:
+    - `ERROR_LOG="./path/to/errorlogfile.txt"`
+    - `ERROR_LOG= ` (set to an empty value) to disable
 
 See the [logging reference](logging.md) for further info.
 
@@ -383,14 +392,14 @@ See the [logging reference](logging.md) for further info.
 
 `BASIC_AUTH_USERNAME`
 
--   Username for HTTP Basic auth.
--   Default: not set
--   Custom: `BASIC_AUTH_USERNAME=test_user`
+- Username for HTTP Basic auth.
+- Default: not set
+- Custom: `BASIC_AUTH_USERNAME=test_user`
 
 `BASIC_AUTH_PASSWORD`
 
--   Password for HTTP Basic auth.
--   Default: not set
--   Custom: `BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable`
+- Password for HTTP Basic auth.
+- Default: not set
+- Custom: `BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable`
 
 See the [authentication reference](authentication.md) for further info.

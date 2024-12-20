@@ -114,13 +114,13 @@ check = [
   "ruff check",
   "ruff format --check",
   "mypy",
-  "npx -s -y prettier@'^3' . --check",
+  "npx -s -y prettier@'^3.4' . --check",
   "npx -s -y cspell --dot --gitignore *.md **/*.md",
 ]
 format = [
   "ruff check --fix",
   "ruff format",
-  "npx -s -y prettier@'^3' . --write",
+  "npx -s -y prettier@'^3.4' . --write",
 ]
 
 [tool.hatch.envs.docs]

@@ -44,15 +44,15 @@ Please see [inboard Git tags](https://github.com/br3ndonland/inboard/tags), [inb
 
 For a [Hatch](https://hatch.pypa.io/latest/) project with the following directory structure:
 
--   `repo/`
-    -   `package_name/`
-        -   `__init__.py`
-        -   `main.py`
-        -   `prestart.py`
-    -   `tests/`
-    -   `Dockerfile`
-    -   `pyproject.toml`
-    -   `README.md`
+- `repo/`
+    - `package_name/`
+        - `__init__.py`
+        - `main.py`
+        - `prestart.py`
+    - `tests/`
+    - `Dockerfile`
+    - `pyproject.toml`
+    - `README.md`
 
 The _pyproject.toml_ could look like this:
 
@@ -184,15 +184,15 @@ The _Dockerfile_ could look like this:
 
 For a standard `pip` install:
 
--   `repo/`
-    -   `package_name/`
-        -   `__init__.py`
-        -   `main.py`
-        -   `prestart.py`
-    -   `tests/`
-    -   `Dockerfile`
-    -   `requirements.txt`
-    -   `README.md`
+- `repo/`
+    - `package_name/`
+        - `__init__.py`
+        - `main.py`
+        - `prestart.py`
+    - `tests/`
+    - `Dockerfile`
+    - `requirements.txt`
+    - `README.md`
 
 Packaging would be set up separately as described in the [Python packaging user guide](https://packaging.python.org/en/latest/).
 
@@ -260,30 +260,30 @@ docker run -d -p 80:80 --platform linux/amd64 \
 
 Details on the `docker run` command:
 
--   `-e "PROCESS_MANAGER=uvicorn" -e "WITH_RELOAD=true"` will instruct `start.py` to run Uvicorn with reloading and without Gunicorn. The Gunicorn configuration won't apply, but these environment variables will still work as [described](environment.md):
-    -   `APP_MODULE`
-    -   `HOST`
-    -   `PORT`
-    -   `LOG_COLORS`
-    -   `LOG_FORMAT`
-    -   `LOG_LEVEL`
-    -   `RELOAD_DIRS`
-    -   `WITH_RELOAD`
--   `-v $(pwd)/package:/app/package`: the specified directory (`/path/to/repo/package` in this example) will be [mounted as a volume](https://docs.docker.com/engine/reference/run/#volume-shared-filesystems) inside of the container at `/app/package`. When files in the working directory change, Docker and Uvicorn will sync the files to the running Docker container.
+- `-e "PROCESS_MANAGER=uvicorn" -e "WITH_RELOAD=true"` will instruct `start.py` to run Uvicorn with reloading and without Gunicorn. The Gunicorn configuration won't apply, but these environment variables will still work as [described](environment.md):
+    - `APP_MODULE`
+    - `HOST`
+    - `PORT`
+    - `LOG_COLORS`
+    - `LOG_FORMAT`
+    - `LOG_LEVEL`
+    - `RELOAD_DIRS`
+    - `WITH_RELOAD`
+- `-v $(pwd)/package:/app/package`: the specified directory (`/path/to/repo/package` in this example) will be [mounted as a volume](https://docs.docker.com/engine/reference/run/#volume-shared-filesystems) inside of the container at `/app/package`. When files in the working directory change, Docker and Uvicorn will sync the files to the running Docker container.
 
 ## Docker and Hatch
 
 This project uses [Hatch](https://hatch.pypa.io/latest/) for Python dependency management and packaging, and uses [`pipx`](https://pypa.github.io/pipx/) to install Hatch in Docker:
 
--   `ENV PATH=/opt/pipx/bin:/app/.venv/bin:$PATH` is set first to prepare the `$PATH`.
--   `pip` is used to install `pipx`.
--   `pipx` is used to install Hatch, with `PIPX_BIN_DIR=/opt/pipx/bin` used to specify the location where `pipx` installs the Hatch command-line application, and `PIPX_HOME=/opt/pipx/home` used to specify the location for `pipx` itself.
--   `hatch env create` is used with `HATCH_ENV_TYPE_VIRTUAL_PATH=.venv` and `WORKDIR=/app` to create the virtualenv at `/app/.venv` and install the project's packages into the virtualenv.
+- `ENV PATH=/opt/pipx/bin:/app/.venv/bin:$PATH` is set first to prepare the `$PATH`.
+- `pip` is used to install `pipx`.
+- `pipx` is used to install Hatch, with `PIPX_BIN_DIR=/opt/pipx/bin` used to specify the location where `pipx` installs the Hatch command-line application, and `PIPX_HOME=/opt/pipx/home` used to specify the location for `pipx` itself.
+- `hatch env create` is used with `HATCH_ENV_TYPE_VIRTUAL_PATH=.venv` and `WORKDIR=/app` to create the virtualenv at `/app/.venv` and install the project's packages into the virtualenv.
 
 With this approach:
 
--   Subsequent `python` commands use the executable at `app/.venv/bin/python`.
--   As long as `HATCH_ENV_TYPE_VIRTUAL_PATH=.venv` and `WORKDIR /app` are retained, subsequent Hatch commands use the same virtual environment at `/app/.venv`.
+- Subsequent `python` commands use the executable at `app/.venv/bin/python`.
+- As long as `HATCH_ENV_TYPE_VIRTUAL_PATH=.venv` and `WORKDIR /app` are retained, subsequent Hatch commands use the same virtual environment at `/app/.venv`.
 
 ## Docker and Poetry
 
@@ -296,15 +296,15 @@ As explained in [python-poetry/poetry#1879](https://github.com/python-poetry/poe
 
 This project used [`pipx`](https://pypa.github.io/pipx/) to install Poetry in Docker:
 
--   `ENV PATH=/opt/pipx/bin:/app/.venv/bin:$PATH` was set first to prepare the `$PATH`.
--   `pip` was used to install `pipx`.
--   `pipx` was used to install Poetry.
--   `poetry install` was used with `POETRY_VIRTUALENVS_CREATE=true`, `POETRY_VIRTUALENVS_IN_PROJECT=true` and `WORKDIR /app` to install the project's packages into the virtualenv at `/app/.venv`.
+- `ENV PATH=/opt/pipx/bin:/app/.venv/bin:$PATH` was set first to prepare the `$PATH`.
+- `pip` was used to install `pipx`.
+- `pipx` was used to install Poetry.
+- `poetry install` was used with `POETRY_VIRTUALENVS_CREATE=true`, `POETRY_VIRTUALENVS_IN_PROJECT=true` and `WORKDIR /app` to install the project's packages into the virtualenv at `/app/.venv`.
 
 With this approach:
 
--   Subsequent `python` commands used the executable at `app/.venv/bin/python`.
--   As long as `POETRY_VIRTUALENVS_IN_PROJECT=true` and `WORKDIR /app` were retained, subsequent Poetry commands used the same virtual environment at `/app/.venv`.
+- Subsequent `python` commands used the executable at `app/.venv/bin/python`.
+- As long as `POETRY_VIRTUALENVS_IN_PROJECT=true` and `WORKDIR /app` were retained, subsequent Poetry commands used the same virtual environment at `/app/.venv`.
 
 ## Linux distributions
 
@@ -318,9 +318,9 @@ The [official Python Docker image](https://hub.docker.com/_/python) is built on 
 
 Alpine differs from Debian in some important ways, including:
 
--   Shell (Alpine does not use Bash by default)
--   Packages (Alpine uses [`apk`](https://docs.alpinelinux.org/user-handbook/0.1a/Working/apk.html) as its package manager, and does not include some common packages like `curl` by default)
--   C standard library (Alpine uses [`musl`](https://musl.libc.org/) instead of [`gcc`](https://gcc.gnu.org/))
+- Shell (Alpine does not use Bash by default)
+- Packages (Alpine uses [`apk`](https://docs.alpinelinux.org/user-handbook/0.1a/Working/apk.html) as its package manager, and does not include some common packages like `curl` by default)
+- C standard library (Alpine uses [`musl`](https://musl.libc.org/) instead of [`gcc`](https://gcc.gnu.org/))
 
 The different C standard library is of particular note for Python packages, because [binary package distributions](https://packaging.python.org/guides/packaging-binary-extensions/) may not be available for Alpine Linux. To work with these packages, their build dependencies must be installed, then the packages must be built from source. Users will typically then delete the build dependencies to keep the final Docker image size small.
 
@@ -371,9 +371,9 @@ The good news - Python now supports binary package distributions built for `musl
 
 The [official Python Docker image](https://hub.docker.com/_/python) provides "slim" variants of the Debian base images. These images are built on Debian, but then have the build dependencies removed after Python is installed. As with Alpine Linux, there are some caveats:
 
--   Commonly-used packages are removed, requiring reinstallation in downstream images.
--   The overall number of security vulnerabilities will be reduced as compared to the Debian base images, but vulnerabilities inherent to Debian will still remain.
--   If `/etc/os-release` is sourced, the `$ID` will still be `debian`, so custom environment variables or other methods must be used to identify images as "slim" variants.
+- Commonly-used packages are removed, requiring reinstallation in downstream images.
+- The overall number of security vulnerabilities will be reduced as compared to the Debian base images, but vulnerabilities inherent to Debian will still remain.
+- If `/etc/os-release` is sourced, the `$ID` will still be `debian`, so custom environment variables or other methods must be used to identify images as "slim" variants.
 
 A _Dockerfile_ equivalent to the Alpine Linux example might look like the following:
 
