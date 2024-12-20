@@ -97,7 +97,7 @@ The server does not display a log message.
 
 If the inboard Python package is installed from PyPI, the logging configuration can be easily customized as explained in the [Python logging configuration docs](https://docs.python.org/3/library/logging.config.html).
 
-!!!example "Example of a custom logging module"
+!!! example "Example of a custom logging module"
 
     ```py
     # /app/package/custom_logging.py: set with LOGGING_CONF=package.custom_logging
@@ -141,7 +141,7 @@ If the inboard Python package is installed from PyPI, the logging configuration 
 
 Want to override inboard's entire logging config? No problem. Set up a separate `LOGGING_CONFIG` dictionary, and pass inboard the path to the module containing the dictionary. Try something like this:
 
-!!!example "Example of a complete custom logging config"
+!!! example "Example of a complete custom logging config"
 
     ```py
     # /app/package/custom_logging.py: set with LOGGING_CONF=package.custom_logging

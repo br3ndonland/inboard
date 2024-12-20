@@ -26,7 +26,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 -   Default: The appropriate app module from inboard.
 -   Custom: For a module at `/app/package/custom/module.py` and app instance object `api`, either `APP_MODULE` (like `APP_MODULE="package.custom.module:api"`) or `UVICORN_APP` (like `UVICORN_APP="package.custom.module:api"`, _new in inboard 0.62_)
 
-    !!!example "Example of a custom FastAPI app module"
+    !!! example "Example of a custom FastAPI app module"
 
         ```py
         # /app/package/custom/module.py
@@ -334,7 +334,7 @@ The idea here is to allow a catch-all Uvicorn config variable in the spirit of `
     -   `"gunicorn"`: Gunicorn's default format.
     -   `"uvicorn"`: Uvicorn's default format, similar to `simple`, with support for `LOG_COLORS`. Note that Uvicorn's `access` formatter is not supported here, because it frequently throws errors related to [ASGI scope](https://asgi.readthedocs.io/en/latest/specs/lifespan.html).
 
-    !!!example "Example log message in different formats"
+    !!! example "Example log message in different formats"
 
         ```{ .log .no-copy }
         # simple
