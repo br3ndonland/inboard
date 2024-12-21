@@ -2,6 +2,73 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/HEAD/CHANGELOG.md)
 
+## 0.71.2 - 2024-12-21
+
+### Changes
+
+**Update to `pypa/gh-action-pypi-publish` 1.12.3**
+(9d310036b90c81a791dedeb903e0e6d01e176081)
+
+This release will update `pypa/gh-action-pypi-publish` from 1.11.0 to
+[1.12.3](https://github.com/pypa/gh-action-pypi-publish/releases/tag/v1.12.3).
+
+The action will now pull a pre-built Docker image from GHCR
+(GitHub Container Registry) instead of building the Docker image at the
+beginning of each GitHub Actions run
+([pypa/gh-action-pypi-publish#230](https://github.com/pypa/gh-action-pypi-publish/pull/230),
+[pypa/gh-action-pypi-publish#241](https://github.com/pypa/gh-action-pypi-publish/pull/241),
+[pypa/gh-action-pypi-publish#301](https://github.com/pypa/gh-action-pypi-publish/pull/301)).
+
+**Update to FastAPI 0.115.6** (c0216a01752ee94dc112ed56f53de7384988fe7d)
+
+This release will update/upgrade to
+[FastAPI 0.115.6](https://fastapi.tiangolo.com/release-notes/).
+This is a patch release to align with FastAPI versioning.
+
+FastAPI 0.115.6 makes a small change to exception handling in
+[dependencies with yield](https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/)
+when they are regular synchronous functions (as opposed to async). These
+synchronous dependencies will now preserve exception tracebacks.
+
+**Update Markdown formatting for Prettier 3.4**
+(8907eaec0a07afcbcd0925f8fb256fb1b05cc674,
+dd5abd619e08dd2a4738fad7020fc3dcbbe7f339)
+
+This release will update formatting of Markdown documents for
+[Prettier 3.4](https://prettier.io/blog/2024/11/26/3.4.0#markdown).
+The update removes extra spaces after unordered list line prefixes.
+The large diff in Markdown files in this release is from reformatting
+unordered lists from `-   ` to `- `.
+
+Note that Prettier 3.4 exhibits problematic behavior when formatting
+admonitions that are nested within unordered lists
+([prettier/prettier#16929 \(comment\)](https://github.com/prettier/prettier/issues/16929#issuecomment-2556502156)).
+Prettier ignore comments (`<!-- prettier-ignore -->`) have been added
+where necessary to prevent this problematic behavior.
+
+### Commits
+
+- Bump version from 0.71.1 to 0.71.2 (c97bd7e)
+- Update to `pypa/gh-action-pypi-publish` 1.12.3 (9d31003)
+- Update to FastAPI 0.115.6 (c0216a0)
+- Format Markdown admonition lists for Prettier 3.4 (dd5abd6)
+- Update Markdown formatting for Prettier 3.4 (8907eae)
+- Fix style of Markdown admonition directives (779b1f4)
+- Update changelog for version 0.71.1 (#113) (2aca413)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2024-12-21 18:12:33 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQKjUpDOmDmcSI5ZCu3o/keXY8nrX2owqPxayOIyLb76a5HVuCbDU+YWDxYBiHII2jv
+PEke9xyKGuhAEqrYkZnw4=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.71.1 - 2024-11-13
 
 ### Changes
