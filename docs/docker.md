@@ -418,8 +418,8 @@ A _Dockerfile_ equivalent to the Alpine Linux example might look like the follow
 
     For more info, see:
 
-    -   [br3ndonland/inboard#54](https://github.com/br3ndonland/inboard/pull/54)
-    -   [BuildKit docs: Dockerfile frontend syntaxes](https://github.com/moby/buildkit/blob/HEAD/frontend/dockerfile/docs/reference.md)
-    -   [BuildKit releases: dockerfile/1.4.0](https://github.com/moby/buildkit/releases/tag/dockerfile%2F1.4.0)
-    -   [Docker blog 2021-07-30: Introduction to heredocs in Dockerfiles](https://www.docker.com/blog/introduction-to-heredocs-in-dockerfiles/)
-    -   [Docker docs: BuildKit](https://docs.docker.com/build/buildkit/)
+    - [br3ndonland/inboard#54](https://github.com/br3ndonland/inboard/pull/54)
+    - [BuildKit docs: Dockerfile frontend syntaxes](https://github.com/moby/buildkit/blob/HEAD/frontend/dockerfile/docs/reference.md)
+    - [BuildKit releases: dockerfile/1.4.0](https://github.com/moby/buildkit/releases/tag/dockerfile%2F1.4.0)
+    - [Docker blog 2021-07-30: Introduction to heredocs in Dockerfiles](https://www.docker.com/blog/introduction-to-heredocs-in-dockerfiles/)
+    - [Docker docs: BuildKit](https://docs.docker.com/build/buildkit/)
