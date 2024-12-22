@@ -110,9 +110,14 @@ jobs:
       - name: Run Hatch script for code quality checks
         run: hatch run ${{ env.HATCH_ENV }}:check
       - name: Run tests
-        run: hatch run ${{ env.HATCH_ENV }}:coverage run
+        run: |
+          export COVERAGE_PROCESS_START="$PWD/pyproject.toml"
+          hatch run ${{ env.HATCH_ENV }}:coverage run
+        timeout-minutes: 5
       - name: Enforce test coverage
-        run: hatch run ${{ env.HATCH_ENV }}:coverage report
+        run: |
+          hatch run ${{ env.HATCH_ENV }}:coverage combine -q
+          hatch run ${{ env.HATCH_ENV }}:coverage report
       - name: Build Python package
         run: hatch build
       - name: Upload Python package artifacts

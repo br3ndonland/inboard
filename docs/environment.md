@@ -94,8 +94,8 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 [`WORKER_CLASS`](https://docs.gunicorn.org/en/latest/settings.html#worker-processes)
 
 - Uvicorn worker class for Gunicorn to use.
-- Default: `uvicorn.workers.UvicornWorker`
-- Custom: For the [alternate Uvicorn worker](https://www.uvicorn.org/deployment/), `WORKER_CLASS="uvicorn.workers.UvicornH11Worker"` _(the H11 worker is provided for [PyPy](https://www.pypy.org/) and hasn't been tested)_
+- Default: `inboard.gunicorn_workers.UvicornWorker`
+- Custom: For the [alternate Uvicorn worker](https://www.uvicorn.org/deployment/), `WORKER_CLASS="inboard.gunicorn_workers.UvicornH11Worker"` _(the H11 worker is provided for [PyPy](https://www.pypy.org/))_
 
 ### Worker process calculation
 
