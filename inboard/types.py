@@ -136,7 +136,7 @@ class UvicornOptions(TypedDict, total=False):
     limit_max_requests: int | None
     timeout_keep_alive: int
     timeout_graceful_shutdown: int | None
-    ssl_keyfile: str | None
+    ssl_keyfile: str | PathLike[str] | None
     ssl_certfile: str | PathLike[str] | None
     ssl_keyfile_password: str | None
     ssl_version: int
