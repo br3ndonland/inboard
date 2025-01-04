@@ -83,7 +83,9 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 !!! info
 
-    As described in the [Uvicorn docs](https://www.uvicorn.org), "Uvicorn includes a Gunicorn worker class allowing you to run ASGI applications, with all of Uvicorn's performance benefits, while also giving you Gunicorn's fully-featured process management."
+    As originally described in the Uvicorn docs, "Uvicorn includes a Gunicorn worker class allowing you to run ASGI applications, with all of Uvicorn's performance benefits, while also giving you Gunicorn's fully-featured process management."
+
+    Uvicorn deprecated the workers module in version 0.30.0. It is now available here at `inboard.gunicorn_workers`.
 
 `PROCESS_MANAGER`
 
@@ -94,8 +96,8 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 [`WORKER_CLASS`](https://docs.gunicorn.org/en/latest/settings.html#worker-processes)
 
 - Uvicorn worker class for Gunicorn to use.
-- Default: `inboard.gunicorn_workers.UvicornWorker`
-- Custom: For the [alternate Uvicorn worker](https://www.uvicorn.org/deployment/), `WORKER_CLASS="inboard.gunicorn_workers.UvicornH11Worker"` _(the H11 worker is provided for [PyPy](https://www.pypy.org/))_
+- Default: `inboard.gunicorn_workers.UvicornWorker` (provided with inboard)
+- Custom: For the alternate Uvicorn worker, `WORKER_CLASS="inboard.gunicorn_workers.UvicornH11Worker"` _(the H11 worker is provided for [PyPy](https://www.pypy.org/))_
 
 ### Worker process calculation
 
