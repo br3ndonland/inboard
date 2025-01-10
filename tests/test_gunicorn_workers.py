@@ -44,15 +44,6 @@ class Process(subprocess.Popen[str]):
         return self.output.read().decode()
 
 
-def process_has_terminated(process: Process, expected_text: str = "") -> bool:
-    """Assertion helper to test that a process terminated with the expected output."""
-    assert process.poll()
-    if expected_text:
-        output_text = process.read_output()
-        assert expected_text in output_text
-    return True
-
-
 async def app(
     scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable
 ) -> None:
@@ -317,10 +308,7 @@ def test_uvicorn_worker_boot_error(
     [#1066]: https://github.com/encode/uvicorn/issues/1066
     [#1077]: https://github.com/encode/uvicorn/pull/1077
     """
-    process = gunicorn_process_with_lifespan_startup_failure
-    expected_text = "Worker failed to boot"
-    try:
-        assert process_has_terminated(process, expected_text=expected_text)
-    except AssertionError:  # pragma: no cover
-        time.sleep(5)
-        assert process_has_terminated(process, expected_text=expected_text)
+    output_text = gunicorn_process_with_lifespan_startup_failure.read_output()
+    gunicorn_process_with_lifespan_startup_failure.wait(timeout=2)
+    assert gunicorn_process_with_lifespan_startup_failure.poll() is not None
+    assert "Worker failed to boot" in output_text
