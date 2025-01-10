@@ -211,6 +211,59 @@ def gunicorn_process(
             process.client = client
             process.output = output
             yield process
+            process.send_signal(signal.SIGQUIT)
+            process.wait(timeout=2)
+
+
+@pytest.fixture
+def gunicorn_process_with_sigterm(
+    unused_tcp_port: int,
+) -> Generator[Process, None, None]:
+    """Yield a subprocess running a Gunicorn arbiter with a Uvicorn worker.
+
+    An instance of `httpx.Client` is available on the `client` attribute.
+    Output is saved to a temporary file and accessed with `read_output()`.
+
+    This pytest fixture provides a simplified worker configuration that exits
+    with `SIGTERM` instead of `SIGQUIT`. Exiting with `SIGTERM` seems to help
+    coverage.py report the correct code coverage, even without the configuration
+    setting `sigterm = true` on `coverage.run`, but test processes also seem to
+    re-spawn unexpectedly. Coverage.py continues generating `.coverage.*` files,
+    even after the test run has concluded. This is why `SIGQUIT` is used instead
+    of `SIGTERM` in the more complex `gunicorn_process` fixture. The idea is to
+    use `SIGTERM` as little as possible to avoid these re-spawning subprocesses.
+    """
+    worker_class = (
+        f"{gunicorn_workers.UvicornWorker.__module__}."
+        f"{gunicorn_workers.UvicornWorker.__name__}"
+    )
+    app_module = f"{__name__}:{app.__name__}"
+    args = [
+        "gunicorn",
+        "--bind",
+        f"127.0.0.1:{unused_tcp_port}",
+        "--graceful-timeout",
+        "1",
+        "--log-level",
+        "debug",
+        "--worker-class",
+        worker_class,
+        "--workers",
+        "1",
+        app_module,
+    ]
+    bind = f"127.0.0.1:{unused_tcp_port}"
+    base_url = f"http://{bind}"
+    verify = False
+    with (
+        httpx.Client(base_url=base_url, verify=verify) as client,
+        tempfile.TemporaryFile() as output,
+    ):
+        with Process(args, stdout=output, stderr=output) as process:
+            time.sleep(2)
+            process.client = client
+            process.output = output
+            yield process
             process.terminate()
             process.wait(timeout=2)
 
@@ -310,5 +363,17 @@ def test_uvicorn_worker_get_request(gunicorn_process: Process) -> None:
     """Test a GET request to the Gunicorn Uvicorn worker's ASGI app."""
     response = gunicorn_process.client.get("/")
     output_text = gunicorn_process.read_output()
+    assert response.status_code == 204
+    assert "inboard.gunicorn_workers", "startup complete" in output_text
+
+
+def test_uvicorn_worker_get_request_with_sigterm(
+    gunicorn_process_with_sigterm: Process,
+) -> None:
+    """Test a GET request to the Gunicorn Uvicorn worker's ASGI app
+    when `SIGTERM` is used to stop the process instead of `SIGQUIT`.
+    """
+    response = gunicorn_process_with_sigterm.client.get("/")
+    output_text = gunicorn_process_with_sigterm.read_output()
     assert response.status_code == 204
     assert "inboard.gunicorn_workers", "startup complete" in output_text

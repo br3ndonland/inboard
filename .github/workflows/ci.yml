@@ -113,6 +113,21 @@ jobs:
         run: |
           export COVERAGE_PROCESS_START="$PWD/pyproject.toml"
           hatch run ${{ env.HATCH_ENV }}:coverage run
+
+          coverage_files_after_run=$(find . -name '.coverage*' | wc -l)
+          sleep_time=10
+          sleep "$sleep_time"
+          coverage_files_after_sleep=$(find . -name '.coverage*' | wc -l)
+          echo "[INFO] Verifying that coverage.py has stopped generating .coverage files.
+
+          [INFO] Number of coverage files after coverage run: $coverage_files_after_run
+          [INFO] Number of coverage files after $sleep_time second sleep: $coverage_files_after_sleep
+          "
+
+          if [ "$coverage_files_after_sleep" -gt "$coverage_files_after_run" ]; then
+            echo "[ERROR] Unexpected .coverage files detected."
+            exit 1
+          fi
         timeout-minutes: 5
       - name: Enforce test coverage
         run: |
