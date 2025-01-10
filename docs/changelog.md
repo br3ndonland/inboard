@@ -2,6 +2,124 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/HEAD/CHANGELOG.md)
 
+## 0.72.0 - 2025-01-10
+
+### Changes
+
+**Add and test Gunicorn workers**
+(#116, 35d8d86fef91a9f27eb97932d01addb3aecc66e6,
+319c07b59580d1e7878664a2feb17685f9bf4fc4,
+d4f791a1f66c17f5e1731215a3473dd648bfeb7b,
+8beddab974b95a8468a8c10ad27972efc1dca614,
+e8019a2890aa4ca1f210f062f7a41ebcd0e8d8d6,
+c52fd63817f083be8ce3df49f318a9af485d37f1,
+749a3ebd0c553b74b4db8ec08de51ee57f4eec87)
+
+This project supports the Gunicorn web server. The
+[Gunicorn server design](https://docs.gunicorn.org/en/latest/design.html)
+includes a primary "arbiter" process that spawns "worker" child
+processes, each with their own running server. Workers are implemented
+as Python classes and custom workers can be supplied.
+
+This project also supports the Uvicorn web server. In the past, Uvicorn
+supplied workers for use with Gunicorn, but the Uvicorn workers were not
+tested. The `uvicorn.workers` module was completely omitted from
+coverage measurement due to use of the coverage.py `include` setting
+to specify source files. Efforts were made to test the Uvicorn workers
+([encode/uvicorn#1834](https://github.com/encode/uvicorn/issues/1834),
+[encode/uvicorn#1995](https://github.com/encode/uvicorn/pull/1995)),
+but the workers were arbitrarily deprecated and moved to
+someone's personal project ([encode/uvicorn#2302](https://github.com/encode/uvicorn/pull/2302)),
+instead of an Encode-managed project as would have been expected
+([encode/uvicorn#517 \(comment\)](https://github.com/encode/uvicorn/issues/517#issuecomment-564090865)).
+
+Rather than introducing a production dependency on a separate Uvicorn
+workers package that is not managed by Encode, the Gunicorn workers will
+be added directly to this project.
+
+This release will add the code from `uvicorn.workers` to a new module
+`inboard.gunicorn_workers`. The code will be preserved
+[as it was prior to deprecation](https://github.com/encode/uvicorn/blob/4fd507718eb0313e2de66123e6737b054088f722/uvicorn/workers.py),
+with a copy of the
+[Uvicorn license](https://github.com/encode/uvicorn/blob/4fd507718eb0313e2de66123e6737b054088f722/LICENSE.md)
+and necessary updates for compliance with the code quality settings in
+this project.
+
+This release will also add tests of 100% of the Gunicorn worker code to a
+new module `tests.test_gunicorn_workers`. A test fixture starts a
+subprocess running Gunicorn with a Uvicorn worker and an ASGI app. The
+subprocess includes an instance of `httpx.Client` for HTTP requests to
+the Uvicorn worker's ASGI app, and saves its output to a temporary file
+for assertions on `stdout`/`stderr`. Tests can send operating system
+[signals](https://docs.gunicorn.org/en/latest/signals.html) to the
+process. The coverage.py configuration will be updated for subprocess
+test coverage measurement.
+
+On a related note, an attempt was made to update to the latest version
+of Uvicorn (Uvicorn 0.34.0), but this change was reverted. Uvicorn
+updates have been delayed for some time while evaluating the releases.
+There were some notable (but undocumented) updates to signal handling
+introduced in Uvicorn 0.29. The updates may result in child processes
+that do not shut down after the Uvicorn server gracefully shuts down
+([encode/uvicorn#1600](https://github.com/encode/uvicorn/pull/1600),
+[encode/uvicorn#2281](https://github.com/encode/uvicorn/discussions/2281),
+[encode/uvicorn#2289](https://github.com/encode/uvicorn/issues/2289),
+[encode/uvicorn#2317](https://github.com/encode/uvicorn/pull/2317)).
+Furthermore, these signal handling changes haven't been tested with the
+Gunicorn workers, because Uvicorn doesn't test its workers, as noted in
+35d8d86fef91a9f27eb97932d01addb3aecc66e6. Now that the Gunicorn workers
+have been added to inboard directly, the Uvicorn releases can be tested
+and evaluated more effectively.
+
+After updating from Uvicorn 0.28.1 to Uvicorn >=0.29.0, coverage.py
+reports that `inboard.gunicorn_workers.UvicornWorker.callback_notify`
+and the test ASGI app (`tests.test_gunicorn_workers.app`) are not being
+covered, when they actually are covered by the tests. `callback_notify`
+runs after the Gunicorn server has started up, and the test ASGI app
+is obviously used (otherwise the tests couldn't pass). Possibly related
+to the unexpected change in test coverage, coverage.py generates fewer
+coverage files with Uvicorn >=0.29.0. This could suggest that some of
+the subprocesses used in the tests aren't exiting cleanly or aren't
+being detected by coverage.py.
+
+Until the changes to signal handling and test coverage are understood
+more clearly, Uvicorn will remain on version 0.28.1.
+
+**Update to Gunicorn 23.0.0** (1a2be820aa6b80f95235b736990c13a8aecdd081)
+
+This release will update/upgrade Gunicorn from 22.0.0 to 23.0.0.
+There are several breaking changes noted in the
+[Gunicorn changelog](https://docs.gunicorn.org/en/latest/news.html).
+Users are encouraged to review these changes and update usage as needed.
+
+### Commits
+
+- Bump version from 0.71.2 to 0.72.0 (76d69fc)
+- Extend Gunicorn worker test wait times (749a3eb)
+- Update to Gunicorn 23.0.0 (1a2be82)
+- Revert "Update to Uvicorn 0.34.0" (346b12a)
+- Avoid Gunicorn worker test subprocess re-spawning (c52fd63)
+- Rename Gunicorn worker `GET` request test (e8019a2)
+- Simplify Gunicorn worker boot error test assertion (8beddab)
+- Correct docstring in Gunicorn worker test (d4f791a)
+- Update to Uvicorn 0.34.0 (3cdf61e)
+- Update Uvicorn Gunicorn worker info in docs (319c07b)
+- Add and test Gunicorn workers (#116) (35d8d86)
+- Update changelog for version 0.71.2 (#114) (6cf2d1d)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2025-01-10 01:08:01 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQCqJrwrRlBQR6U2uQV8oVsHDOK0NmT1jv8xCuucKSO3M43HFo1ENAdeUw1++hWJlhM
+sDJwcF5qEUYHrJ4pJNCQg=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.71.2 - 2024-12-21
 
 ### Changes

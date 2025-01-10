@@ -438,8 +438,17 @@ jobs:
 
           # shellcheck disable=SC2016
           ESCAPE_DUNDERS='s:([^`])(__)([a-z]+)(__)([^`]):\1\\_\\_\3\\_\\_\5:g'
-          sed -Ei "$ESCAPE_DUNDERS" CHANGELOG.md
-          sed -Ei "$ESCAPE_DUNDERS" docs/changelog.md
+          REPLACEMENT='There are several breaking changes noted in the\n[Gunicorn changelog](https://docs.gunicorn.org/en/latest/news.html).'
+          for changelog in "CHANGELOG.md" "docs/changelog.md"; do
+            sed -Ei "$ESCAPE_DUNDERS" "$changelog"
+            sed -Ei \
+              -e "s|\[Changes\]\(https://docs.gunicorn.org/en/latest/news.html\) include|$REPLACEMENT|g" \
+              -e "s|a fix for a high-severity security vulnerability \(CVE-2024-1135,||g" \
+              -e "s|\[GHSA-w3h3-4rj7-4ph4\]\(https://github.com/advisories/GHSA-w3h3-4rj7-4ph4\)\)\.||g" \
+              -e "s|There are several breaking changes noted in the Gunicorn changelog\.||g" \
+              "$changelog"
+            sed -Ei -z "s|\n\n\n||g" "$changelog"
+          done
       - name: Format changelog with Prettier
         run: npx -s -y prettier@'^3.4' --write CHANGELOG.md docs/changelog.md
       - name: Create pull request with updated changelog
