@@ -75,7 +75,7 @@ async def app(
 async def app_with_lifespan_startup_failure(
     scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable
 ) -> None:
-    """An ASGI app instance for testing Gunicorn worker boot errors."""
+    """An ASGI app for testing Gunicorn worker boot errors."""
     if scope["type"] == "lifespan":
         message = await receive()
         if message["type"] == "lifespan.startup":
