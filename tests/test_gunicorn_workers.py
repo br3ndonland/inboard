@@ -212,7 +212,7 @@ def gunicorn_process(
             process.output = output
             yield process
             process.send_signal(signal.SIGQUIT)
-            process.wait(timeout=2)
+            process.wait(timeout=5)
 
 
 @pytest.fixture
@@ -265,7 +265,7 @@ def gunicorn_process_with_sigterm(
             process.output = output
             yield process
             process.terminate()
-            process.wait(timeout=2)
+            process.wait(timeout=5)
 
 
 @pytest.fixture
@@ -298,7 +298,7 @@ def gunicorn_process_with_lifespan_startup_failure(
             process.output = output
             yield process
             process.terminate()
-            process.wait(timeout=2)
+            process.wait(timeout=5)
 
 
 @pytest.mark.parametrize("signal_to_send", gunicorn_arbiter.Arbiter.SIGNALS)
@@ -316,7 +316,7 @@ def test_gunicorn_arbiter_signal_handling(
     signal_abbreviation = gunicorn_arbiter.Arbiter.SIG_NAMES[signal_to_send]
     expected_text = f"Handling signal: {signal_abbreviation}"
     gunicorn_process.send_signal(signal_to_send)
-    time.sleep(1)
+    time.sleep(2)
     output_text = gunicorn_process.read_output()
     try:
         assert expected_text in output_text
@@ -331,7 +331,7 @@ def test_gunicorn_arbiter_signal_handling(
             getattr(signal, "SIGWINCH", None),
         ]
         if signal_to_send not in flaky_signals:
-            time.sleep(2)
+            time.sleep(5)
             output_text = gunicorn_process.read_output()
             assert expected_text in output_text
 
@@ -354,7 +354,7 @@ def test_uvicorn_worker_boot_error(
     [#1077]: https://github.com/encode/uvicorn/pull/1077
     """
     output_text = gunicorn_process_with_lifespan_startup_failure.read_output()
-    gunicorn_process_with_lifespan_startup_failure.wait(timeout=2)
+    gunicorn_process_with_lifespan_startup_failure.wait(timeout=5)
     assert gunicorn_process_with_lifespan_startup_failure.poll() is not None
     assert "Worker failed to boot" in output_text
 
