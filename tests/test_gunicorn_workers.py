@@ -248,14 +248,6 @@ def gunicorn_process_with_lifespan_startup_failure(
             process.wait(timeout=2)
 
 
-def test_get_request_to_asgi_app(gunicorn_process: Process) -> None:
-    """Test a GET request to the Gunicorn Uvicorn worker's ASGI app."""
-    response = gunicorn_process.client.get("/")
-    output_text = gunicorn_process.read_output()
-    assert response.status_code == 204
-    assert "inboard.gunicorn_workers", "startup complete" in output_text
-
-
 @pytest.mark.parametrize("signal_to_send", gunicorn_arbiter.Arbiter.SIGNALS)
 def test_gunicorn_arbiter_signal_handling(
     gunicorn_process: Process, signal_to_send: signal.Signals
@@ -312,3 +304,11 @@ def test_uvicorn_worker_boot_error(
     gunicorn_process_with_lifespan_startup_failure.wait(timeout=2)
     assert gunicorn_process_with_lifespan_startup_failure.poll() is not None
     assert "Worker failed to boot" in output_text
+
+
+def test_uvicorn_worker_get_request(gunicorn_process: Process) -> None:
+    """Test a GET request to the Gunicorn Uvicorn worker's ASGI app."""
+    response = gunicorn_process.client.get("/")
+    output_text = gunicorn_process.read_output()
+    assert response.status_code == 204
+    assert "inboard.gunicorn_workers", "startup complete" in output_text
