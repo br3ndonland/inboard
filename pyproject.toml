@@ -21,7 +21,7 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
-  "gunicorn==22.0.0",
+  "gunicorn==23.0.0",
   "uvicorn==0.28.1",
 ]
 description = "Docker images and utilities to power your Python APIs and help you ship faster."
