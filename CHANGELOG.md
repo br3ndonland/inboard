@@ -86,10 +86,8 @@ more clearly, Uvicorn will remain on version 0.28.1.
 **Update to Gunicorn 23.0.0** (1a2be820aa6b80f95235b736990c13a8aecdd081)
 
 This release will update/upgrade Gunicorn from 22.0.0 to 23.0.0.
-[Changes](https://docs.gunicorn.org/en/latest/news.html) include
-a fix for a high-severity security vulnerability (CVE-2024-1135,
-[GHSA-w3h3-4rj7-4ph4](https://github.com/advisories/GHSA-w3h3-4rj7-4ph4)).
-There are several breaking changes noted in the Gunicorn changelog.
+There are several breaking changes noted in the
+[Gunicorn changelog](https://docs.gunicorn.org/en/latest/news.html).
 Users are encouraged to review these changes and update usage as needed.
 
 ### Commits
