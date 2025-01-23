@@ -1,5 +1,43 @@
 # Changelog
 
+## 0.72.1 - 2025-01-23
+
+### Changes
+
+**Update to FastAPI 0.115.7 and Starlette 0.45**
+(9a278f2050e317633fa2c98be3119a64314b64f8)
+
+This release will update/upgrade to
+[FastAPI 0.115.7](https://fastapi.tiangolo.com/release-notes/)
+and
+[Starlette 0.45](https://www.starlette.io/release-notes/).
+This is a patch release to align with FastAPI versioning.
+
+FastAPI has been repeatedly updating the minor version of Starlette in
+patch releases of FastAPI (1bde85a8387820b5ae8635fec73d5093d2517096).
+In this case, FastAPI 0.115.7 updated Starlette from 0.41 to 0.45.
+Changes to Starlette between 0.41 and 0.45 include removal of Python 3.8
+support and various small bug fixes and updates.
+
+### Commits
+
+- Bump version from 0.72.0 to 0.72.1 (6577aa6)
+- Update to FastAPI 0.115.7 and Starlette 0.45 (9a278f2)
+- Update changelog for version 0.72.0 (#117) (d210af3)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2025-01-23 17:18:24 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQLEyXaHl+qMDxfU8q3YVk9wvvBgGfcHcKzYnsQaILZWqtvLQ/6yBJXeb05YvC4a5zw
+cCYijdVKb5JoleVcmR+gE=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.72.0 - 2025-01-10
 
 ### Changes
