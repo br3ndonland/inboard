@@ -22,7 +22,7 @@ def calculate_workers(
 
 
 # Gunicorn settings
-bind = os.getenv("BIND") or f'{os.getenv("HOST", "0.0.0.0")}:{os.getenv("PORT", "80")}'
+bind = os.getenv("BIND") or f"{os.getenv('HOST', '0.0.0.0')}:{os.getenv('PORT', '80')}"
 accesslog = os.getenv("ACCESS_LOG", "-")
 errorlog = os.getenv("ERROR_LOG", "-")
 graceful_timeout = int(os.getenv("GRACEFUL_TIMEOUT", "120"))

@@ -16,8 +16,7 @@ if TYPE_CHECKING:
 
 def _compose_message() -> str:
     version = (
-        f"{sys.version_info.major}.{sys.version_info.minor}"
-        f".{sys.version_info.micro}"
+        f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
     )
     process_manager = os.getenv("PROCESS_MANAGER", "gunicorn")
     if process_manager not in {"gunicorn", "uvicorn"}:
