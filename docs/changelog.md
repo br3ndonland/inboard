@@ -2,6 +2,40 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/HEAD/CHANGELOG.md)
 
+## 0.72.2 - 2025-02-17
+
+### Changes
+
+**Update to FastAPI 0.115.8** (744ba2504420e73146f89c70cab854b6aad05023)
+
+This release will update/upgrade to
+[FastAPI 0.115.8](https://fastapi.tiangolo.com/release-notes/).
+This is a patch release to align with FastAPI versioning.
+
+FastAPI 0.115.8 adds Python 3.13 support and fixes syntax used in
+[OAuth 2.0 password grants](https://www.oauth.com/oauth2-servers/access-tokens/password-grant/).
+
+### Commits
+
+- Bump version from 0.72.1 to 0.72.2 (8dc2e11)
+- Update to FastAPI 0.115.8 (744ba25)
+- Update to Ruff 0.9 (3e573b6)
+- Update to `pypa/gh-action-pypi-publish` 1.12.4 (a2ef32d)
+- Update changelog for version 0.72.1 (#118) (c33d1b5)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2025-02-17 12:20:25 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQH05uvUZ2bOGhFnz5NJBDkI+axv6PnZx2szFkDZhf3Dm1eVrNij5Eml5TMPOGrTLHw
+J2sC8RTX4YM3HVS3kzMAs=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.72.1 - 2025-01-23
 
 ### Changes
