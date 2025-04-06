@@ -1,5 +1,43 @@
 # Changelog
 
+## 0.72.3 - 2025-04-06
+
+### Changes
+
+**Update to FastAPI 0.115.12** (723cf0b1d1d254a646e03bd799fbbf4e900987d8)
+
+This release will update/upgrade to
+[FastAPI 0.115.12](https://fastapi.tiangolo.com/release-notes/)
+and
+[Starlette 0.46](https://www.starlette.io/release-notes/). inboard was
+already on FastAPI 0.115, so this is a patch release to align with
+FastAPI versioning.
+
+Changes to FastAPI between 0.115.8 and 0.115.12 include Starlette 0.46
+support and other small fixes.
+
+### Commits
+
+- Bump version from 0.72.2 to 0.72.3 (00f554b)
+- Update to FastAPI 0.115.12 and Starlette 0.46 (723cf0b)
+- Update to `mypy==1.15.0` (3da23e1)
+- Update to Ruff 0.11 (172d077)
+- Update to Hatch 1.14 and Hatchling 1.26.3 (c01230a)
+- Update changelog for version 0.72.2 (#119) (a21a840)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2025-04-06 15:54:24 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQC0lZ4wa/duv/sENXmOquJI1EvZ2q0jXt8hkZq8ENDTW7Ryk2Aiz/QZGM7K8rfdslU
+Nh7KJy/aAfV5VV03lt1Aw=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.72.2 - 2025-02-17
 
 ### Changes
