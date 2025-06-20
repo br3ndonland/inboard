@@ -2,11 +2,11 @@ import os
 import sys
 
 from starlette.applications import Starlette
-from starlette.authentication import requires
+from starlette.authentication import AuthenticationError, requires
 from starlette.middleware import Middleware
 from starlette.middleware.authentication import AuthenticationMiddleware
 from starlette.middleware.cors import CORSMiddleware
-from starlette.requests import Request
+from starlette.requests import HTTPConnection, Request
 from starlette.responses import JSONResponse
 from starlette.routing import Route
 
@@ -21,7 +21,7 @@ server = (
 version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
 
 
-def on_auth_error(request: Request, e: Exception) -> JSONResponse:
+def on_auth_error(connection: HTTPConnection, e: AuthenticationError) -> JSONResponse:
     return JSONResponse(
         {"error": "Incorrect username or password", "detail": str(e)}, status_code=401
     )
