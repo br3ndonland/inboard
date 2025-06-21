@@ -441,6 +441,8 @@ jobs:
           REPLACEMENT='There are several breaking changes noted in the\n[Gunicorn changelog](https://docs.gunicorn.org/en/latest/news.html).'
           for changelog in "CHANGELOG.md" "docs/changelog.md"; do
             sed -Ei "$ESCAPE_DUNDERS" "$changelog"
+            # shellcheck disable=SC2016
+            sed -Ei 's:`AuthenticationMiddleware\.\\_\\_init\\_\\_\(\)`:`AuthenticationMiddleware\.__init__\(\)`:g' "$changelog"
             sed -Ei \
               -e "s|\[Changes\]\(https://docs.gunicorn.org/en/latest/news.html\) include|$REPLACEMENT|g" \
               -e "s|a fix for a high-severity security vulnerability \(CVE-2024-1135,||g" \
