@@ -2,6 +2,63 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/HEAD/CHANGELOG.md)
 
+## 0.72.4 - 2025-06-20
+
+### Changes
+
+**Update to FastAPI 0.115.13** (8253166c1f49ac0a3d2031876774817c2ffe4c54)
+
+This release will update/upgrade to
+[FastAPI 0.115.13](https://fastapi.tiangolo.com/release-notes/).
+inboard was already on FastAPI 0.115, so this is a patch release to
+align with FastAPI versioning.
+
+FastAPI 0.115.13 includes small updates related to OAuth2 and Pydantic.
+
+**Update to `mypy==1.16.1`** (e221fd41bdc752b0b9326d27ce3de3a4a400d850)
+
+This mypy update is mentioned in the release notes because it required
+an update to a user-facing type annotation.
+
+Mypy 1.16.1 detects a type error, undetected in previous mypy versions,
+in the `on_error` argument to `AuthenticationMiddleware.\_\_init\_\_()` in
+`inboard.app.main_starlette`.
+
+```text
+inboard/app/main_starlette.py:56:
+error: Argument "on_error" to "Middleware" has incompatible type
+"Callable[[Request, Exception], JSONResponse]";
+expected "Callable[[HTTPConnection, AuthenticationError], Response] | None"  [arg-type]
+```
+
+The `on_auth_error` callable had the first argument incorrectly type
+annotated as `starlette.requests.Request` when it should have been
+`starlette.requests.HTTPConnection`. The second argument is annotated in
+Starlette as `starlette.exceptions.AuthenticationError`, which inherits
+from `Exception` and is merely a `pass`.
+
+### Commits
+
+- Bump version from 0.72.3 to 0.72.4 (71a998f)
+- Update to FastAPI 0.115.13 (8253166)
+- Update to Ruff 0.12 (a2dda06)
+- Update to `mypy==1.16.1` (e221fd4)
+- Update to Hatch 1.14.1 (3b43236)
+- Update changelog for version 0.72.3 (#120) (f801c79)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2025-06-20 22:12:51 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQPbSJuRVoJr+UF78zwfzGKZpKgldSNdwa466wxmfuCgIOq2rGik3M+ZbcbhnmHKp5Q
++6me/th0qm8PRr7UnWKgM=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.72.3 - 2025-04-06
 
 ### Changes
