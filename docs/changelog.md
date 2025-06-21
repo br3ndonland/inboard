@@ -21,7 +21,7 @@ This mypy update is mentioned in the release notes because it required
 an update to a user-facing type annotation.
 
 Mypy 1.16.1 detects a type error, undetected in previous mypy versions,
-in the `on_error` argument to `AuthenticationMiddleware.\_\_init\_\_()` in
+in the `on_error` argument to `AuthenticationMiddleware.__init__()` in
 `inboard.app.main_starlette`.
 
 ```text
