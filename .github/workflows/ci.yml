@@ -417,6 +417,7 @@ jobs:
           echo '# Changelog
           ' >CHANGELOG.md
 
+          # shellcheck disable=SC2016
           echo '# Changelog
 
           [View on GitHub](https://github.com/${{github.repository}}/blob/HEAD/CHANGELOG.md)
