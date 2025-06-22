@@ -437,13 +437,10 @@ jobs:
           git tag -l --sort=-taggerdate:iso --format="$GIT_LOG_FORMAT" >>CHANGELOG.md
           git tag -l --sort=-taggerdate:iso --format="$GIT_LOG_FORMAT" >>docs/changelog.md
 
-          # shellcheck disable=SC2016
-          ESCAPE_DUNDERS='s:([^`])(__)([a-z]+)(__)([^`]):\1\\_\\_\3\\_\\_\5:g'
+          ESCAPE_DUNDERS='s:(\s|\/)(__)(all|init|token)(__)(\s|\.py|\(\)){0,1}:\1\\_\\_\3\\_\\_\5:g'
           REPLACEMENT='There are several breaking changes noted in the\n[Gunicorn changelog](https://docs.gunicorn.org/en/latest/news.html).'
           for changelog in "CHANGELOG.md" "docs/changelog.md"; do
             sed -Ei "$ESCAPE_DUNDERS" "$changelog"
-            # shellcheck disable=SC2016
-            sed -Ei 's:`AuthenticationMiddleware\.\\_\\_init\\_\\_\(\)`:`AuthenticationMiddleware\.__init__\(\)`:g' "$changelog"
             sed -Ei \
               -e "s|\[Changes\]\(https://docs.gunicorn.org/en/latest/news.html\) include|$REPLACEMENT|g" \
               -e "s|a fix for a high-severity security vulnerability \(CVE-2024-1135,||g" \
