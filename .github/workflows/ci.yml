@@ -414,6 +414,8 @@ jobs:
           ref: develop
       - name: Generate changelog from Git tags
         run: |
+          # Generate changelog from Git tags
+
           echo '# Changelog
           ' >CHANGELOG.md
 
@@ -436,6 +438,38 @@ jobs:
 
           git tag -l --sort=-taggerdate:iso --format="$GIT_LOG_FORMAT" >>CHANGELOG.md
           git tag -l --sort=-taggerdate:iso --format="$GIT_LOG_FORMAT" >>docs/changelog.md
+      - name: Fix changelog
+        run: |
+          # Fix changelog
+          #
+          # The previous step in the GitHub Actions job generates a changelog
+          # from Git tag messages and writes the output to Markdown documents.
+          # https://github.com/br3ndonland/inboard/commit/b15efff7fc45759983743411fcbbd52415eb5455
+          #
+          # Some post-processing of these Git tag messages may be necessary in order
+          # for them to render properly from the Markdown documents. One reason for
+          # this post-processing is to handle "dunders" (double underscores).
+          #
+          # Dunder names like `__init__` have special meaning in Python.
+          # https://docs.python.org/3/reference/datamodel.html#specialnames
+          # https://docs.python.org/3/reference/lexical_analysis.html
+          #
+          # Dunders also make text bold in Markdown unless escaped with backslashes
+          # or enclosed in backticks. When the document is transformed to HTML, the
+          # backticks are transformed to HTML code elements.
+          #
+          # Some early changelog entries in this project did not enclose dunders in
+          # backticks. When the text from these entries is formatted as Markdown and
+          # rendered, text within dunders like `__init__` shows up as "init" in bold
+          # because Markdown parsers read it as equivalent to `**init**`. To avoid
+          # having these dunder names converted to bold text, the GitHub Actions job
+          # runs a `sed` command to escape the dunders, like \_\_init\_\_.
+          #
+          # The changelog entry for the update to Gunicorn 23.0.0 mentions a
+          # security vulnerability that was fixed, but this vulnerability was
+          # actually fixed in Gunicorn 22.0.0 and described in the changelog
+          # for inboard 0.68.0. This step removes the duplicate info.
+          # https://github.com/br3ndonland/inboard/pull/117
 
           ESCAPE_DUNDERS='s:(\s|\/)(__)(all|init|token)(__)(\s|\.py|\(\)){0,1}:\1\\_\\_\3\\_\\_\5:g'
           REPLACEMENT='There are several breaking changes noted in the\n[Gunicorn changelog](https://docs.gunicorn.org/en/latest/news.html).'
