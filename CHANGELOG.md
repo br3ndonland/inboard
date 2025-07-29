@@ -1,5 +1,47 @@
 # Changelog
 
+## 0.73.0 - 2025-07-29
+
+### Changes
+
+**Update to FastAPI 0.116 and Starlette 0.47** (dc8ae340af88a3a1749c077f23b32bedcd800b76)
+
+This release will update/upgrade to
+[FastAPI 0.116](https://fastapi.tiangolo.com/release-notes/) and
+[Starlette 0.47](https://www.starlette.io/release-notes/).
+This is a minor release to align with FastAPI and Starlette versioning.
+
+FastAPI 0.116 introduces support for deploying to FastAPI Cloud with
+the `fastapi deploy` CLI command.
+
+Starlette 0.47 reintroduces support for an ASGI extension called
+[path send](https://asgi.readthedocs.io/en/latest/extensions.html#path-send)
+(aka "path-send" or `pathsend`). It was introduced in Starlette 0.36,
+then removed in 0.38 because of issues with `BaseHTTPMiddleware`. Now
+they're giving it another try.
+
+### Commits
+
+- Bump version from 0.72.4 to 0.73.0 (f28b44f)
+- Update to FastAPI 0.116 and Starlette 0.47 (dc8ae34)
+- Fix changelog in separate GitHub Actions job step (60c0700)
+- Fix changelog generator `$ESCAPE_DUNDERS` regex (2a6a518)
+- Add missing `shellcheck disable=SC2016` (6573cd9)
+- Update changelog for version 0.72.4 (#121) (879782b)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2025-07-29 18:07:25 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQP4plwsHpFxvbiWWCR90etBjeK1b+iUwEtcmr0LM6u15G4ZFHjWKKx30q8bXUbxy7q
+gjq0L8Rfbn9czEUHFhUAk=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.72.4 - 2025-06-20
 
 ### Changes
