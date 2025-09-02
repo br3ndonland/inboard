@@ -152,7 +152,6 @@ path = "inboard/__init__.py"
 [tool.mypy]
 files = ["**/*.py"]
 plugins = "pydantic.mypy"
-show_error_codes = true
 strict = true
 
 [tool.pytest.ini_options]
