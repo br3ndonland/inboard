@@ -150,6 +150,7 @@ path = ".venv"
 path = "inboard/__init__.py"
 
 [tool.mypy]
+exclude_gitignore = true
 files = ["**/*.py"]
 plugins = "pydantic.mypy"
 strict = true
