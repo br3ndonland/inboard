@@ -1,3 +1,11 @@
 {
-    "tabWidth": 4
+  "overrides": [
+    {
+      "files": ["docs/**/*.md"],
+      "options": {
+        "parser": "markdown",
+        "tabWidth": 4
+      }
+    }
+  ]
 }
