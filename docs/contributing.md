@@ -267,14 +267,6 @@ Spell check is performed with [CSpell](https://cspell.org/). The CSpell command 
 
 ### Deployments
 
-Documentation is built with [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/), deployed on [Vercel](https://vercel.com/), and available at [inboard.bws.bio](https://inboard.bws.bio) and [inboard.vercel.app](https://inboard.vercel.app).
-
-[Vercel build configuration](https://vercel.com/docs/build-step):
-
-- Install command: `python3 -m pip install --user pipx && export PATH="$HOME/.local/bin:$PATH" && pipx install --global --include-deps 'mkdocs-material>=9,<10'`
-- Build command: `mkdocs build --site-dir public`
-- Output directory: `public` (default)
+Documentation is built with [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/), deployed to [Vercel](https://vercel.com/) using the [Vercel project configuration](https://vercel.com/docs/project-configuration) in [`vercel.json`](vercel.json), and available at [inboard.bws.bio](https://inboard.bws.bio) and [inboard.vercel.app](https://inboard.vercel.app).
 
 **The version of `mkdocs-material` installed on Vercel is independent of the version listed in _pyproject.toml_. If the version of `mkdocs-material` is updated in _pyproject.toml_, it must also be updated in the Vercel build configuration**.
-
-[Vercel site configuration](https://vercel.com/docs/configuration) is specified in _vercel.json_.

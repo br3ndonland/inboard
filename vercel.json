@@ -1,4 +1,6 @@
 {
+  "installCommand": "python3 -m pip install --user pipx && export PATH=\"$HOME/.local/bin:$PATH\" && pipx install --global --include-deps 'mkdocs-material>=9,<10'",
+  "buildCommand": "mkdocs build --site-dir public",
   "cleanUrls": true,
   "trailingSlash": false
 }
