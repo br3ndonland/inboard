@@ -271,7 +271,10 @@ Documentation is built with [Material for MkDocs](https://squidfunk.github.io/mk
 
 [Vercel build configuration](https://vercel.com/docs/build-step):
 
-- Build command: `python3 -m pip install 'mkdocs-material>=9,<10' && mkdocs build --site-dir public`. **The version of `mkdocs-material` installed on Vercel is independent of the version listed in _pyproject.toml_. If the version of `mkdocs-material` is updated in _pyproject.toml_, it must also be updated in the Vercel build configuration**.
+- Install command: `python3 -m pip install --user pipx && export PATH="$HOME/.local/bin:$PATH" && pipx install --global --include-deps 'mkdocs-material>=9,<10'`
+- Build command: `mkdocs build --site-dir public`
 - Output directory: `public` (default)
+
+**The version of `mkdocs-material` installed on Vercel is independent of the version listed in _pyproject.toml_. If the version of `mkdocs-material` is updated in _pyproject.toml_, it must also be updated in the Vercel build configuration**.
 
 [Vercel site configuration](https://vercel.com/docs/configuration) is specified in _vercel.json_.
