@@ -14,6 +14,7 @@ on:
 
 env:
   DOCKER_BUILDKIT: "1"
+  HATCH_ENV_TYPE_VIRTUAL_PATH: ".venv"
   HATCH_ENV: "ci"
   HATCH_VERSION: "1.14.1"
   PIPX_VERSION: "1.7.1"
@@ -87,7 +88,7 @@ jobs:
         run: hatch env create ${{ env.HATCH_ENV }}
       - name: Test virtualenv location
         run: |
-          EXPECTED_VIRTUALENV_PATH=$GITHUB_WORKSPACE/.venv
+          EXPECTED_VIRTUALENV_PATH="$GITHUB_WORKSPACE/$HATCH_ENV_TYPE_VIRTUAL_PATH"
           INSTALLED_VIRTUALENV_PATH=$(hatch env find)
           echo "The virtualenv should be at $EXPECTED_VIRTUALENV_PATH."
           echo "Hatch is using a virtualenv at $INSTALLED_VIRTUALENV_PATH."
@@ -232,7 +233,7 @@ jobs:
         run: |
           test_virtualenv_location_in_docker() {
             local docker_virtualenv docker_python expected_virtualenv expected_python
-            expected_virtualenv="/app/.venv"
+            expected_virtualenv="/app/$HATCH_ENV_TYPE_VIRTUAL_PATH"
             expected_python="$expected_virtualenv/bin/python"
             echo "The Hatch virtualenv should be at $expected_virtualenv."
             echo "The Python executable should be at $expected_python."

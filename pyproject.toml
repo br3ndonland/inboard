@@ -89,7 +89,6 @@ packages = ["inboard"]
 [tool.hatch.envs.base]
 dev-mode = false
 features = []
-path = ".venv"
 
 [tool.hatch.envs.ci]
 dev-mode = false
@@ -99,7 +98,6 @@ features = [
   "tests",
   "uvicorn-fast",
 ]
-path = ".venv"
 
 [tool.hatch.envs.default]
 dev-mode = true
@@ -110,7 +108,6 @@ features = [
   "tests",
   "uvicorn-fast",
 ]
-path = ".venv"
 
 [tool.hatch.envs.default.scripts]
 check = [
@@ -137,14 +134,12 @@ dev-mode = false
 features = [
   "fastapi",
 ]
-path = ".venv"
 
 [tool.hatch.envs.starlette]
 dev-mode = false
 features = [
   "starlette",
 ]
-path = ".venv"
 
 [tool.hatch.version]
 path = "inboard/__init__.py"
