@@ -112,7 +112,6 @@ jobs:
         run: hatch run ${{ env.HATCH_ENV }}:check
       - name: Run tests
         run: |
-          export COVERAGE_PROCESS_START="$PWD/pyproject.toml"
           hatch run ${{ env.HATCH_ENV }}:coverage run
 
           coverage_files_after_run=$(find . -name '.coverage*' | wc -l)
