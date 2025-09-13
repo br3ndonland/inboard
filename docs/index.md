@@ -1,6 +1,6 @@
 # 🚢 inboard 🐳
 
-<img src="assets/images/inboard-logo.svg" alt="inboard logo" width="90%" />
+<img src="https://raw.githubusercontent.com/br3ndonland/inboard/develop/docs/assets/images/inboard-logo.svg" alt="inboard logo" width="90%" />
 
 _Docker images and utilities to power your Python APIs and help you ship faster._
 
@@ -22,8 +22,8 @@ _Why use this project?_ You might want to try out inboard because it:
 
 - **Offers a Python package and Docker images that work together**. Python packages and Docker images don't automatically share the same versioning systems, but inboard can help with this. You might install the Python package with a minor version constraint. You can also pull the corresponding Docker image by specifying the minor version in the Docker tag (`FROM ghcr.io/br3ndonland/inboard:<version>`).
 - **Tests everything**. inboard performs unit testing of 100% of the Python code, and also runs smoke tests of the Docker images each time they are built.
-- **Sets sane defaults, but allows configuration**. Configure a variety of settings with [environment variables](environment.md). Or run it as-is and it just works.
-- **Configures logging extensibly**. [inboard simplifies logging](logging.md) by handling all its Python log streams with a single logging config. It also offers the ability to [filter health check endpoints out of the access logs](logging.md#filtering-log-messages). Don't like it? No problem. You can easily [extend](logging.md#extending-the-logging-config) or [override](logging.md#overriding-the-logging-config) the logging behavior.
+- **Sets sane defaults, but allows configuration**. Configure a variety of settings with environment variables. Or run it as-is and it just works.
+- **Configures logging extensibly**. inboard simplifies logging by handling all its Python log streams with a single logging config. It also offers the ability to filter health check endpoints out of the access logs. Don't like it? No problem. You can easily extend or override the logging behavior.
 
 ## Quickstart
 
@@ -34,6 +34,10 @@ docker pull ghcr.io/br3ndonland/inboard
 docker run -d -p 80:80 --platform linux/amd64 ghcr.io/br3ndonland/inboard
 http :80  # HTTPie: https://httpie.io/
 ```
+
+## Documentation
+
+Documentation is built with [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/), deployed to [Vercel](https://vercel.com/) using the [Vercel project configuration](https://vercel.com/docs/project-configuration) in `vercel.json`, and available at [inboard.bws.bio](https://inboard.bws.bio) and [inboard.vercel.app](https://inboard.vercel.app).
 
 ## Background
 

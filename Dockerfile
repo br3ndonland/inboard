@@ -20,9 +20,11 @@ ENV \
   PIPX_HOME=/opt/pipx/home \
   PIPX_VERSION=$PIPX_VERSION \
   PYTHONPATH=/app
-COPY --link pyproject.toml README.md /app/
+COPY --link pyproject.toml /app/
+COPY --link docs/index.md /app/docs/index.md
 WORKDIR /app
 RUN <<HEREDOC
+set -e
 . /etc/os-release
 if [ "$ID" = "alpine" ]; then
   apk add --no-cache --virtual .build-deps \
@@ -42,6 +44,7 @@ CMD ["-m", "inboard.start"]
 FROM builder AS base
 ENV APP_MODULE=inboard.app.main_base:app
 RUN <<HEREDOC
+set -e
 hatch env create base
 . /etc/os-release
 if [ "$ID" = "alpine" ]; then
@@ -55,6 +58,7 @@ HEREDOC
 FROM builder AS fastapi
 ENV APP_MODULE=inboard.app.main_fastapi:app
 RUN <<HEREDOC
+set -e
 hatch env create fastapi
 . /etc/os-release
 if [ "$ID" = "alpine" ]; then
@@ -68,6 +72,7 @@ HEREDOC
 FROM builder AS starlette
 ENV APP_MODULE=inboard.app.main_starlette:app
 RUN <<HEREDOC
+set -e
 hatch env create starlette
 . /etc/os-release
 if [ "$ID" = "alpine" ]; then

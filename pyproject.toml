@@ -29,7 +29,7 @@ dynamic = ["version"]
 keywords = ["asgi", "docker", "fastapi", "gunicorn", "uvicorn"]
 license = "MIT"
 name = "inboard"
-readme = "README.md"
+readme = "docs/index.md"
 requires-python = ">=3.9,<4"
 
 [project.optional-dependencies]
