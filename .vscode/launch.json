@@ -4,7 +4,7 @@
     // inboard uvicorn debug config
     {
       "name": "inboard",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "stopOnEntry": false,
       "python": "${command:python.interpreterPath}",
@@ -25,7 +25,7 @@
     // FastAPI debugger config from VSCode Python extension
     {
       "name": "FastAPI",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "module": "uvicorn",
       "args": [
