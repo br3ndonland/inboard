@@ -4,7 +4,7 @@ import json
 import logging
 import os
 import subprocess
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, final
 
 import pytest
 
@@ -33,7 +33,7 @@ class TestRunPreStartScript:
         logger = mocker.patch.object(logging, "root", autospec=True)
         monkeypatch.setenv("PRE_START_PATH", str(pre_start_script_tmp_py))
         pre_start_path = os.getenv("PRE_START_PATH")
-        start.run_pre_start_script(logger=logger)
+        _ = start.run_pre_start_script(logger=logger)
         logger.debug.assert_has_calls(
             calls=[
                 mocker.call("Checking for pre-start script."),
@@ -52,7 +52,7 @@ class TestRunPreStartScript:
         logger = mocker.patch.object(logging, "root", autospec=True)
         monkeypatch.setenv("PRE_START_PATH", str(pre_start_script_tmp_sh))
         pre_start_path = os.getenv("PRE_START_PATH")
-        start.run_pre_start_script(logger=logger)
+        _ = start.run_pre_start_script(logger=logger)
         logger.debug.assert_has_calls(
             calls=[
                 mocker.call("Checking for pre-start script."),
@@ -69,7 +69,7 @@ class TestRunPreStartScript:
         """Test `start.run_pre_start_script` with an incorrect file path."""
         logger = mocker.patch.object(logging, "root", autospec=True)
         monkeypatch.setenv("PRE_START_PATH", "/no/file/here")
-        start.run_pre_start_script(logger=logger)
+        _ = start.run_pre_start_script(logger=logger)
         logger.debug.assert_has_calls(
             calls=[
                 mocker.call("Checking for pre-start script."),
@@ -80,7 +80,7 @@ class TestRunPreStartScript:
     def test_run_pre_start_script_none(self, mocker: MockerFixture) -> None:
         """Test `start.run_pre_start_script` with `PRE_START_PATH` set to `None`."""
         logger = mocker.patch.object(logging, "root", autospec=True)
-        start.run_pre_start_script(logger=logger)
+        _ = start.run_pre_start_script(logger=logger)
         logger.debug.assert_has_calls(
             calls=[
                 mocker.call("Checking for pre-start script."),
@@ -100,7 +100,7 @@ class TestRunPreStartScript:
         pre_start_path = os.getenv("PRE_START_PATH")
         process = "python" if pre_start_script_error.suffix == ".py" else "sh"
         with pytest.raises(subprocess.CalledProcessError):
-            start.run_pre_start_script(logger=logger)
+            _ = start.run_pre_start_script(logger=logger)
         assert logger.debug.call_count == 2
         logger.debug.assert_has_calls(
             calls=[
@@ -124,7 +124,7 @@ class TestSetAppModule:
         """Test `start.set_app_module` with default module path."""
         logger = mocker.patch.object(logging, "root", autospec=True)
         monkeypatch.setenv("APP_MODULE", f"inboard.app.main_{module}:app")
-        start.set_app_module(logger=logger)
+        _ = start.set_app_module(logger=logger)
         assert mocker.call(f"App module set to inboard.app.main_{module}:app.")
 
     @pytest.mark.parametrize("module", ("base", "fastapi", "starlette"))
@@ -141,7 +141,7 @@ class TestSetAppModule:
         logger = mocker.patch.object(logging, "root", autospec=True)
         monkeypatch.syspath_prepend(app_module_tmp_path)
         monkeypatch.setenv(module_variable_name, f"tmp_app.main_{module}:app")
-        start.set_app_module(logger=logger)
+        _ = start.set_app_module(logger=logger)
         assert mocker.call(f"App module set to tmp_app.main_{module}:app.")
 
     def test_set_app_module_incorrect(
@@ -155,13 +155,12 @@ class TestSetAppModule:
         logger_error_msg = "Error when setting app module"
         incorrect_module_msg = "Unable to find or import inboard.app.incorrect"
         with pytest.raises(ImportError):
-            start.set_app_module(logger=logger)
+            _ = start.set_app_module(logger=logger)
         assert mocker.call(f"{logger_error_msg}: ImportError {incorrect_module_msg}.")
 
     def test_set_app_module_when_environment_variable_not_set(
         self,
         mocker: MockerFixture,
-        monkeypatch: pytest.MonkeyPatch,
     ) -> None:
         """Test `start.set_app_module` when the environment variable
         `APP_MODULE` is not set.
@@ -170,7 +169,7 @@ class TestSetAppModule:
         logger_error_msg = "Error when setting app module"
         missing_value_msg = "Please set the APP_MODULE environment variable"
         with pytest.raises(ValueError):
-            start.set_app_module(logger=logger)
+            _ = start.set_app_module(logger=logger)
         assert mocker.call(f"{logger_error_msg}: ImportError {missing_value_msg}.")
 
 
@@ -203,7 +202,6 @@ class TestSetGunicornOptions:
         self,
         gunicorn_conf_tmp_file_path: Path,
         monkeypatch: pytest.MonkeyPatch,
-        tmp_path: Path,
     ) -> None:
         """Test custom Gunicorn server options with temporary configuration file."""
         app_module = "inboard.app.main_starlette:app"
@@ -226,9 +224,10 @@ class TestSetGunicornOptions:
         """Set path to non-existent file and raise an error."""
         monkeypatch.setenv("GUNICORN_CONF", "/no/file/here")
         with pytest.raises(FileNotFoundError):
-            start.set_gunicorn_options("inboard.app.main_fastapi:app")
+            _ = start.set_gunicorn_options("inboard.app.main_fastapi:app")
 
 
+@final
 class TestSetUvicornOptions:
     """Test Uvicorn configuration options method.
     ---

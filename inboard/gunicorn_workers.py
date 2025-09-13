@@ -34,8 +34,12 @@ import signal
 import sys
 from typing import Any
 
-from gunicorn.arbiter import Arbiter  # type: ignore[import-untyped]
-from gunicorn.workers.base import Worker  # type: ignore[import-untyped]
+from gunicorn.arbiter import (  # type: ignore[import-untyped] # pyright: ignore[reportMissingTypeStubs]
+    Arbiter,
+)
+from gunicorn.workers.base import (  # type: ignore[import-untyped] # pyright: ignore[reportMissingTypeStubs]
+    Worker,
+)
 from uvicorn.config import Config
 from uvicorn.server import Server
 
@@ -88,7 +92,7 @@ class UvicornWorker(Worker):  # type: ignore[misc]
 
         config_kwargs.update(self.CONFIG_KWARGS)
 
-        self.config = Config(**config_kwargs)
+        self.config: Config = Config(**config_kwargs)
 
     def init_process(self) -> None:
         self.config.setup_event_loop()
@@ -99,9 +103,9 @@ class UvicornWorker(Worker):  # type: ignore[misc]
         # other signals are set up by Server.install_signal_handlers()
         # See: https://github.com/encode/uvicorn/issues/894
         for s in self.SIGNALS:
-            signal.signal(s, signal.SIG_DFL)
+            _ = signal.signal(s, signal.SIG_DFL)
 
-        signal.signal(signal.SIGUSR1, self.handle_usr1)
+        _ = signal.signal(signal.SIGUSR1, self.handle_usr1)
         # Don't let SIGUSR1 disturb active requests by interrupting system calls
         signal.siginterrupt(signal.SIGUSR1, False)
 
@@ -131,4 +135,4 @@ class UvicornWorker(Worker):  # type: ignore[misc]
 
 
 class UvicornH11Worker(UvicornWorker):
-    CONFIG_KWARGS = {"loop": "asyncio", "http": "h11"}
+    CONFIG_KWARGS: dict[str, str] = {"loop": "asyncio", "http": "h11"}

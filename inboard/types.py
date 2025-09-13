@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     if sys.version_info < (3, 11):
         from typing_extensions import Required
     else:
-        from typing import Required
+        from typing import Required  # pyright: ignore[reportUnreachable]
 
     from uvicorn._types import ASGIApplication
     from uvicorn.config import (
@@ -49,14 +49,14 @@ class _FilterConfigurationTypedDict(TypedDict):
 # https://docs.python.org/3/library/logging.config.html#user-defined-objects
 _FormatterConfiguration = Union[
     _FormatterConfigurationTypedDict,
-    dict[str, Any],
+    dict[str, Any],  # pyright: ignore[reportExplicitAny]
 ]
 _FilterConfiguration = Union[
     _FilterConfigurationTypedDict,
-    dict[str, Any],
+    dict[str, Any],  # pyright: ignore[reportExplicitAny]
 ]
 # Handler config can have additional keys even when not providing a custom factory so we just use `dict`.
-_HandlerConfiguration = dict[str, Any]
+_HandlerConfiguration = dict[str, Any]  # pyright: ignore[reportExplicitAny]
 
 
 class DictConfig(TypedDict):

@@ -21,23 +21,23 @@ server = (
 version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
 
 
-def on_auth_error(connection: HTTPConnection, e: AuthenticationError) -> JSONResponse:
+def on_auth_error(_: HTTPConnection, e: AuthenticationError) -> JSONResponse:
     return JSONResponse(
         {"error": "Incorrect username or password", "detail": str(e)}, status_code=401
     )
 
 
-async def get_root(request: Request) -> JSONResponse:
+async def get_root(_: Request) -> JSONResponse:
     return JSONResponse({"Hello": "World"})
 
 
 @requires("authenticated")
-async def get_health(request: Request) -> JSONResponse:
+async def get_health(request: Request) -> JSONResponse:  # pyright: ignore[reportUnusedParameter]
     return JSONResponse({"application": "inboard", "status": "active"})
 
 
 @requires("authenticated")
-async def get_status(request: Request) -> JSONResponse:
+async def get_status(request: Request) -> JSONResponse:  # pyright: ignore[reportUnusedParameter]
     message = f"Hello World, from {server}, Starlette, and Python {version}!"
     return JSONResponse(
         {"application": "inboard", "status": "active", "message": message}

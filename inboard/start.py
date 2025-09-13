@@ -12,13 +12,15 @@ from typing import TYPE_CHECKING
 import uvicorn
 
 from inboard.logging_conf import configure_logging
+from inboard.types import UvicornOptions
 
 if TYPE_CHECKING:
-    from inboard.types import DictConfig, UvicornOptions
+    from inboard.types import DictConfig
 
 
-def run_pre_start_script(logger: logging.Logger = logging.getLogger()) -> str:
+def run_pre_start_script(logger: logging.Logger | None = None) -> str:
     """Run a pre-start script at the provided path."""
+    logger = logger or logging.getLogger()
     pre_start_path = os.getenv("PRE_START_PATH")
     logger.debug("Checking for pre-start script.")
     if not pre_start_path:
@@ -27,7 +29,7 @@ def run_pre_start_script(logger: logging.Logger = logging.getLogger()) -> str:
         process = "python" if Path(pre_start_path).suffix == ".py" else "sh"
         run_message = f"Running pre-start script with {process} {pre_start_path}."
         logger.debug(run_message)
-        subprocess.run([process, pre_start_path], check=True)
+        _ = subprocess.run([process, pre_start_path], check=True)
         message = f"Ran pre-start script with {process} {pre_start_path}."
     else:
         message = "No pre-start script found."
@@ -35,8 +37,9 @@ def run_pre_start_script(logger: logging.Logger = logging.getLogger()) -> str:
     return message
 
 
-def set_app_module(logger: logging.Logger = logging.getLogger()) -> str:
+def set_app_module(logger: logging.Logger | None = None) -> str:
     """Set the name of the Python module with the app instance to run."""
+    logger = logger or logging.getLogger()
     try:
         app_module = os.getenv("APP_MODULE") or os.getenv("UVICORN_APP")
         if not app_module:
@@ -76,8 +79,8 @@ def _update_uvicorn_options(uvicorn_options: UvicornOptions) -> UvicornOptions:
         uvicorn_options["reload_includes"] = reload_includes
         uvicorn_options["reload_excludes"] = reload_excludes
     if value := os.getenv("UVICORN_CONFIG_OPTIONS"):
-        uvicorn_options_json = json.loads(value)
-        uvicorn_options.update(uvicorn_options_json)
+        uvicorn_options_json = json.loads(value)  # pyright: ignore[reportAny]
+        uvicorn_options.update(uvicorn_options_json)  # pyright: ignore[reportAny]
     return uvicorn_options
 
 
@@ -91,7 +94,7 @@ def set_uvicorn_options(
     log_level = os.getenv("LOG_LEVEL", "info")
     reload_dirs = _split_uvicorn_option("RELOAD_DIRS")
     use_reload = bool((value := os.getenv("WITH_RELOAD")) and value.lower() == "true")
-    uvicorn_options: UvicornOptions = dict(
+    uvicorn_options = UvicornOptions(
         app=app_module,
         host=host,
         port=port,
@@ -106,21 +109,22 @@ def set_uvicorn_options(
 def start_server(
     process_manager: str,
     app_module: str,
-    logger: logging.Logger = logging.getLogger(),
+    logger: logging.Logger | None = None,
     logging_conf_dict: DictConfig | None = None,
 ) -> None:
     """Start the Uvicorn or Gunicorn server."""
+    logger = logger or logging.getLogger()
     try:
         if process_manager == "gunicorn":
             logger.debug("Running Uvicorn with Gunicorn.")
             gunicorn_options: list[str] = set_gunicorn_options(app_module)
-            subprocess.run(gunicorn_options)
+            _ = subprocess.run(gunicorn_options)
         elif process_manager == "uvicorn":
             logger.debug("Running Uvicorn without Gunicorn.")
             uvicorn_options: UvicornOptions = set_uvicorn_options(
                 app_module, log_config=logging_conf_dict
             )
-            uvicorn.run(**uvicorn_options)  # type: ignore[arg-type]
+            uvicorn.run(**uvicorn_options)  # type: ignore[arg-type] # pyright: ignore[reportArgumentType]
         else:
             raise NameError("Process manager needs to be either uvicorn or gunicorn")
     except Exception as e:
@@ -131,7 +135,7 @@ def start_server(
 if __name__ == "__main__":  # pragma: no cover
     logger = logging.getLogger()
     logging_conf_dict = configure_logging(logger=logger)
-    run_pre_start_script(logger=logger)
+    _ = run_pre_start_script(logger=logger)
     start_server(
         str(os.getenv("PROCESS_MANAGER", "gunicorn")),
         app_module=set_app_module(logger=logger),

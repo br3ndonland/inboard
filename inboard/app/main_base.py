@@ -25,9 +25,7 @@ def _compose_message() -> str:
     return f"Hello World, from {server} and Python {version}!"
 
 
-async def app(
-    scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable
-) -> None:
+async def app(scope: Scope, _: ASGIReceiveCallable, send: ASGISendCallable) -> None:
     """Define a simple ASGI 3 application for use with Uvicorn.
 
     https://asgi.readthedocs.io/en/stable/introduction.html

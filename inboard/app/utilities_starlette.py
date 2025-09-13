@@ -17,18 +17,18 @@ class BasicAuth(AuthenticationBackend):
     """Configure HTTP Basic auth for Starlette."""
 
     async def authenticate(
-        self, request: HTTPConnection
+        self, conn: HTTPConnection
     ) -> tuple[AuthCredentials, SimpleUser] | None:
         """Authenticate a Starlette request with HTTP Basic auth."""
-        if "Authorization" not in request.headers:
+        if "Authorization" not in conn.headers:
             return None
         try:
-            auth = request.headers["Authorization"]
+            auth = conn.headers["Authorization"]
             basic_auth_username = os.getenv("BASIC_AUTH_USERNAME")
             basic_auth_password = os.getenv("BASIC_AUTH_PASSWORD")
             if not (basic_auth_username and basic_auth_password):
                 raise AuthenticationError("Server HTTP Basic auth credentials not set")
-            scheme, credentials = auth.split()
+            _, credentials = auth.split()
             decoded = base64.b64decode(credentials).decode("ascii")
             username, _, password = decoded.partition(":")
             correct_username = secrets.compare_digest(username, basic_auth_username)

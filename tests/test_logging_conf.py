@@ -24,7 +24,7 @@ class TestConfigureLogging:
     ) -> None:
         """Test logging configuration with correct logging config file path."""
         logger = mocker.patch.object(logging, "root", autospec=True)
-        logging_conf.configure_logging(
+        _ = logging_conf.configure_logging(
             logger=logger, logging_conf=str(logging_conf_file_path)
         )
         logger.debug.assert_called_once_with(
@@ -36,7 +36,7 @@ class TestConfigureLogging:
     ) -> None:
         """Test logging configuration with correct logging config module path."""
         logger = mocker.patch.object(logging, "root", autospec=True)
-        logging_conf.configure_logging(
+        _ = logging_conf.configure_logging(
             logger=logger, logging_conf=logging_conf_module_path
         )
         logger.debug.assert_called_once_with(
@@ -48,7 +48,9 @@ class TestConfigureLogging:
         logger = mocker.patch.object(logging, "root", autospec=True)
         logger_error_msg = "Error when setting logging module"
         with pytest.raises(ModuleNotFoundError):
-            logging_conf.configure_logging(logger=logger, logging_conf="no.module.here")
+            _ = logging_conf.configure_logging(
+                logger=logger, logging_conf="no.module.here"
+            )
         assert logger_error_msg in logger.error.call_args.args[0]
         assert "ModuleNotFoundError" in logger.error.call_args.args[0]
 
@@ -58,7 +60,9 @@ class TestConfigureLogging:
         """Test logging configuration with temporary logging config file path."""
         logger = mocker.patch.object(logging, "root", autospec=True)
         logging_conf_file = f"{logging_conf_tmp_file_path}/tmp_log.py"
-        logging_conf.configure_logging(logger=logger, logging_conf=logging_conf_file)
+        _ = logging_conf.configure_logging(
+            logger=logger, logging_conf=logging_conf_file
+        )
         logger.debug.assert_called_once_with(
             f"Logging dict config loaded from {logging_conf_file}."
         )
@@ -76,7 +80,7 @@ class TestConfigureLogging:
         logger_error_msg = "Error when setting logging module"
         import_error_msg = f"Unable to import {incorrect_logging_conf}"
         with pytest.raises(ImportError) as e:
-            logging_conf.configure_logging(
+            _ = logging_conf.configure_logging(
                 logger=logger,
                 logging_conf=str(incorrect_logging_conf),
             )
@@ -99,7 +103,7 @@ class TestConfigureLogging:
         monkeypatch.syspath_prepend(logging_conf_tmp_file_path)
         monkeypatch.setenv("LOGGING_CONF", "tmp_log")
         assert os.getenv("LOGGING_CONF") == "tmp_log"
-        logging_conf.configure_logging(logger=logger, logging_conf="tmp_log")
+        _ = logging_conf.configure_logging(logger=logger, logging_conf="tmp_log")
         logger.debug.assert_called_once_with("Logging dict config loaded from tmp_log.")
 
     def test_configure_logging_tmp_module_incorrect_type(
@@ -119,7 +123,9 @@ class TestConfigureLogging:
         type_error_msg = "LOGGING_CONFIG is not a dictionary instance"
         assert os.getenv("LOGGING_CONF") == "incorrect_type"
         with pytest.raises(TypeError):
-            logging_conf.configure_logging(logger=logger, logging_conf="incorrect_type")
+            _ = logging_conf.configure_logging(
+                logger=logger, logging_conf="incorrect_type"
+            )
         logger.error.assert_called_once_with(
             f"{logger_error_msg}: TypeError {type_error_msg}."
         )
@@ -141,7 +147,7 @@ class TestConfigureLogging:
         attribute_error_msg = "No LOGGING_CONFIG in no_dict"
         assert os.getenv("LOGGING_CONF") == "no_dict"
         with pytest.raises(AttributeError):
-            logging_conf.configure_logging(logger=logger, logging_conf="no_dict")
+            _ = logging_conf.configure_logging(logger=logger, logging_conf="no_dict")
         logger.error.assert_called_once_with(
             f"{logger_error_msg}: AttributeError {attribute_error_msg}."
         )
@@ -158,7 +164,7 @@ class TestLoggingOutput:
     def test_logging_output_default(self, capfd: pytest.CaptureFixture[str]) -> None:
         """Test logger output with default format."""
         logger = logging.getLogger()
-        logging_conf.configure_logging()
+        _ = logging_conf.configure_logging()
         logger.info("Hello, World!")
         captured = capfd.readouterr()
         assert "INFO" in captured.out
@@ -181,7 +187,7 @@ class TestLoggingOutput:
         monkeypatch.setenv("LOG_FORMAT", log_format)
         monkeypatch.setenv("LOG_LEVEL", "debug")
         logger = logging.getLogger()
-        logging_conf.configure_logging(logging_conf=logging_conf_file)
+        _ = logging_conf.configure_logging(logging_conf=logging_conf_file)
         logger.debug("Hello, Customized World!")
         captured = capfd.readouterr()
         assert log_format not in captured.out
@@ -207,7 +213,7 @@ class TestLoggingOutput:
     ) -> None:
         """Test that log message filters are applied as expected."""
         monkeypatch.setenv("LOG_FILTERS", log_filters_input)
-        mocker.patch.object(
+        _ = mocker.patch.object(
             logging_conf, "LOG_FILTERS", logging_conf.LogFilter.set_filters()
         )
         mocker.patch.dict(
@@ -217,7 +223,7 @@ class TestLoggingOutput:
         )
         path_to_log = "/status"
         logger = logging.getLogger("test.logging_conf.output.filters")
-        logging_conf.configure_logging(logger=logger)
+        _ = logging_conf.configure_logging(logger=logger)
         logger.info(*self._uvicorn_access_log_args(path_to_log))
         logger.info(log_filters_input)
         for log_filter in log_filters_output:
@@ -250,7 +256,7 @@ class TestLoggingOutput:
             clear=True,
         )
         logger = logging.getLogger("test.logging_conf.output.filtererrors")
-        logging_conf.configure_logging(logger=logger)
+        _ = logging_conf.configure_logging(logger=logger)
         logger.info(log_filters_input)
         logger.info("/healthy")
         captured = capfd.readouterr()

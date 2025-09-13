@@ -14,18 +14,21 @@ from inboard.app import prestart as pre_start_module
 from inboard.app.main_base import app as base_app
 from inboard.app.main_fastapi import app as fastapi_app
 from inboard.app.main_starlette import app as starlette_app
+from inboard.types import UvicornOptions
 
 if TYPE_CHECKING:
     from pytest_mock import MockerFixture
 
-    from inboard.types import DictConfig, UvicornOptions
+    from inboard.types import DictConfig
 
 
 @pytest.fixture(scope="session")
 def app_module_tmp_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Copy app modules to temporary directory to test custom app module paths."""
     tmp_dir = tmp_path_factory.mktemp("app")
-    shutil.copytree(Path(pre_start_module.__file__).parent, Path(f"{tmp_dir}/tmp_app"))
+    _ = shutil.copytree(
+        Path(pre_start_module.__file__).parent, Path(f"{tmp_dir}/tmp_app")
+    )
     return tmp_dir
 
 
@@ -54,7 +57,7 @@ def client_asgi() -> TestClient:
 
     https://asgi.readthedocs.io/en/stable/specs/main.html#applications
     """
-    return TestClient(base_app)  # type: ignore[arg-type]
+    return TestClient(base_app)  # type: ignore[arg-type] # pyright: ignore[reportArgumentType]
 
 
 @pytest.fixture(params=(fastapi_app, starlette_app), scope="session")
@@ -92,7 +95,7 @@ def gunicorn_conf_tmp_file_path(tmp_path_factory: pytest.TempPathFactory) -> Pat
     """Copy gunicorn configuration file to temporary directory."""
     gunicorn_conf_tmp_path = tmp_path_factory.mktemp("gunicorn")
     tmp_file = Path(f"{gunicorn_conf_tmp_path}/gunicorn_conf.py")
-    shutil.copy(Path(gunicorn_conf_module.__file__), tmp_file)
+    _ = shutil.copy(Path(gunicorn_conf_module.__file__), tmp_file)
     return tmp_file
 
 
@@ -125,7 +128,7 @@ def logging_conf_module_path(monkeypatch: pytest.MonkeyPatch) -> str:
 def logging_conf_tmp_file_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Copy logging configuration module to custom temporary location."""
     tmp_dir = tmp_path_factory.mktemp("tmp_log")
-    shutil.copy(Path(logging_conf_module.__file__), Path(f"{tmp_dir}/tmp_log.py"))
+    _ = shutil.copy(Path(logging_conf_module.__file__), Path(f"{tmp_dir}/tmp_log.py"))
     return tmp_dir
 
 
@@ -135,7 +138,7 @@ def logging_conf_tmp_path_no_dict(tmp_path_factory: pytest.TempPathFactory) -> P
     tmp_dir = tmp_path_factory.mktemp("tmp_log_no_dict")
     tmp_file = tmp_dir / "no_dict.py"
     with open(Path(tmp_file), "x") as f:
-        f.write("print('Hello, World!')\n")
+        _ = f.write("print('Hello, World!')\n")
     return tmp_dir
 
 
@@ -147,7 +150,7 @@ def logging_conf_tmp_path_incorrect_extension(
     tmp_dir = tmp_path_factory.mktemp("tmp_log_incorrect_extension")
     tmp_file = tmp_dir / "tmp_logging_conf"
     with open(Path(tmp_file), "x") as f:
-        f.write("This file doesn't have the correct extension.\n")
+        _ = f.write("This file doesn't have the correct extension.\n")
     return tmp_dir
 
 
@@ -159,7 +162,7 @@ def logging_conf_tmp_path_incorrect_type(
     tmp_dir = tmp_path_factory.mktemp("tmp_log_incorrect_type")
     tmp_file = tmp_dir / "incorrect_type.py"
     with open(Path(tmp_file), "x") as f:
-        f.write("LOGGING_CONFIG: list = ['Hello', 'World']\n")
+        _ = f.write("LOGGING_CONFIG: list = ['Hello', 'World']\n")
     return tmp_dir
 
 
@@ -175,7 +178,7 @@ def pre_start_script_tmp_sh(tmp_path: Path) -> Path:
     """Create custom temporary pre-start shell script."""
     tmp_file = tmp_path / "prestart.sh"
     with open(Path(tmp_file), "x") as f:
-        f.write('echo "Hello World, from a temporary pre-start shell script"\n')
+        _ = f.write('echo "Hello World, from a temporary pre-start shell script"\n')
     return Path(tmp_file)
 
 
@@ -198,14 +201,14 @@ def pre_start_script_error(request: pytest.FixtureRequest, tmp_path: Path) -> Pa
     file_name, file_content = getattr(request, "param")
     tmp_file = tmp_path / file_name
     with open(Path(tmp_file), "x") as f:
-        f.write(file_content)
+        _ = f.write(file_content)
     return Path(tmp_file)
 
 
 @pytest.fixture(scope="session")
 def uvicorn_options_default() -> UvicornOptions:
     """Return default options used by `uvicorn.run()` for use in test assertions."""
-    return dict(
+    return UvicornOptions(
         app="inboard.app.main_base:app",
         host="0.0.0.0",
         port=80,
@@ -222,7 +225,7 @@ def uvicorn_options_default() -> UvicornOptions:
 @pytest.fixture
 def uvicorn_options_custom(logging_conf_dict: DictConfig) -> UvicornOptions:
     """Return custom options used by `uvicorn.run()` for use in test assertions."""
-    return dict(
+    return UvicornOptions(
         app="inboard.app.main_fastapi:app",
         host="0.0.0.0",
         port=80,

@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "charliermarsh.ruff",
+    "detachhead.basedpyright",
+    "esbenp.prettier-vscode",
+    "github.vscode-github-actions",
+    "ms-python.python",
+    "streetsidesoftware.code-spell-checker",
+    "tombi-toml.tombi",
+    "yzhang.markdown-all-in-one"
+  ],
+  "unwantedRecommendations": [
+    "ms-python.mypy-type-checker",
+    "ms-python.vscode-pylance"
+  ]
+}

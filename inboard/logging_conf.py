@@ -23,21 +23,23 @@ def find_and_load_logging_conf(logging_conf: str) -> DictConfig:
     if not spec:
         raise ImportError(f"Unable to import {logging_conf_path}")
     logging_conf_module = importlib.util.module_from_spec(spec)
-    exec_module = getattr(spec.loader, "exec_module")
+    exec_module = getattr(spec.loader, "exec_module")  # pyright: ignore[reportAny]
     exec_module(logging_conf_module)
     if not hasattr(logging_conf_module, "LOGGING_CONFIG"):
         raise AttributeError(f"No LOGGING_CONFIG in {logging_conf_module.__name__}")
-    logging_conf_dict: DictConfig = getattr(logging_conf_module, "LOGGING_CONFIG")
+    logging_conf_dict = getattr(logging_conf_module, "LOGGING_CONFIG")  # pyright: ignore[reportAny]
     if not isinstance(logging_conf_dict, dict):
         raise TypeError("LOGGING_CONFIG is not a dictionary instance")
-    return logging_conf_dict
+    return logging_conf_dict  # pyright: ignore[reportReturnType, reportUnknownVariableType]
 
 
 def configure_logging(
-    logger: logging.Logger = logging.getLogger(),
-    logging_conf: str | None = os.getenv("LOGGING_CONF"),
+    logger: logging.Logger | None = None,
+    logging_conf: str | None = None,
 ) -> DictConfig:
     """Configure Python logging given the name of a logging module or file."""
+    logger = logger or logging.getLogger()
+    logging_conf = logging_conf or os.getenv("LOGGING_CONF")
     try:
         if not logging_conf:
             logging_conf_path = __name__
@@ -45,7 +47,7 @@ def configure_logging(
         else:
             logging_conf_path = logging_conf
             logging_conf_dict = find_and_load_logging_conf(logging_conf_path)
-        logging.config.dictConfig(logging_conf_dict)  # type: ignore[arg-type]
+        logging.config.dictConfig(dict(logging_conf_dict))
         logger.debug(f"Logging dict config loaded from {logging_conf_path}.")
         return logging_conf_dict
     except Exception as e:
@@ -67,7 +69,7 @@ class LogFilter(logging.Filter):
     method can produce the set of filters from the environment variable value.
     """
 
-    __slots__ = "name", "nlen", "filters"
+    __slots__: tuple[str, str, str] = "name", "nlen", "filters"
 
     def __init__(
         self,
@@ -75,9 +77,10 @@ class LogFilter(logging.Filter):
         filters: set[str] | None = None,
     ) -> None:
         """Initialize a filter."""
-        self.name = name
-        self.nlen = len(name)
-        self.filters = filters
+        super().__init__(name=name)
+        self.name: str
+        self.nlen: int
+        self.filters: set[str] | None = filters
 
     def filter(self, record: logging.LogRecord) -> bool:
         """Determine if the specified record is to be logged.

@@ -19,7 +19,8 @@ def test_type_checking_attrs() -> None:
     https://docs.python.org/3/library/typing.html
     https://mypy.readthedocs.io/en/stable/config_file.html
     """
-    assert inboard.types.TYPE_CHECKING is False  # type: ignore[attr-defined]
+    assert inboard.types.TYPE_CHECKING is False  # type: ignore[attr-defined] # pyright: ignore[reportPrivateLocalImportUsage]
+
     for attr in ("DictConfig", "UvicornOptions"):
         assert hasattr(inboard.types, attr)
 

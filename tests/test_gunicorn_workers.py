@@ -39,14 +39,19 @@ class Process(subprocess.Popen[str]):
     client: httpx.Client
     output: IO[bytes]
 
+    def __init__(
+        self, args: list[str], *, client: httpx.Client, output: IO[bytes]
+    ) -> None:
+        super().__init__(args, stdout=output, stderr=output)
+        self.client = client
+        self.output = output
+
     def read_output(self) -> str:
-        self.output.seek(0)
+        _ = self.output.seek(0)
         return self.output.read().decode()
 
 
-async def app(
-    scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable
-) -> None:
+async def app(scope: Scope, _: ASGIReceiveCallable, send: ASGISendCallable) -> None:
     """An ASGI app for testing requests to Gunicorn workers."""
     assert scope["type"] == "http"
     start_event: HTTPResponseStartEvent = {
@@ -93,7 +98,7 @@ def tls_ca_certificate_pem_path(
 @pytest.fixture
 def tls_ca_ssl_context(tls_certificate_authority: trustme.CA) -> ssl.SSLContext:
     ssl_ctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-    tls_certificate_authority.configure_trust(ssl_ctx)
+    _ = tls_certificate_authority.configure_trust(ssl_ctx)
     return ssl_ctx
 
 
@@ -205,14 +210,12 @@ def gunicorn_process(
         httpx.Client(base_url=base_url, verify=verify) as client,
         tempfile.TemporaryFile() as output,
     ):
-        with Process(args, stdout=output, stderr=output) as process:
+        with Process(args, client=client, output=output) as process:
             time.sleep(2)
             assert not process.poll()
-            process.client = client
-            process.output = output
             yield process
             process.send_signal(signal.SIGQUIT)
-            process.wait(timeout=5)
+            _ = process.wait(timeout=5)
 
 
 @pytest.fixture
@@ -238,10 +241,11 @@ def gunicorn_process_with_sigterm(
         f"{gunicorn_workers.UvicornWorker.__name__}"
     )
     app_module = f"{__name__}:{app.__name__}"
+    bind = f"127.0.0.1:{unused_tcp_port}"
     args = [
         "gunicorn",
         "--bind",
-        f"127.0.0.1:{unused_tcp_port}",
+        bind,
         "--graceful-timeout",
         "1",
         "--log-level",
@@ -252,20 +256,17 @@ def gunicorn_process_with_sigterm(
         "1",
         app_module,
     ]
-    bind = f"127.0.0.1:{unused_tcp_port}"
     base_url = f"http://{bind}"
     verify = False
     with (
         httpx.Client(base_url=base_url, verify=verify) as client,
         tempfile.TemporaryFile() as output,
     ):
-        with Process(args, stdout=output, stderr=output) as process:
+        with Process(args, client=client, output=output) as process:
             time.sleep(2)
-            process.client = client
-            process.output = output
             yield process
             process.terminate()
-            process.wait(timeout=5)
+            _ = process.wait(timeout=5)
 
 
 @pytest.fixture
@@ -278,10 +279,11 @@ def gunicorn_process_with_lifespan_startup_failure(
     The lifespan startup error in the ASGI app helps test worker boot errors.
     """
     app_module = f"{__name__}:{app_with_lifespan_startup_failure.__name__}"
+    bind = f"127.0.0.1:{unused_tcp_port}"
     args = [
         "gunicorn",
         "--bind",
-        f"127.0.0.1:{unused_tcp_port}",
+        bind,
         "--graceful-timeout",
         "1",
         "--log-level",
@@ -292,13 +294,17 @@ def gunicorn_process_with_lifespan_startup_failure(
         "1",
         app_module,
     ]
-    with tempfile.TemporaryFile() as output:
-        with Process(args, stdout=output, stderr=output) as process:
+    base_url = f"http://{bind}"
+    verify = False
+    with (
+        httpx.Client(base_url=base_url, verify=verify) as client,
+        tempfile.TemporaryFile() as output,
+    ):
+        with Process(args, client=client, output=output) as process:
             time.sleep(2)
-            process.output = output
             yield process
             process.terminate()
-            process.wait(timeout=5)
+            _ = process.wait(timeout=5)
 
 
 @pytest.mark.parametrize("signal_to_send", gunicorn_arbiter.Arbiter.SIGNALS)
@@ -354,7 +360,7 @@ def test_uvicorn_worker_boot_error(
     [#1077]: https://github.com/encode/uvicorn/pull/1077
     """
     output_text = gunicorn_process_with_lifespan_startup_failure.read_output()
-    gunicorn_process_with_lifespan_startup_failure.wait(timeout=5)
+    _ = gunicorn_process_with_lifespan_startup_failure.wait(timeout=5)
     assert gunicorn_process_with_lifespan_startup_failure.poll() is not None
     assert "Worker failed to boot" in output_text
 

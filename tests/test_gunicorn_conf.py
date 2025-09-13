@@ -97,7 +97,7 @@ class TestGunicornSettings:
             "inboard.gunicorn_workers.UvicornWorker",
             app_module,
         ]
-        subprocess.run(gunicorn_options)
+        _ = subprocess.run(gunicorn_options)
         captured = capfd.readouterr()
         captured_and_cleaned = captured.out.replace(" ", "").splitlines()
         assert app_module in captured.out
@@ -141,7 +141,7 @@ class TestGunicornSettings:
             "inboard.gunicorn_workers.UvicornWorker",
             app_module,
         ]
-        subprocess.run(gunicorn_options)
+        _ = subprocess.run(gunicorn_options)
         captured = capfd.readouterr()
         captured_and_cleaned = captured.out.replace(" ", "").splitlines()
         assert app_module in captured.out
