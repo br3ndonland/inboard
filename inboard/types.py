@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypedDict
+from typing import TYPE_CHECKING, Any, Literal, TypedDict, Union
 
 if TYPE_CHECKING:
     import sys
     from asyncio import Protocol
     from collections.abc import Sequence
     from os import PathLike
-    from typing import Any, Literal
 
     if sys.version_info < (3, 11):
         from typing_extensions import Required
@@ -34,17 +33,33 @@ class _LoggerConfiguration(_RootLoggerConfiguration, TypedDict, total=False):
     propagate: bool
 
 
-class _OptionalDictConfigArgs(TypedDict, total=False):
-    formatters: dict[str, dict[str, Any]]
-    filters: dict[str, dict[str, Any]]
-    handlers: dict[str, dict[str, Any]]
-    loggers: dict[str, _LoggerConfiguration]
-    root: _RootLoggerConfiguration | None
-    incremental: bool
-    disable_existing_loggers: bool
+_FormatterConfigurationTypedDict = TypedDict(
+    "_FormatterConfigurationTypedDict",
+    {"class": str, "format": str, "datefmt": str, "style": Literal["%", "{", "$"]},
+    total=False,
+)
 
 
-class DictConfig(_OptionalDictConfigArgs, TypedDict):
+class _FilterConfigurationTypedDict(TypedDict):
+    name: str
+
+
+# Formatter and filter configs can specify custom factories via the special `()` key.
+# If that is the case, the dictionary can contain any additional keys
+# https://docs.python.org/3/library/logging.config.html#user-defined-objects
+_FormatterConfiguration = Union[
+    _FormatterConfigurationTypedDict,
+    dict[str, Any],
+]
+_FilterConfiguration = Union[
+    _FilterConfigurationTypedDict,
+    dict[str, Any],
+]
+# Handler config can have additional keys even when not providing a custom factory so we just use `dict`.
+_HandlerConfiguration = dict[str, Any]
+
+
+class DictConfig(TypedDict):
     """Python standard library logging module dict config type.
     ---
 
@@ -52,7 +67,14 @@ class DictConfig(_OptionalDictConfigArgs, TypedDict):
     https://github.com/python/typeshed/blob/main/stdlib/logging/config.pyi
     """
 
-    version: Literal[1]
+    version: Required[Literal[1]]
+    formatters: dict[str, _FormatterConfiguration]
+    filters: dict[str, _FilterConfiguration]
+    handlers: dict[str, _HandlerConfiguration]
+    loggers: dict[str, _LoggerConfiguration]
+    root: _RootLoggerConfiguration
+    incremental: bool
+    disable_existing_loggers: bool
 
 
 class UvicornOptions(TypedDict, total=False):

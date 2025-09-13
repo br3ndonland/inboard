@@ -122,6 +122,7 @@ LOG_LEVEL = str(os.getenv("LOG_LEVEL", "info")).upper()
 LOGGING_CONFIG: DictConfig = {
     "version": 1,
     "disable_existing_loggers": False,
+    "incremental": False,
     "filters": {
         "filter_log_message": {"()": LogFilter, "filters": LOG_FILTERS},
     },
