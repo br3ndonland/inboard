@@ -1,9 +1,11 @@
-[build-system]
-build-backend = "hatchling.build"
-requires = ["hatchling>=1.26.3,<2"]
-
 [project]
-authors = [{email = "bws@bws.bio", name = "Brendon Smith"}]
+name = "inboard"
+description = "Docker images and utilities to power your Python APIs and help you ship faster."
+readme = "docs/index.md"
+requires-python = ">=3.9,<4"
+license = "MIT"
+authors = [{ name = "Brendon Smith", email = "bws@bws.bio" }]
+keywords = ["asgi", "docker", "fastapi", "gunicorn", "uvicorn"]
 classifiers = [
   "Framework :: FastAPI",
   "Natural Language :: English",
@@ -24,13 +26,13 @@ dependencies = [
   "gunicorn==23.0.0",
   "uvicorn==0.28.1",
 ]
-description = "Docker images and utilities to power your Python APIs and help you ship faster."
 dynamic = ["version"]
-keywords = ["asgi", "docker", "fastapi", "gunicorn", "uvicorn"]
-license = "MIT"
-name = "inboard"
-readme = "docs/index.md"
-requires-python = ">=3.9,<4"
+
+[project.urls]
+Docker = "https://github.com/br3ndonland/inboard/pkgs/container/inboard"
+Documentation = "https://inboard.bws.bio"
+Homepage = "https://github.com/br3ndonland/inboard"
+Repository = "https://github.com/br3ndonland/inboard"
 
 [project.optional-dependencies]
 checks = [
@@ -63,11 +65,9 @@ uvicorn-standard = [
   "uvicorn[standard]==0.28.1",
 ]
 
-[project.urls]
-Docker = "https://github.com/br3ndonland/inboard/pkgs/container/inboard"
-Documentation = "https://inboard.bws.bio"
-Homepage = "https://github.com/br3ndonland/inboard"
-Repository = "https://github.com/br3ndonland/inboard"
+[build-system]
+requires = ["hatchling>=1.26.3,<2"]
+build-backend = "hatchling.build"
 
 [tool.coverage.report]
 exclude_lines = ["if TYPE_CHECKING:", "pragma: no cover"]
