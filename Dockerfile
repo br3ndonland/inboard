@@ -10,7 +10,7 @@ LABEL org.opencontainers.image.url="https://github.com/br3ndonland/inboard/pkgs/
 ARG \
   HATCH_VERSION=1.14.2 \
   LINUX_VERSION \
-  PIPX_VERSION=1.7.1
+  PIPX_VERSION=1.8.0
 ENV \
   HATCH_ENV_TYPE_VIRTUAL_PATH=.venv \
   HATCH_VERSION=$HATCH_VERSION \
