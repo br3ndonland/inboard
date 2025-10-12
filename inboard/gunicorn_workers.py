@@ -34,12 +34,8 @@ import signal
 import sys
 from typing import Any
 
-from gunicorn.arbiter import (  # type: ignore[import-untyped] # pyright: ignore[reportMissingTypeStubs]
-    Arbiter,
-)
-from gunicorn.workers.base import (  # type: ignore[import-untyped] # pyright: ignore[reportMissingTypeStubs]
-    Worker,
-)
+from gunicorn.arbiter import Arbiter
+from gunicorn.workers.base import Worker
 from uvicorn.config import Config
 from uvicorn.server import Server
 
