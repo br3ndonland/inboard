@@ -2,6 +2,99 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/HEAD/CHANGELOG.md)
 
+## 0.74.0 - 2025-10-11
+
+### Changes
+
+**Switch type checking from mypy to BasedPyright**
+(99b7a4526e8700c686d56962b122307407596037)
+
+This release will switch Python type checking from mypy to
+[BasedPyright](https://docs.basedpyright.com/latest/). See the
+[docs](https://docs.basedpyright.com/latest/) for comparisons with mypy
+and Pyright. This is a minor release due to the possibility of affecting
+type checks and the associated CI workflows.
+
+Pre-existing errors have been fixed if possible. BasedPyright supports
+[baselining](https://docs.basedpyright.com/latest/benefits-over-pyright/baseline/),
+in which existing errors can be written to a file. This allows adoption
+of the type checker without having to fix all pre-existing errors first.
+The baseline file will be added to `.basedpyright/baseline.json`.
+
+The rule `reportImplicitOverride` will be set to "information" only. The
+fix for this warning is to use the `@typing.override` decorator that was
+introduced in Python 3.12. The `typing_extensions` package provides this
+decorator for use with older versions of Python is needed. The problem
+is that, while the
+[typing docs](https://docs.python.org/3/library/typing.html#typing.override)
+say "There is no runtime checking of this property," use as a decorator
+(rather than just a type annotation) means it is required at runtime.
+Therefore, this project would have to add a runtime dependency on the
+`typing_extensions` package, which is not of interest at this time.
+
+In addition to superior type checking results, another motivation for
+this change is the language server provided by the BasedPyright
+VSCode/VSCodium extension.
+[Jedi](https://github.com/pappasam/jedi-language-server) is no longer
+working well for
+[Python editing](https://code.visualstudio.com/docs/python/editing)
+features like autocompletion and go to definition, and the Microsoft
+Pylance/Pyright extension is only available on the proprietary Microsoft
+extension registry. BasedPyright is another option also available on
+[Open VSX](https://open-vsx.org/extension/detachhead/basedpyright) for
+users of [VSCodium](https://code.visualstudio.com/docs/python/editing).
+This commit will add an `extensions.json` file to suggest BasedPyright.
+
+Note that the VSCode `settings.json` for the user should include
+`"python.languageServer": "None"` so that BasedPyright can act as the
+language server. `"None"` is currently the default for this setting, but
+it could change in the future, so it is prudent to explicitly set it to
+`"None"`. This setting cannot be added at the folder level.
+
+### Commits
+
+- Bump version from 0.73.0 to 0.74.0 (0fbadc8)
+- Update BasedPyright baseline (9225263)
+- Update to `pipx==1.8.0` (4676659)
+- Update to Hatch 1.14.2 (bc60ea2)
+- Match Hatch version in GitHub Actions and Docker (5ce5dcb)
+- Switch type checking from mypy to BasedPyright (99b7a45)
+- Format `pyproject.toml` with Tombi (8145b7d)
+- Update logging dict config type (5c5d3e9)
+- Use same file for contributing docs (860aada)
+- Use same file for README and docs homepage (3c6f2d9)
+- Update `launch.json` for Python Debugger extension (bc957fe)
+- Use Hatch commands in contributing.md testing docs (0ed9ab5)
+- Update to `peter-evans/create-pull-request@v7` (546a7f1)
+- Streamline coverage.py subprocess code measurement (4bcb4d8)
+- Remove CodeQL GitHub Actions workflow (b375633)
+- Format Git tag messages with Prettier (ff85351)
+- Relax Prettier version constraint (83f2753)
+- Format Git commit messages with Prettier (592c8f3)
+- Update `.gitignore` (d0d5a4f)
+- Use `$HATCH_ENV_TYPE_VIRTUAL_PATH` consistently (d6768f5)
+- Update to `pypa/gh-action-pypi-publish@v1.13.0` (04f54b1)
+- Move Vercel commands to `vercel.json` (2c28fc0)
+- Add Markdown-specific override to `.prettierrc` (c4c2f0e)
+- Move `.prettierrc` to repo root (f35c230)
+- Update Vercel commands in README (bc09556)
+- Add `exclude_gitignore` mypy setting (77abc33)
+- Remove deprecated `show_error_codes` mypy setting (85a8e5e)
+- Update changelog for version 0.73.0 (#122) (487e646)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2025-10-11 22:36:13 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQPZg2ADzeXLihnF55kqSNKYF9vqksy0GUpkR+cS/K2aT42kT51SxSjdeMbE3san7AC
+Bnc6lS5osCr/O0QUCSjg0=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.73.0 - 2025-07-29
 
 ### Changes
