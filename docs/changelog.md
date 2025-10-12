@@ -2,6 +2,47 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/HEAD/CHANGELOG.md)
 
+## 0.75.0 - 2025-10-12
+
+### Changes
+
+**Update to FastAPI 0.118 and Starlette 0.48**
+(ef0703beb8a5b673764f122e319813d6121f8f27)
+
+This release will update/upgrade to
+[FastAPI 0.118](https://fastapi.tiangolo.com/release-notes/) and
+[Starlette 0.48](https://www.starlette.dev/release-notes/). This is a
+minor release to align with FastAPI and Starlette versioning.
+
+Changes to FastAPI between 0.116.1 and 0.118.3 are mostly small fixes.
+
+Starlette 0.48 adds Python 3.14 support.
+
+Notably, Starlette and Uvicorn have been transferred from the Encode org
+to an individual user's GitHub account. For context, see
+[Kludex/starlette#2997](https://github.com/Kludex/starlette/discussions/2997).
+Docs are now hosted at [starlette.dev](https://www.starlette.dev/) and
+[uvicorn.dev](https://uvicorn.dev/).
+
+### Commits
+
+- Bump version from 0.74.0 to 0.75.0 (a0848c4)
+- Update to FastAPI 0.118 and Starlette 0.48 (ef0703b)
+- Update changelog for version 0.74.0 (#123) (d8c23fc)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2025-10-12 00:21:50 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQBdLdfzKYBRJzt3ebGDjxTiPXtXppoBkke9d0nLVCGuxIk3mSqAVEmWyxzc+J7ZXoy
+WOmUGvyVm7hDfpUT3klAc=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.74.0 - 2025-10-11
 
 ### Changes
