@@ -2,7 +2,7 @@
 name = "inboard"
 description = "Docker images and utilities to power your Python APIs and help you ship faster."
 readme = "docs/index.md"
-requires-python = ">=3.9,<4"
+requires-python = ">=3.10,<4"
 license = "MIT"
 authors = [{ name = "Brendon Smith", email = "bws@bws.bio" }]
 keywords = ["asgi", "docker", "fastapi", "gunicorn", "uvicorn"]
@@ -10,7 +10,6 @@ classifiers = [
   "Framework :: FastAPI",
   "Natural Language :: English",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -70,7 +69,7 @@ requires = ["hatchling>=1.26.3,<2"]
 build-backend = "hatchling.build"
 
 [tool.basedpyright]
-pythonVersion = "3.9"
+pythonVersion = "3.10"
 reportImplicitOverride = "information"
 
 [tool.coverage.report]

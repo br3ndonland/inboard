@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal, TypedDict, Union
+from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
 if TYPE_CHECKING:
     import sys
@@ -47,14 +47,12 @@ class _FilterConfigurationTypedDict(TypedDict):
 # Formatter and filter configs can specify custom factories via the special `()` key.
 # If that is the case, the dictionary can contain any additional keys
 # https://docs.python.org/3/library/logging.config.html#user-defined-objects
-_FormatterConfiguration = Union[
-    _FormatterConfigurationTypedDict,
-    dict[str, Any],  # pyright: ignore[reportExplicitAny]
-]
-_FilterConfiguration = Union[
-    _FilterConfigurationTypedDict,
-    dict[str, Any],  # pyright: ignore[reportExplicitAny]
-]
+_FormatterConfiguration = (
+    _FormatterConfigurationTypedDict | dict[str, Any]  # pyright: ignore[reportExplicitAny]
+)
+_FilterConfiguration = (
+    _FilterConfigurationTypedDict | dict[str, Any]  # pyright: ignore[reportExplicitAny]
+)
 # Handler config can have additional keys even when not providing a custom factory so we just use `dict`.
 _HandlerConfiguration = dict[str, Any]  # pyright: ignore[reportExplicitAny]
 
