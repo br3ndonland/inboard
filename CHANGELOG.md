@@ -1,5 +1,42 @@
 # Changelog
 
+## 0.77.0 - 2025-11-08
+
+### Changes
+
+**Update to FastAPI 0.120 and Starlette 0.49**
+(ec0d986e55202c9da32fca672a9f1f200b27fe9d)
+
+This release will update/upgrade to
+[FastAPI 0.120](https://fastapi.tiangolo.com/release-notes/) and
+[Starlette 0.49](https://starlette.dev/release-notes/). This is a minor
+release to align with FastAPI and Starlette versioning.
+
+FastAPI 0.120 adds support for Starlette 0.49 and provides some other
+internal refactors.
+
+Starlette 0.49 fixes a security vulnerability (GHSA-7f5h-v6xp-fcq8).
+
+### Commits
+
+- Bump version from 0.76.0 to 0.77.0 (b314bb2)
+- Update to FastAPI 0.120 and Starlette 0.49 (ec0d986)
+- Update to Ruff 0.14 (4f5a542)
+- Update changelog for version 0.76.0 (#125) (03a297f)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2025-11-08 17:07:28 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQAbqKkjcWqHrr21nY7NueFDU0FoT9i+6j5MeBG6zjOSL14Wc+F9n4//+u6cK/74VJA
+XwqBRnvtFUG/OUYF5KyQo=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.76.0 - 2025-11-08
 
 ### Changes
