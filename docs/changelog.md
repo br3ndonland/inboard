@@ -2,6 +2,43 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/HEAD/CHANGELOG.md)
 
+## 0.78.0 - 2025-11-08
+
+### Changes
+
+**Update to FastAPI 0.121** (e9c0b2d79781c054140e943a8a41a833455ab9d5)
+
+This release will update/upgrade to
+[FastAPI 0.121](https://fastapi.tiangolo.com/release-notes/). This is a
+minor release to align with FastAPI versioning.
+
+FastAPI 0.121 updates the behavior of dependencies with `yield` as
+explained in the
+[docs](https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#scope-for-sub-dependencies).
+For further background on this topic, see
+[inboard 0.59.0](https://inboard.bws.bio/changelog#0590-2023-12-30) and
+[inboard 0.66.0](https://inboard.bws.bio/changelog#0660-2024-03-11).
+
+### Commits
+
+- Bump version from 0.77.0 to 0.78.0 (081d584)
+- Update to FastAPI 0.121 (e9c0b2d)
+- Update to BasedPyright 1.33 (5c27b39)
+- Update changelog for version 0.77.0 (#126) (b896aae)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2025-11-08 17:48:32 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQFTHtfYh2o4jskygC2pBJSbqJkaTCkn5W86MA0d2O88H0Z+zNH6lTTvhB/RUHd7Ukx
+yzVSx+9jj96o62cWPQkg0=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.77.0 - 2025-11-08
 
 ### Changes
