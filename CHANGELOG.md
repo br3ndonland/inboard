@@ -1,5 +1,40 @@
 # Changelog
 
+## 0.76.0 - 2025-11-08
+
+### Changes
+
+**Update to FastAPI 0.119** (f38a43e8e317a73cbb7f6c5381c97f6bd6779704)
+
+This release will update/upgrade to
+[FastAPI 0.119](https://fastapi.tiangolo.com/release-notes/). This is a
+minor release to align with FastAPI versioning.
+
+FastAPI 0.119 adds dual support for Pydantic 1 and 2. Now that Pydantic
+2 is supported, FastAPI will be deprecating Pydantic 1. See the
+[docs](https://fastapi.tiangolo.com/how-to/migrate-from-pydantic-v1-to-pydantic-v2/)
+for suggestions on how to migrate from Pydantic 1 to 2.
+
+### Commits
+
+- Bump version from 0.75.0 to 0.76.0 (8f4e1a9)
+- Update to FastAPI 0.119 (f38a43e)
+- Update to Hatch 1.15.1 (5d60ebb)
+- Update changelog for version 0.75.0 (#124) (8769c6d)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2025-11-08 16:00:33 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQKwgnLSkrzFVSOqkYw+CfT3Ho258A8Ygz93OfCF4jI4+y9rV2SvPU6/Rz//V0l2DAd
+HIxH4zghZF8Qbpd/rTXAo=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.75.0 - 2025-10-12
 
 ### Changes
