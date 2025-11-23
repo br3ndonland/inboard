@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastapi import Depends, FastAPI, status
 from fastapi.middleware import Middleware
@@ -26,7 +26,7 @@ class GetRoot(BaseModel):
 class GetStatus(BaseModel):
     application: str
     status: str
-    message: Optional[str]
+    message: str | None
 
 
 class GetUser(BaseModel):
