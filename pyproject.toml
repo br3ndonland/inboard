@@ -57,8 +57,8 @@ tests = [
   "trustme>=1.2,<2",
 ]
 uvicorn-fast = [
-  "httptools>=0.5.0",
-  "uvloop>=0.14.0,!=0.15.0,!=0.15.1; sys_platform != 'win32' and (sys_platform != 'cygwin' and platform_python_implementation != 'PyPy')",
+  "httptools>=0.6.3",
+  "uvloop>0.15.1; sys_platform != 'win32' and (sys_platform != 'cygwin' and platform_python_implementation != 'PyPy')",
   "websockets>=10.4",
 ]
 uvicorn-standard = [
