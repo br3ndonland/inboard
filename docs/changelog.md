@@ -2,6 +2,103 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/HEAD/CHANGELOG.md)
 
+## 0.79.0 - 2025-11-23
+
+### Changes
+
+**Update to FastAPI 0.121.3 and Starlette 0.50**
+(e7ff057e59f9d0bee7ee0c1b76adc74716720192)
+
+This release will update/upgrade to
+[FastAPI 0.121.3](https://fastapi.tiangolo.com/release-notes/) and
+[Starlette 0.50](https://starlette.dev/release-notes/). Although inboard
+was already on FastAPI 0.121, this is a minor version bump for Starlette
+that includes a breaking change, so this is a minor release of inboard.
+
+FastAPI 0.121.3 adds support for Starlette 0.50 and provides some other
+small changes and internal refactors.
+
+Starlette 0.50 drops Python 3.9 support. This is a breaking change for
+Python 3.9 users. Note that, while Starlette doesn't support Python 3.9,
+[FastAPI still does](https://github.com/fastapi/fastapi/blob/4f3ff79/pyproject.toml#L37-L38).
+This doesn't make much sense because FastAPI depends on Starlette for
+much of its functionality. FastAPI probably shouldn't be using Starlette
+with unsupported versions of Python.
+
+**Drop Python 3.9 support** (#128,
+8ca759d15b3db0092a69ba3a43eb433787c3bf06)
+
+Python 3.9 is past [end-of-life](https://devguide.python.org/versions/).
+[Starlette 0.50](https://starlette.dev/release-notes/) dropped support
+for Python 3.9. This release will drop support for Python 3.9.
+
+**Add Python 3.13 support** (#115,
+6daa20bafcd55b4d0988c9073a40f42ab7a44a82)
+
+This release will add
+[Python 3.13](https://docs.python.org/3/whatsnew/3.13.html) support to
+inboard.
+
+- inboard will now run tests with Python 3.13, in addition to 3.9-3.12
+- inboard will now build and publish its PyPI package using Python 3.13
+- inboard will now include a Python 3.13 classifier in its PyPI package
+- inboard will now ship Docker images running Python 3.13, in addition
+  to 3.9-3.12, and Docker images tagged with `latest` will now use 3.13
+
+Related projects that have released support for Python 3.13 include:
+
+- AnyIO
+  ([4.6.2 - 2024-10-13](https://github.com/agronholm/anyio/releases/tag/4.6.2))
+- FastAPI
+  ([0.115.8 - 2025-01-30](https://github.com/fastapi/fastapi/releases/tag/0.115.8))
+- Hatch
+  ([1.13.0 - 2024-10-13](https://github.com/pypa/hatch/releases/tag/hatch-v1.13.0))
+- httptools
+  ([0.6.2 - 2024-10-14](https://github.com/MagicStack/httptools/releases/tag/v0.6.2))
+- pipx
+  ([1.8.0 - 2025-09-30](https://github.com/pypa/pipx/releases/tag/1.8.0))
+- Pydantic
+  ([2.8.0 - 2024-07-01](https://github.com/pydantic/pydantic/releases/tag/v2.8.0))
+- Starlette
+  ([0.38.3 - 2024-09-01](https://github.com/encode/starlette/releases/tag/0.38.3))
+- Uvicorn
+  ([0.32.0 - 2024-10-15](https://github.com/encode/uvicorn/releases/tag/0.32.0))
+- uvloop
+  ([0.21.0 - 2024-10-14](https://github.com/MagicStack/uvloop/releases/tag/v0.21.0))
+
+Related projects that have not released support for Python 3.13 include:
+
+- [Gunicorn](https://github.com/benoitc/gunicorn) (has not released
+  Python 3.13 support, but is testing with Python 3.13 in development)
+
+Gunicorn has still not released Python 3.13 support, and has not done a
+release of any kind in over a year. Python 3.12 will of course still be
+supported in case there are issues with Gunicorn on Python 3.13.
+
+Updates to `uvloop>0.15.1` and `httptools>=0.6.3` were needed for Python
+3.13 compatibility.
+
+### Commits
+
+- Bump version from 0.78.0 to 0.79.0 (a2b040a)
+- Add Python 3.13 support (#115) (6daa20b)
+- Drop Python 3.9 support (#128) (8ca759d)
+- Update to FastAPI 0.121.3 and Starlette 0.50 (e7ff057)
+- Update changelog for version 0.78.0 (#127) (3168717)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2025-11-23 17:32:12 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQEBRQeSRE6ntQSrAUq7Y200Dlf8DMJZ4pXz4A0AK6/CziiwxspOZMKAhkAdYp/AlZa
+zhfeE1r6qxdEm4B5elkwE=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.78.0 - 2025-11-08
 
 ### Changes
