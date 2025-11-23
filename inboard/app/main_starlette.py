@@ -1,3 +1,4 @@
+# pyright: reportArgumentType=information, reportUnusedParameter=information
 import os
 import sys
 
@@ -32,12 +33,12 @@ async def get_root(_: Request) -> JSONResponse:
 
 
 @requires("authenticated")
-async def get_health(request: Request) -> JSONResponse:  # pyright: ignore[reportUnusedParameter]
+async def get_health(request: Request) -> JSONResponse:
     return JSONResponse({"application": "inboard", "status": "active"})
 
 
 @requires("authenticated")
-async def get_status(request: Request) -> JSONResponse:  # pyright: ignore[reportUnusedParameter]
+async def get_status(request: Request) -> JSONResponse:
     message = f"Hello World, from {server}, Starlette, and Python {version}!"
     return JSONResponse(
         {"application": "inboard", "status": "active", "message": message}
