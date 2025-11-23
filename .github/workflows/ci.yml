@@ -58,7 +58,7 @@ jobs:
     needs: [setup]
     strategy:
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -97,7 +97,7 @@ jobs:
           *) echo "Incorrect Hatch virtualenv." && exit 1 ;;
           esac
       - name: Test that Git tag version and Python package version match
-        if: github.ref_type == 'tag' && matrix.python-version == '3.12'
+        if: github.ref_type == 'tag' && matrix.python-version == '3.13'
         run: |
           GIT_TAG_VERSION=$GITHUB_REF_NAME
           PACKAGE_VERSION=$(hatch version)
@@ -138,7 +138,7 @@ jobs:
       - name: Upload Python package artifacts
         if: >
           github.ref_type == 'tag' &&
-          matrix.python-version == '3.12' &&
+          matrix.python-version == '3.13' &&
           needs.setup.outputs.environment-name == 'PyPI'
         uses: actions/upload-artifact@v4
         with:
@@ -152,7 +152,7 @@ jobs:
       fail-fast: false
       matrix:
         linux-version: ["alpine", "bookworm", "slim-bookworm"]
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -298,7 +298,7 @@ jobs:
             -u ${{ github.actor }} --password-stdin
       - name: Tag and push Docker images with latest tags
         if: >
-          matrix.python-version == '3.12' &&
+          matrix.python-version == '3.13' &&
           (
             github.ref_type == 'tag' ||
             github.ref == 'refs/heads/develop' ||
