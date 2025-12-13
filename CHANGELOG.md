@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.80.0 - 2025-12-13
+
+### Changes
+
+**Update to Debian 13 "trixie"** (#129,
+1b6ea662167e01e09363e035187db105f1c0f278)
+
+inboard began specifying the version of Debian Linux starting in version
+0.67. At that time, the latest version was Debian 12 ("bookworm").
+
+The latest version is now Debian 13 ("trixie"). This release will update
+to trixie.
+
+- [br3ndonland/inboard#80](https://github.com/br3ndonland/inboard/discussions/80)
+- https://github.com/br3ndonland/inboard/pull/105
+- [inboard 0.67](https://inboard.bws.bio/changelog#0670-2024-04-11)
+- [docker-library/python](https://github.com/docker-library/python)
+- [Debian releases: "trixie"](https://www.debian.org/releases/trixie/)
+
+### Commits
+
+- Bump version from 0.79.0 to 0.80.0 (fb70266)
+- Update to Debian 13 "trixie" (#129) (1b6ea66)
+- Revert "Fix BasedPyright `reportUnusedParameter` usage" (02dd6d8)
+- Fix BasedPyright `reportUnusedParameter` usage (c0fd2ac)
+- Update changelog for version 0.79.0 (#130) (2349797)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2025-12-13 14:02:47 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQKlBfi9g0a4YWIdBl6aCILhaNnVUrO/+2No+TwfXFTa4X99Xe5uHjT4fJa81p47tqs
+1MMny/7FnJgfJNz/cNsQo=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.79.0 - 2025-11-23
 
 ### Changes
