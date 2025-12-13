@@ -1,5 +1,49 @@
 # Changelog
 
+## 0.82.0 - 2025-12-13
+
+### Changes
+
+**Update to FastAPI 0.123**
+
+This release will update/upgrade to
+[FastAPI 0.123](https://fastapi.tiangolo.com/release-notes/). This is a
+minor release to align with FastAPI versioning.
+
+FastAPI 0.123 implements dependency caching using
+[`functools.cached_property`](https://docs.python.org/3/library/functools.html).
+This behavior is undocumented, but the related PR description
+([fastapi/fastapi#14419](https://github.com/fastapi/fastapi/pull/14419))
+says,
+
+> Dependencies are cached based on the function. And also on the
+> **scopes**, but (now) **only** when those scopes are used by this
+> dependency or by a sub-dependency: this dependency or a sub-dependency
+> declare scopes or access the `SecurityScopes`.
+
+Also see the
+[docs](https://fastapi.tiangolo.com/tutorial/dependencies/dependencies-with-yield/#early-exit-and-scope)
+on dependency scope.
+
+### Commits
+
+- Bump version from 0.81.0 to 0.82.0 (b66ec24)
+- Update to FastAPI 0.123 (3099002)
+- Update changelog for version 0.81.0 (#133) (31a16b2)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2025-12-13 15:43:10 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQPwABK4xhZ+6IvlK3FW3seNzr0z4Wk0/ZTDVJJgWTcXbIdK8Q3Cb4ioXxewOr4eum3
+T1bua02BqY1kKmhTrRMgI=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.81.0 - 2025-12-13
 
 ### Changes
