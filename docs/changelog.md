@@ -2,6 +2,49 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/HEAD/CHANGELOG.md)
 
+## 0.81.0 - 2025-12-13
+
+### Changes
+
+**Update to FastAPI 0.122** (ea826cea9a9e65f3047e3e7f8f73562ca317722c)
+
+This release will update/upgrade to
+[FastAPI 0.122](https://fastapi.tiangolo.com/release-notes/). This is a
+minor release to align with FastAPI versioning.
+
+FastAPI 0.122 updates the behavior of `fastapi.security` classes. These
+classes will now return `401 Unauthorized` instead of `403 Forbidden`.
+See the
+[HTTP Basic auth docs](https://fastapi.tiangolo.com/advanced/security/http-basic-auth/)
+for general info, and the related
+[how-to](https://fastapi.tiangolo.com/how-to/authentication-error-status-code/)
+if custom status codes are needed for authorization errors.
+
+Note that this may be a breaking change for some projects if application
+logic or tests were hard-coded to expect a `401` status code. inboard
+anticipated this situation years ago, so the tests of HTTP Basic auth
+were written to allow either a `401` or `403` for these errors as seen
+[here](https://github.com/br3ndonland/inboard/blob/b429f5c/tests/app/test_main.py#L162).
+
+### Commits
+
+- Bump version from 0.80.0 to 0.81.0 (f416046)
+- Update to FastAPI 0.122 (ea826ce)
+- Update changelog for version 0.80.0 (#132) (893889a)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2025-12-13 14:50:57 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQL8+BkCBOzr+phb4Q8Y6uFChPcruohaS2qIE7M1yNdaenZXKPtXVPwm1Q8u2nSxXsB
+Gp0hLWXjD3LrtzRRcd8Q4=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.80.0 - 2025-12-13
 
 ### Changes
