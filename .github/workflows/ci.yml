@@ -16,7 +16,7 @@ env:
   DOCKER_BUILDKIT: "1"
   HATCH_ENV_TYPE_VIRTUAL_PATH: ".venv"
   HATCH_ENV: "ci"
-  HATCH_VERSION: "1.15.1"
+  HATCH_VERSION: ">=1.16.4,<1.17"
   PIPX_VERSION: "1.8.0"
 
 jobs:
@@ -74,16 +74,7 @@ jobs:
       - name: Install pipx for Python ${{ matrix.python-version }}
         run: python -m pip install "pipx==$PIPX_VERSION"
       - name: Install Hatch
-        run: pipx install "hatch==$HATCH_VERSION"
-      - name: Test Hatch version
-        run: |
-          HATCH_VERSION_INSTALLED=$(hatch --version)
-          echo "The HATCH_VERSION environment variable is set to $HATCH_VERSION."
-          echo "The installed Hatch version is ${HATCH_VERSION_INSTALLED##Hatch, version }."
-          case $HATCH_VERSION_INSTALLED in
-          *$HATCH_VERSION) echo "Hatch version correct." ;;
-          *) echo "Hatch version incorrect." && exit 1 ;;
-          esac
+        run: pipx install "hatch$HATCH_VERSION"
       - name: Install dependencies
         run: hatch env create ${{ env.HATCH_ENV }}
       - name: Test virtualenv location
@@ -210,24 +201,6 @@ jobs:
             -e "BASIC_AUTH_USERNAME=test_user" \
             -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
             ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG"
-      - name: Test Hatch version in Docker containers
-        run: |
-          test_hatch_version_in_docker() {
-            echo "The HATCH_VERSION environment variable is set to $HATCH_VERSION."
-            local hatch_version_in_docker hatch_version_in_docker_full
-            for container_name in "$@"; do
-              hatch_version_in_docker_full=$(docker exec "$container_name" hatch --version)
-              hatch_version_in_docker="${hatch_version_in_docker_full##Hatch, version }"
-              if [ -n "$hatch_version_in_docker" ]; then
-                echo "Docker container $container_name has $hatch_version_in_docker."
-              fi
-              case $hatch_version_in_docker in
-              *$HATCH_VERSION) echo "Hatch versions match for $container_name." ;;
-              *) echo "Hatch version test failed for $container_name." && return 1 ;;
-              esac
-            done
-          }
-          test_hatch_version_in_docker inboard-base inboard-starlette inboard-fastapi
       - name: Test virtualenv location in Docker containers
         run: |
           test_virtualenv_location_in_docker() {
