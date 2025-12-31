@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.83.0 - 2025-12-31
+
+### Changes
+
+**Update to FastAPI 0.124** (ef0c302f6bb6512de223bbea129c00439d0f89df)
+
+This commit will update/upgrade to
+[FastAPI 0.124](https://fastapi.tiangolo.com/release-notes/). This is a
+minor release to align with FastAPI versioning.
+
+FastAPI 0.124 adds endpoint metadata to `ValidationError` tracebacks and
+provides some type checking fixes.
+
+### Commits
+
+- Bump version from 0.82.0 to 0.83.0 (b8bb436)
+- Update to FastAPI 0.124 (ef0c302)
+- Update changelog for version 0.82.0 (#134) (a0106c5)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2025-12-31 14:43:27 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQPqEcm6Kt+EoGSKrYWSzpALZdOvT5lm7ahlM4z8dSrFUR2gc9t6+2FVjPcCCtEkVLE
+YzX9u6jRmmV1LzJfhsYAg=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.82.0 - 2025-12-13
 
 ### Changes
