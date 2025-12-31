@@ -16,7 +16,7 @@ env:
   DOCKER_BUILDKIT: "1"
   HATCH_ENV_TYPE_VIRTUAL_PATH: ".venv"
   HATCH_ENV: "ci"
-  HATCH_VERSION: "1.15.1"
+  HATCH_VERSION: ">=1.16.4,<1.17"
   PIPX_VERSION: "1.8.0"
 
 jobs:
@@ -74,14 +74,15 @@ jobs:
       - name: Install pipx for Python ${{ matrix.python-version }}
         run: python -m pip install "pipx==$PIPX_VERSION"
       - name: Install Hatch
-        run: pipx install "hatch==$HATCH_VERSION"
+        run: pipx install "hatch$HATCH_VERSION"
       - name: Test Hatch version
         run: |
-          HATCH_VERSION_INSTALLED=$(hatch --version)
+          hatch_version_installed=$(hatch --version)
+          HATCH_VERSION_INSTALLED=${hatch_version_installed##Hatch, version }
           echo "The HATCH_VERSION environment variable is set to $HATCH_VERSION."
-          echo "The installed Hatch version is ${HATCH_VERSION_INSTALLED##Hatch, version }."
+          echo "The installed Hatch version is $HATCH_VERSION_INSTALLED."
           case $HATCH_VERSION_INSTALLED in
-          *$HATCH_VERSION) echo "Hatch version correct." ;;
+          $HATCH_VERSION) echo "Hatch version correct." ;;
           *) echo "Hatch version incorrect." && exit 1 ;;
           esac
       - name: Install dependencies
