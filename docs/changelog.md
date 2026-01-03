@@ -2,6 +2,41 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/HEAD/CHANGELOG.md)
 
+## 0.84.0 - 2026-01-03
+
+### Changes
+
+**Update to FastAPI 0.125** (b21826a60bb4a92ebbd6374ee981729ddeb2ae0a)
+
+This release will update/upgrade to
+[FastAPI 0.125](https://fastapi.tiangolo.com/release-notes/). This is a
+minor release to align with FastAPI versioning.
+
+FastAPI 0.125 drops Python 3.8 support. This change is a year overdue.
+Python 3.8 was at [end-of-life](https://devguide.python.org/versions/)
+on 2024-10-07, inboard dropped Python 3.8 support in version 0.71.0 on
+2024-10-05, and Starlette dropped Python 3.8 support in version 0.45.0
+on 2024-12-29.
+
+### Commits
+
+- Bump version from 0.83.0 to 0.84.0 (026779b)
+- Update to FastAPI 0.125 (b21826a)
+- Update changelog for version 0.83.0 (#135) (0bce217)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2026-01-03 17:45:28 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQN6h+7RICrc+M26OtIyfJz8eQhVYtPV2hq5NVnMBCppLRzrHdajOmtJ67NmpnNAfl+
+Zo5a/+d+8IXNlUy4FZIAs=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.83.0 - 2025-12-31
 
 ### Changes
