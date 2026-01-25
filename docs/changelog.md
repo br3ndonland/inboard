@@ -2,6 +2,40 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/HEAD/CHANGELOG.md)
 
+## 0.85.0 - 2026-01-25
+
+### Changes
+
+**Update to FastAPI 0.127** (65f0e953c58daa213d24d19c4704c4f48488cdb4)
+
+This release will update/upgrade to
+[FastAPI 0.127](https://fastapi.tiangolo.com/release-notes/).
+
+FastAPI 0.126 and 0.127 are being released together here because they
+both set up the deprecation of Pydantic 1. FastAPI will now raise a
+`FastAPIDeprecationWarning` when Pydantic 1 is used. Pydantic 1 support
+will be dropped in FastAPI 0.128.
+
+### Commits
+
+- Bump version from 0.84.0 to 0.85.0 (ffb1b0f)
+- Update to FastAPI 0.127 (65f0e95)
+- Update Vercel configuration for uv (c8ea689)
+- Update changelog for version 0.84.0 (#136) (33b5172)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2026-01-25 18:02:14 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQJ+xcwHBuwesPvBYCrMr46xttitBhr+Fan1/8bv0psDP2dUIajPI13XYvGx5vHX4aK
+vcgWxmMiaD0NK25/P9+AE=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.84.0 - 2026-01-03
 
 ### Changes
