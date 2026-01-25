@@ -1,6 +1,6 @@
 {
-  "installCommand": "python3 -m pip install --user pipx && export PATH=\"$HOME/.local/bin:$PATH\" && pipx install --global --include-deps 'mkdocs-material>=9,<10'",
-  "buildCommand": "mkdocs build --site-dir public",
+  "installCommand": "export HATCH_VERSION=\"==1.15.1\" && uv tool install \"hatch$HATCH_VERSION\"",
+  "buildCommand": "export PATH=\"$HOME/.local/bin:$PATH\" && hatch run docs:mkdocs build --site-dir public",
   "cleanUrls": true,
   "trailingSlash": false
 }
