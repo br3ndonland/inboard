@@ -128,7 +128,7 @@ jobs:
             echo "[ERROR] Unexpected .coverage files detected."
             exit 1
           fi
-        timeout-minutes: 5
+        timeout-minutes: 10
       - name: Enforce test coverage
         run: |
           hatch run ${{ env.HATCH_ENV }}:coverage combine -q
@@ -210,6 +210,21 @@ jobs:
             -e "BASIC_AUTH_USERNAME=test_user" \
             -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
             ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG"
+          docker run -d -p 83:80 --name inboard-base-gunicorn-asgi \
+            -e "BASIC_AUTH_USERNAME=test_user" \
+            -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
+            -e "WORKER_CLASS=asgi" \
+            ghcr.io/br3ndonland/inboard:base"$LINUX_TAG"
+          docker run -d -p 84:80 --name inboard-starlette-gunicorn-asgi \
+            -e "BASIC_AUTH_USERNAME=test_user" \
+            -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
+            -e "WORKER_CLASS=asgi" \
+            ghcr.io/br3ndonland/inboard:starlette"$LINUX_TAG"
+          docker run -d -p 85:80 --name inboard-fastapi-gunicorn-asgi \
+            -e "BASIC_AUTH_USERNAME=test_user" \
+            -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
+            -e "WORKER_CLASS=asgi" \
+            ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG"
       - name: Test Hatch version in Docker containers
         run: |
           test_hatch_version_in_docker() {
@@ -282,12 +297,21 @@ jobs:
           smoke_test :80
           smoke_test :81
           smoke_test :82
+          smoke_test :83
+          smoke_test :84
+          smoke_test :85
           smoke_test -a test_user:r4ndom_bUt_memorable :81/status
           smoke_test -a test_user:r4ndom_bUt_memorable :82/status
+          smoke_test -a test_user:r4ndom_bUt_memorable :84/status
+          smoke_test -a test_user:r4ndom_bUt_memorable :85/status
           smoke_test_xfail -a test_user:incorrect_password :81/status
           smoke_test_xfail -a test_user:incorrect_password :82/status
+          smoke_test_xfail -a test_user:incorrect_password :84/status
+          smoke_test_xfail -a test_user:incorrect_password :85/status
           smoke_test_xfail :81/status
           smoke_test_xfail :82/status
+          smoke_test_xfail :84/status
+          smoke_test_xfail :85/status
       - name: Log in to Docker registry
         if: >
           github.ref_type == 'tag' ||
