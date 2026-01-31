@@ -36,7 +36,7 @@ Repository = "https://github.com/br3ndonland/inboard"
 
 [project.optional-dependencies]
 checks = [
-  "basedpyright>=1.33,<1.34",
+  "basedpyright>=1.37,<1.38",
   "ruff>=0.14,<0.15",
 ]
 docs = [
