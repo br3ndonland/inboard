@@ -2,6 +2,41 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/HEAD/CHANGELOG.md)
 
+## 0.86.0 - 2026-01-31
+
+### Changes
+
+**Update to FastAPI 0.128** (683c12af6674c3639e85e5ebb5dfe1ad7fdac02a)
+
+This release will update/upgrade to
+[FastAPI 0.128](https://fastapi.tiangolo.com/release-notes/). This is a
+minor release to align with FastAPI versioning.
+
+FastAPI 0.128 drops Pydantic 1 support. This is a **BREAKING CHANGE**
+for Pydantic 1 users. See the
+[FastAPI docs](https://fastapi.tiangolo.com/how-to/migrate-from-pydantic-v1-to-pydantic-v2/)
+for further information on migrating to Pydantic 2.
+
+### Commits
+
+- Bump version from 0.85.0 to 0.86.0 (9ab54fe)
+- Update to FastAPI 0.128 (683c12a)
+- Update to BasedPyright 1.37 (905d723)
+- Update changelog for version 0.85.0 (#137) (bf8e78f)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2026-01-31 15:03:43 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQDYHNTm5191XMUhBL6Uu9+dk86OGILDezOaYFXOV1rINXufpHkkUaouz37O1Fxrm98
+QBQQ3bG4i4JX2RvU8X4wk=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.85.0 - 2026-01-25
 
 ### Changes
