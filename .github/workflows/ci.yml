@@ -225,6 +225,20 @@ jobs:
             -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
             -e "WORKER_CLASS=asgi" \
             ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG"
+      - name: WIP
+        run: |
+          containers=(
+            inboard-base
+            inboard-starlette
+            inboard-fastapi
+            inboard-base-gunicorn-asgi
+            inboard-starlette-gunicorn-asgi
+            inboard-fastapi-gunicorn-asgi
+          )
+          for container in "${containers[@]}"; do
+            echo "$container"
+            docker logs "$container"
+          done
       - name: Test Hatch version in Docker containers
         run: |
           test_hatch_version_in_docker() {
