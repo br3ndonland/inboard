@@ -20,12 +20,12 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 ## General
 
-`APP_MODULE`/`UVICORN_APP`
+`APP_MODULE`
 
 <!-- prettier-ignore -->
 - Python module with app instance.
 - Default: The appropriate app module from inboard.
-- Custom: For a module at `/app/package/custom/module.py` and app instance object `api`, either `APP_MODULE` (like `APP_MODULE="package.custom.module:api"`) or `UVICORN_APP` (like `UVICORN_APP="package.custom.module:api"`, _new in inboard 0.62_)
+- Custom: For a module at `/app/package/custom/module.py` and app instance object `api`, `APP_MODULE="package.custom.module:api"`
 
     !!! example "Example of a custom FastAPI app module"
 
@@ -72,7 +72,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 `GUNICORN_CONF`
 
-- Path to a [Gunicorn configuration file](https://docs.gunicorn.org/en/latest/settings.html#config-file). Gunicorn accepts either file paths or module paths.
+- Path to a [Gunicorn configuration file](https://gunicorn.org/reference/settings/#config-file). Gunicorn accepts either file paths or module paths.
 - Default:
     - `"python:inboard.gunicorn_conf"` (provided with inboard)
 - Custom:
@@ -81,29 +81,31 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 ### Process management
 
-!!! info
-
-    As originally described in the Uvicorn docs, "Uvicorn includes a Gunicorn worker class allowing you to run ASGI applications, with all of Uvicorn's performance benefits, while also giving you Gunicorn's fully-featured process management."
-
-    Uvicorn deprecated the workers module in version 0.30.0. It is now available here at `inboard.gunicorn_workers`.
-
 `PROCESS_MANAGER`
 
-- Manager for Uvicorn worker processes.
-- Default: `"gunicorn"` (run Uvicorn with Gunicorn as the process manager)
+- Manager for worker processes.
+- Default: `"gunicorn"` (run Gunicorn as the process manager)
 - Custom: `"uvicorn"` (run Uvicorn alone for local development)
 
-[`WORKER_CLASS`](https://docs.gunicorn.org/en/latest/settings.html#worker-processes)
+[`WORKER_CLASS`](https://gunicorn.org/reference/settings/#worker-processes)
 
-- Uvicorn worker class for Gunicorn to use.
+- Worker class for Gunicorn to use.
 - Default: `inboard.gunicorn_workers.UvicornWorker` (provided with inboard)
-- Custom: For the alternate Uvicorn worker, `WORKER_CLASS="inboard.gunicorn_workers.UvicornH11Worker"` _(the H11 worker is provided for [PyPy](https://www.pypy.org/))_
+- Custom:
+    - `WORKER_CLASS="inboard.gunicorn_workers.UvicornH11Worker"` for the alternate Uvicorn H11 worker _(provided for [PyPy](https://www.pypy.org/))_
+    - `WORKER_CLASS="asgi"` for the [Gunicorn ASGI worker](https://gunicorn.org/asgi/)
+
+!!! tip
+
+    As of Gunicorn 25, Gunicorn now provides a new [ASGI worker](https://gunicorn.org/asgi/) that supports uvloop and can run FastAPI, Starlette, Quart, and other ASGI apps without the need for Uvicorn.
+
+    Uvicorn, on the other hand, stopped supporting their ASGI worker and deprecated the workers module in version 0.30.0. It is now available here at `inboard.gunicorn_workers`.
 
 ### Worker process calculation
 
 !!! info
 
-    The number of [Gunicorn worker processes](https://docs.gunicorn.org/en/latest/settings.html#worker-processes) to run is determined based on the `MAX_WORKERS`, `WEB_CONCURRENCY`, and `WORKERS_PER_CORE` environment variables, with a default of 1 worker per CPU core and a default minimum of 2. This is the "performance auto-tuning" feature described in [tiangolo/uvicorn-gunicorn-docker](https://github.com/tiangolo/uvicorn-gunicorn-docker).
+    The number of [Gunicorn worker processes](https://gunicorn.org/reference/settings/#worker-processes) to run is determined based on the `MAX_WORKERS`, `WEB_CONCURRENCY`, and `WORKERS_PER_CORE` environment variables, with a default of 1 worker per CPU core and a default minimum of 2. This is the "performance auto-tuning" feature described in [tiangolo/uvicorn-gunicorn-docker](https://github.com/tiangolo/uvicorn-gunicorn-docker).
 
 `MAX_WORKERS`
 
@@ -135,19 +137,19 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 ### Worker timeouts
 
-[`GRACEFUL_TIMEOUT`](https://docs.gunicorn.org/en/stable/settings.html#graceful-timeout)
+[`GRACEFUL_TIMEOUT`](https://gunicorn.org/reference/settings/#graceful_timeout)
 
 - Number of seconds to wait for workers to finish serving requests before restart.
 - Default: `"120"`
 - Custom: `GRACEFUL_TIMEOUT="20"`
 
-[`TIMEOUT`](https://docs.gunicorn.org/en/stable/settings.html#timeout)
+[`TIMEOUT`](https://gunicorn.org/reference/settings/#timeout)
 
 - Workers silent for more than this many seconds are killed and restarted.
 - Default: `"120"`
 - Custom: `TIMEOUT="20"`
 
-[`KEEP_ALIVE`](https://docs.gunicorn.org/en/stable/settings.html#keepalive)
+[`KEEP_ALIVE`](https://gunicorn.org/reference/settings/#keepalive)
 
 - Number of seconds to wait for workers to finish serving requests on a Keep-Alive connection.
 - Default: `"5"`
@@ -167,7 +169,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 - Default: `"80"`
 - Custom: `PORT="8080"`
 
-[`BIND`](https://docs.gunicorn.org/en/latest/settings.html#server-socket)
+[`BIND`](https://gunicorn.org/reference/settings/#server-socket)
 
 - The actual host and port passed to Gunicorn.
 - Default: `HOST:PORT` (`"0.0.0.0:80"`)
@@ -177,8 +179,8 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
 `GUNICORN_CMD_ARGS`
 
-- Additional [command-line arguments for Gunicorn](https://docs.gunicorn.org/en/stable/settings.html). Gunicorn looks for the `GUNICORN_CMD_ARGS` environment variable automatically, and gives these settings precedence over other environment variables and Gunicorn config files.
-- Custom: To use a custom TLS certificate, copy or mount the certificate and private key into the Docker image, and set [`--keyfile` and `--certfile`](http://docs.gunicorn.org/en/latest/settings.html#ssl) to the location of the files.
+- Additional [command-line arguments for Gunicorn](https://gunicorn.org/reference/settings/). Gunicorn looks for the `GUNICORN_CMD_ARGS` environment variable automatically, and gives these settings precedence over other environment variables and Gunicorn config files.
+- Custom: To use a custom TLS certificate, copy or mount the certificate and private key into the Docker image, and set [`--keyfile` and `--certfile`](https://gunicorn.org/reference/settings/#ssl) to the location of the files.
 
     ```sh
     CERTS="--keyfile=/secrets/key.pem --certfile=/secrets/cert.pem"
@@ -193,7 +195,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
     These settings are mostly used for local development.
 
-    [Uvicorn supports environment variables named with the `UVICORN_` prefix](https://www.uvicorn.org/settings/) (via the [Click `auto_envvar_prefix` feature](https://click.palletsprojects.com/en/7.x/options/#dynamic-defaults-for-prompts)), but these environment variables are only read when running from the CLI. inboard runs Uvicorn programmatically with `uvicorn.run()` instead of running with the CLI, so most of these variables will not apply. The exception is `UVICORN_APP`, as explained in the [general section](#general).
+    [Uvicorn supports environment variables named with the `UVICORN_` prefix](https://www.uvicorn.org/settings/) (via the [Click `auto_envvar_prefix` feature](https://click.palletsprojects.com/en/7.x/options/#dynamic-defaults-for-prompts)), but these environment variables are only read when running from the CLI. inboard runs Uvicorn programmatically with `uvicorn.run()` instead of running with the CLI, so most of these variables will not apply.
 
 `WITH_RELOAD`
 
@@ -260,11 +262,6 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
         - Parsed into a list of strings in the same manner as for `RELOAD_DIRS`.
         - `uvicorn.run` equivalent: `reload_includes`
         - Uvicorn CLI equivalent: `--reload-include`
-
-`UVICORN_APP` _(new in inboard 0.62)_
-
-- `UVICORN_APP` can be used interchangeably with `APP_MODULE`.
-- See the [general section](#general) for further details.
 
 `UVICORN_CONFIG_OPTIONS` _(advanced usage, new in inboard 0.11)_
 
@@ -363,7 +360,7 @@ The idea here is to allow a catch-all Uvicorn config variable in the spirit of `
 
 `LOG_LEVEL`
 
-- Log level for [Gunicorn](https://docs.gunicorn.org/en/latest/settings.html#logging) or [Uvicorn](https://www.uvicorn.org/settings/#logging).
+- Log level for [Gunicorn](https://gunicorn.org/reference/settings/#logging) or [Uvicorn](https://www.uvicorn.org/settings/#logging).
 - Default: `"info"`
 - Custom (organized from greatest to least amount of logging):
     - `LOG_LEVEL="debug"`

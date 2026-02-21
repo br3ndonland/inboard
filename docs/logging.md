@@ -251,7 +251,7 @@ The project initially also had support for the old-format `.conf`/`.ini` files, 
 
 - **Dict configs allow programmatic control of logging settings** (see how log level is set in [`logging_conf.py`](https://github.com/br3ndonland/inboard/blob/HEAD/inboard/logging_conf.py) for an example).
 - **Gunicorn and Uvicorn both use dict configs in `.py` files for their own logging configurations**.
-- **Gunicorn prefers dict configs** specified with the [`logconfig_dict` option](https://docs.gunicorn.org/en/latest/settings.html#logconfig-dict).
+- **Gunicorn prefers dict configs** specified with the [`logconfig_dict` option](https://gunicorn.org/reference/settings/#logging).
 - **Uvicorn accepts dict configs when running programmatically**, like `uvicorn.run(log_config=your_dict_config)`.
 - **Relying on Python dictionaries reduces testing burden** (only have to write unit tests for `.py` files)
 - **YAML isn't a Python data structure**. YAML is confusingly used for examples in the documentation, but isn't actually a recommended format. There's no built-in YAML data structure in Python, so the YAML must be parsed by PyYAML and converted into a dictionary, then passed to `logging.config.dictConfig()`. **Why not just make the logging config a dictionary in the first place?**

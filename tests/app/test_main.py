@@ -131,7 +131,7 @@ class TestEndpoints:
         response = client_asgi.get("/")
         assert response.status_code == 200
         assert response.text == (
-            f"Hello World, from Uvicorn, Gunicorn, and Python "
+            f"Hello World, from Gunicorn and Python "
             f"{version.major}.{version.minor}.{version.micro}!"
         )
 
@@ -231,7 +231,7 @@ class TestEndpoints:
         assert error_response.status_code in {401, 403}
         assert response.status_code == 200
         assert "message" in response_json
-        for word in ("Hello", "World", "Uvicorn", "Python"):
+        for word in ("Hello", "World", "Python"):
             assert word in response_json["message"]
         if isinstance(client.app, FastAPI):
             assert "FastAPI" in response_json["message"]
