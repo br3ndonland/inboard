@@ -1,5 +1,49 @@
 # Changelog
 
+## 0.87.0 - 2026-02-21
+
+### Changes
+
+**Update to FastAPI 0.129 and Starlette 0.52**
+(70548ac836fef912ff29ef5572fb4f620292d851)
+
+This release will update/upgrade to
+[FastAPI 0.129](https://fastapi.tiangolo.com/release-notes/) and
+[Starlette 0.52](https://www.starlette.io/release-notes/). This is a
+minor release to align with FastAPI and Starlette versioning.
+
+FastAPI 0.129 drops support for Python 3.9 (already dropped by Starlette
+and inboard) and drops the "fastapi-slim" package build. FastAPI 0.128.3
+also relaxed the Starlette version range from
+`starlette>=0.40.0,<0.51.0` to `starlette>=0.40.0,<1.0.0`. This could
+lead to issues because that the plan for Starlette 1 is not clear
+([encode/starlette#51](https://github.com/encode/starlette/issues/51)),
+and breaking changes could be introduced at any point until then.
+inboard will continue to limit the Starlette version to avoid breaking
+changes, updating to 0.52 in this release. Changes to Starlette in 0.51
+and 0.52 include the ability to access state with dictionary syntax
+([docs](https://starlette.dev/lifespan/#accessing-state)) and add
+`Access-Control-Allow-Private-Network` headers with `CORSMiddleware`.
+
+### Commits
+
+- Bump version from 0.86.0 to 0.87.0 (37cba2a)
+- Update to FastAPI 0.129 and Starlette 0.52 (70548ac)
+- Update changelog for version 0.86.0 (#138) (83c0dae)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2026-02-21 16:18:37 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQMP8PQNr5KwG2ez90eiZZ6xTUsoqpSs68nR8ls3r/z1jQpWt/iIwAN3+8IffOsqLUX
+tyEo9ygtq++6mbUTPvZgQ=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.86.0 - 2026-01-31
 
 ### Changes
