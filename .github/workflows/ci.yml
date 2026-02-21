@@ -128,7 +128,7 @@ jobs:
             echo "[ERROR] Unexpected .coverage files detected."
             exit 1
           fi
-        timeout-minutes: 5
+        timeout-minutes: 8
       - name: Enforce test coverage
         run: |
           hatch run ${{ env.HATCH_ENV }}:coverage combine -q
@@ -196,21 +196,7 @@ jobs:
             --build-arg PIPX_VERSION="$PIPX_VERSION" \
             --build-arg PYTHON_VERSION="$PYTHON_VERSION" \
             -t ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG"
-      - name: Run Docker containers for testing
-        run: |
-          docker run -d -p 80:80 --name inboard-base \
-            -e "BASIC_AUTH_USERNAME=test_user" \
-            -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
-            ghcr.io/br3ndonland/inboard:base"$LINUX_TAG"
-          docker run -d -p 81:80 --name inboard-starlette \
-            -e "BASIC_AUTH_USERNAME=test_user" \
-            -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
-            ghcr.io/br3ndonland/inboard:starlette"$LINUX_TAG"
-          docker run -d -p 82:80 --name inboard-fastapi \
-            -e "BASIC_AUTH_USERNAME=test_user" \
-            -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
-            ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG"
-      - name: Test Hatch version in Docker containers
+      - name: Smoke test Docker containers
         run: |
           test_hatch_version_in_docker() {
             echo "The HATCH_VERSION environment variable is set to $HATCH_VERSION."
@@ -227,9 +213,7 @@ jobs:
               esac
             done
           }
-          test_hatch_version_in_docker inboard-base inboard-starlette inboard-fastapi
-      - name: Test virtualenv location in Docker containers
-        run: |
+
           test_virtualenv_location_in_docker() {
             local docker_virtualenv docker_python expected_virtualenv expected_python
             expected_virtualenv="/app/$HATCH_ENV_TYPE_VIRTUAL_PATH"
@@ -249,9 +233,7 @@ jobs:
               esac
             done
           }
-          test_virtualenv_location_in_docker inboard-base inboard-starlette inboard-fastapi
-      - name: Smoke test Docker containers
-        run: |
+
           handle_error_code() {
             case "$1" in
             2) : 'Request timed out!' ;;
@@ -264,30 +246,55 @@ jobs:
             echo "$_"
             return "$1"
           }
+
           smoke_test() {
             if http --check-status --ignore-stdin -q --timeout=5 "$@"; then
-              echo 'Smoke test passed. OK!'
+              echo "Smoke test of $* passed. OK!"
             else
-              handle_error_code "$?"
+              local error_code="$?"
+              echo "Smoke test of $* not passed."
+              handle_error_code "$error_code"
             fi
           }
+
           smoke_test_xfail() {
             if http --check-status --ignore-stdin -q --timeout=5 "$@" &>/dev/null; then
-              echo 'Smoke test should have failed!'
+              echo "Smoke test of $* should have failed!"
               return 1
             else
-              echo 'Smoke test expected to fail. OK!'
+              echo "Smoke test of $* expected to fail. OK!"
             fi
           }
-          smoke_test :80
-          smoke_test :81
-          smoke_test :82
-          smoke_test -a test_user:r4ndom_bUt_memorable :81/status
-          smoke_test -a test_user:r4ndom_bUt_memorable :82/status
-          smoke_test_xfail -a test_user:incorrect_password :81/status
-          smoke_test_xfail -a test_user:incorrect_password :82/status
-          smoke_test_xfail :81/status
-          smoke_test_xfail :82/status
+
+          inboard_containers=(
+            inboard-base
+            inboard-starlette
+            inboard-fastapi
+            inboard-base-gunicorn-asgi
+            inboard-starlette-gunicorn-asgi
+            inboard-fastapi-gunicorn-asgi
+          )
+
+          for container in "${inboard_containers[@]}"; do
+            echo "$container"
+            container_tag=$(echo "$container" | cut -d - -f 2)
+            host_port=10101
+            [[ $container == *asgi ]] && worker_class=asgi
+            docker run -d -p $host_port:80 --name "$container" \
+              -e "BASIC_AUTH_USERNAME=test_user" \
+              -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
+              ${worker_class:+-e "WORKER_CLASS=asgi"} \
+              ghcr.io/br3ndonland/inboard:"$container_tag$LINUX_TAG"
+            test_hatch_version_in_docker "$container"
+            test_virtualenv_location_in_docker "$container"
+            smoke_test :$host_port
+            smoke_test -a test_user:r4ndom_bUt_memorable :$host_port/status
+            smoke_test_xfail -a test_user:incorrect_password :$host_port/status
+            smoke_test_xfail :$host_port/status
+            docker logs "$container"
+            [[ $container == *asgi ]] && grep "Using worker: asgi" <(docker logs "$container")
+            docker stop "$container"
+          done
       - name: Log in to Docker registry
         if: >
           github.ref_type == 'tag' ||

@@ -29,8 +29,12 @@ if TYPE_CHECKING:
     )
 
 pytestmark = pytest.mark.skipif(sys.platform == "win32", reason="requires unix")
+pytestmarks = [pytest.mark.subprocess, pytest.mark.timeout(60)]
 gunicorn_arbiter = pytest.importorskip("gunicorn.arbiter", reason="requires gunicorn")
-gunicorn_workers = pytest.importorskip(
+gunicorn_workers_gasgi = pytest.importorskip(
+    "gunicorn.workers.gasgi", reason="requires gunicorn"
+)
+gunicorn_workers_inboard = pytest.importorskip(
     "inboard.gunicorn_workers", reason="requires gunicorn"
 )
 
@@ -136,8 +140,9 @@ def unused_tcp_port() -> int:
 
 @pytest.fixture(
     params=(
-        pytest.param(gunicorn_workers.UvicornWorker, marks=pytest.mark.subprocess),
-        pytest.param(gunicorn_workers.UvicornH11Worker, marks=pytest.mark.subprocess),
+        pytest.param(gunicorn_workers_gasgi.ASGIWorker, marks=pytestmarks),
+        pytest.param(gunicorn_workers_inboard.UvicornWorker, marks=pytestmarks),
+        pytest.param(gunicorn_workers_inboard.UvicornH11Worker, marks=pytestmarks),
     )
 )
 def worker_class(request: pytest.FixtureRequest) -> str:
@@ -151,7 +156,11 @@ def worker_class(request: pytest.FixtureRequest) -> str:
     https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html
     """
     worker_class = request.param
-    return f"{worker_class.__module__}.{worker_class.__name__}"
+    return (
+        f"{worker_class.__module__}.{worker_class.__name__}"
+        if "uvicorn" in str(worker_class.__name__).casefold()
+        else "asgi"
+    )
 
 
 @pytest.fixture(
@@ -169,7 +178,7 @@ def gunicorn_process(
     unused_tcp_port: int,
     worker_class: str,
 ) -> Generator[Process, None, None]:
-    """Yield a subprocess running a Gunicorn arbiter with a Uvicorn worker.
+    """Yield a subprocess running a Gunicorn arbiter with a worker.
 
     An instance of `httpx.Client` is available on the `client` attribute.
     Output is saved to a temporary file and accessed with `read_output()`.
@@ -206,72 +215,23 @@ def gunicorn_process(
         base_url = f"http://{bind}"
         verify = False
     args.append(app_module)
+    transport = httpx.HTTPTransport(retries=5, verify=verify)
     with (
-        httpx.Client(base_url=base_url, verify=verify) as client,
+        httpx.Client(base_url=base_url, transport=transport) as client,
         tempfile.TemporaryFile() as output,
     ):
         with Process(args, client=client, output=output) as process:
             time.sleep(2)
-            assert not process.poll()
-            yield process
-            process.send_signal(signal.SIGQUIT)
-            _ = process.wait(timeout=5)
-
-
-@pytest.fixture
-def gunicorn_process_with_sigterm(
-    unused_tcp_port: int,
-) -> Generator[Process, None, None]:
-    """Yield a subprocess running a Gunicorn arbiter with a Uvicorn worker.
-
-    An instance of `httpx.Client` is available on the `client` attribute.
-    Output is saved to a temporary file and accessed with `read_output()`.
-
-    This pytest fixture provides a simplified worker configuration that exits
-    with `SIGTERM` instead of `SIGQUIT`. Exiting with `SIGTERM` seems to help
-    coverage.py report the correct code coverage, even without the configuration
-    setting `sigterm = true` on `coverage.run`, but test processes also seem to
-    re-spawn unexpectedly. Coverage.py continues generating `.coverage.*` files,
-    even after the test run has concluded. This is why `SIGQUIT` is used instead
-    of `SIGTERM` in the more complex `gunicorn_process` fixture. The idea is to
-    use `SIGTERM` as little as possible to avoid these re-spawning subprocesses.
-    """
-    worker_class = (
-        f"{gunicorn_workers.UvicornWorker.__module__}."
-        f"{gunicorn_workers.UvicornWorker.__name__}"
-    )
-    app_module = f"{__name__}:{app.__name__}"
-    bind = f"127.0.0.1:{unused_tcp_port}"
-    args = [
-        "gunicorn",
-        "--bind",
-        bind,
-        "--graceful-timeout",
-        "1",
-        "--log-level",
-        "debug",
-        "--worker-class",
-        worker_class,
-        "--workers",
-        "1",
-        app_module,
-    ]
-    base_url = f"http://{bind}"
-    verify = False
-    with (
-        httpx.Client(base_url=base_url, verify=verify) as client,
-        tempfile.TemporaryFile() as output,
-    ):
-        with Process(args, client=client, output=output) as process:
-            time.sleep(2)
+            assert process.poll() is None
             yield process
             process.terminate()
             _ = process.wait(timeout=5)
+            assert process.poll() is not None
 
 
 @pytest.fixture
 def gunicorn_process_with_lifespan_startup_failure(
-    unused_tcp_port: int, worker_class: str
+    unused_tcp_port: int,
 ) -> Generator[Process, None, None]:
     """Yield a subprocess running a Gunicorn arbiter with a Uvicorn worker.
 
@@ -289,7 +249,7 @@ def gunicorn_process_with_lifespan_startup_failure(
         "--log-level",
         "debug",
         "--worker-class",
-        worker_class,
+        "inboard.gunicorn_workers.UvicornWorker",
         "--workers",
         "1",
         app_module,
@@ -330,7 +290,6 @@ def test_gunicorn_arbiter_signal_handling(
         # occasional flakes are seen with certain signals
         flaky_signals = [
             getattr(signal, "SIGHUP", None),
-            getattr(signal, "SIGTERM", None),
             getattr(signal, "SIGTTIN", None),
             getattr(signal, "SIGTTOU", None),
             getattr(signal, "SIGUSR2", None),
@@ -365,21 +324,10 @@ def test_uvicorn_worker_boot_error(
     assert "Worker failed to boot" in output_text
 
 
-def test_uvicorn_worker_get_request(gunicorn_process: Process) -> None:
-    """Test a GET request to the Gunicorn Uvicorn worker's ASGI app."""
+def test_worker_get_request(gunicorn_process: Process) -> None:
+    """Test a GET request to the Gunicorn worker's ASGI app."""
     response = gunicorn_process.client.get("/")
     output_text = gunicorn_process.read_output()
     assert response.status_code == 204
-    assert "inboard.gunicorn_workers", "startup complete" in output_text
-
-
-def test_uvicorn_worker_get_request_with_sigterm(
-    gunicorn_process_with_sigterm: Process,
-) -> None:
-    """Test a GET request to the Gunicorn Uvicorn worker's ASGI app
-    when `SIGTERM` is used to stop the process instead of `SIGQUIT`.
-    """
-    response = gunicorn_process_with_sigterm.client.get("/")
-    output_text = gunicorn_process_with_sigterm.read_output()
-    assert response.status_code == 204
-    assert "inboard.gunicorn_workers", "startup complete" in output_text
+    assert "gunicorn" in output_text
+    assert "Listening" in output_text

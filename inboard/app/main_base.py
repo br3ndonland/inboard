@@ -21,12 +21,12 @@ def _compose_message() -> str:
     process_manager = os.getenv("PROCESS_MANAGER", "gunicorn")
     if process_manager not in {"gunicorn", "uvicorn"}:
         raise NameError("Process manager needs to be either uvicorn or gunicorn.")
-    server = "Uvicorn" if process_manager == "uvicorn" else "Uvicorn, Gunicorn,"
+    server = "Uvicorn" if process_manager == "uvicorn" else "Gunicorn"
     return f"Hello World, from {server} and Python {version}!"
 
 
 async def app(scope: Scope, _: ASGIReceiveCallable, send: ASGISendCallable) -> None:
-    """Define a simple ASGI 3 application for use with Uvicorn.
+    """Define a simple ASGI 3 application.
 
     https://asgi.readthedocs.io/en/stable/introduction.html
     https://asgi.readthedocs.io/en/stable/specs/main.html#applications
