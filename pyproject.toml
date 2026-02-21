@@ -23,7 +23,7 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
-  "gunicorn==23.0.0",
+  "gunicorn==25.1.0",
   "uvicorn==0.28.1",
 ]
 dynamic = ["version"]
@@ -38,12 +38,15 @@ Repository = "https://github.com/br3ndonland/inboard"
 fastapi = [
   "fastapi==0.129.2",
 ]
+gunicorn-fast = [
+  "uvloop>=0.19.0; sys_platform != 'win32' and (sys_platform != 'cygwin' and platform_python_implementation != 'PyPy')",
+]
 starlette = [
   "starlette>=0.40.0,<0.53.0",
 ]
 uvicorn-fast = [
   "httptools>=0.6.3",
-  "uvloop>0.15.1; sys_platform != 'win32' and (sys_platform != 'cygwin' and platform_python_implementation != 'PyPy')",
+  "uvloop>=0.19.0; sys_platform != 'win32' and (sys_platform != 'cygwin' and platform_python_implementation != 'PyPy')",
   "websockets>=10.4",
 ]
 uvicorn-standard = [
@@ -93,7 +96,9 @@ packages = ["inboard"]
 
 [tool.hatch.envs.base]
 dev-mode = false
-features = []
+features = [
+  "gunicorn-fast",
+]
 
 [tool.hatch.envs.ci]
 builder = true
@@ -104,6 +109,7 @@ dependency-groups = [
 ]
 features = [
   "fastapi",
+  "gunicorn-fast",
   "uvicorn-fast",
 ]
 
@@ -116,6 +122,7 @@ dependency-groups = [
 ]
 features = [
   "fastapi",
+  "gunicorn-fast",
   "uvicorn-fast",
 ]
 
@@ -143,11 +150,13 @@ dependency-groups = [
 dev-mode = false
 features = [
   "fastapi",
+  "gunicorn-fast",
 ]
 
 [tool.hatch.envs.starlette]
 dev-mode = false
 features = [
+  "gunicorn-fast",
   "starlette",
 ]
 
