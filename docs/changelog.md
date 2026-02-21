@@ -18,7 +18,7 @@ FastAPI 0.129 drops support for Python 3.9 (already dropped by Starlette
 and inboard) and drops the "fastapi-slim" package build. FastAPI 0.128.3
 also relaxed the Starlette version range from
 `starlette>=0.40.0,<0.51.0` to `starlette>=0.40.0,<1.0.0`. This could
-lead to issues because that the plan for Starlette 1 is not clear
+lead to issues because the plan for Starlette 1 is not clear
 ([encode/starlette#51](https://github.com/encode/starlette/issues/51)),
 and breaking changes could be introduced at any point until then.
 inboard will continue to limit the Starlette version to avoid breaking
