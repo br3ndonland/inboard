@@ -482,6 +482,7 @@ jobs:
               -e "s|There are several breaking changes noted in the Gunicorn changelog\.||g" \
               "$changelog"
             sed -Ei -z "s|\n\n\n||g" "$changelog"
+            sed -Ei "s|because that the|because the|g" "$changelog"
           done
       - name: Format changelog with Prettier
         run: npx -s -y prettier@'^3' --write CHANGELOG.md docs/changelog.md
