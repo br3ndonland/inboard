@@ -93,7 +93,7 @@ jobs:
             echo "[ERROR] Unexpected .coverage files detected."
             exit 1
           fi
-        timeout-minutes: 5
+        timeout-minutes: 8
       - name: Enforce test coverage
         run: |
           hatch run ${{ env.HATCH_ENV }}:coverage combine -q
@@ -160,80 +160,101 @@ jobs:
             --build-arg PIPX_VERSION="$PIPX_VERSION" \
             --build-arg PYTHON_VERSION="$PYTHON_VERSION" \
             -t ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG"
-      - name: Run Docker containers for testing
-        run: |
-          docker run -d -p 80:80 --name inboard-base \
-            -e "BASIC_AUTH_USERNAME=test_user" \
-            -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
-            ghcr.io/br3ndonland/inboard:base"$LINUX_TAG"
-          docker run -d -p 81:80 --name inboard-starlette \
-            -e "BASIC_AUTH_USERNAME=test_user" \
-            -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
-            ghcr.io/br3ndonland/inboard:starlette"$LINUX_TAG"
-          docker run -d -p 82:80 --name inboard-fastapi \
-            -e "BASIC_AUTH_USERNAME=test_user" \
-            -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
-            ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG"
-      - name: Test virtualenv location in Docker containers
-        run: |
-          test_virtualenv_location_in_docker() {
-            local docker_virtualenv docker_python expected_virtualenv expected_python
-            expected_virtualenv="/app/$HATCH_ENV_TYPE_VIRTUAL_PATH"
-            expected_python="$expected_virtualenv/bin/python"
-            echo "The Hatch virtualenv should be at $expected_virtualenv."
-            echo "The Python executable should be at $expected_python."
-            for container_name in "$@"; do
-              docker_virtualenv=$(docker exec "$container_name" hatch env find)
-              docker_python=$(docker exec "$container_name" which python)
-              case "$docker_virtualenv" in
-              "$expected_virtualenv") echo "Correct Hatch virtualenv $docker_virtualenv for $container_name." ;;
-              *) echo "Incorrect Hatch virtualenv $docker_virtualenv for $container_name." && return 1 ;;
-              esac
-              case "$docker_python" in
-              "$expected_python") echo "Correct Python $docker_python for $container_name." ;;
-              *) echo "Incorrect Python $docker_python for $container_name." && return 1 ;;
-              esac
-            done
-          }
-          test_virtualenv_location_in_docker inboard-base inboard-starlette inboard-fastapi
       - name: Smoke test Docker containers
         run: |
           handle_error_code() {
             case "$1" in
-            2) : 'Request timed out!' ;;
-            3) : 'Unexpected HTTP 3xx Redirection!' ;;
-            4) : 'HTTP 4xx Client Error!' ;;
-            5) : 'HTTP 5xx Server Error!' ;;
-            6) : 'Exceeded --max-redirects=<n> redirects!' ;;
-            *) : 'Other Error!' ;;
+            2) : "Request timed out" ;;
+            3) : "Unexpected HTTP 3xx redirection" ;;
+            4) : "HTTP 4xx client error" ;;
+            5) : "HTTP 5xx server error" ;;
+            6) : "Exceeded max number of redirects" ;;
+            *) : "Other error code $1" ;;
             esac
-            echo "$_"
+            echo "[ERROR] error code: $_" >&2
             return "$1"
           }
+
           smoke_test() {
+            echo [DEBUG] running http --check-status --ignore-stdin -q --timeout=5 "$@"
             if http --check-status --ignore-stdin -q --timeout=5 "$@"; then
-              echo 'Smoke test passed. OK!'
+              echo "[INFO] Smoke test of $* passed. OK!"
             else
-              handle_error_code "$?"
+              local error_code="$?"
+              echo "[ERROR] Smoke test of $* not passed." >&2
+              handle_error_code "$error_code"
             fi
           }
+
           smoke_test_xfail() {
             if http --check-status --ignore-stdin -q --timeout=5 "$@" &>/dev/null; then
-              echo 'Smoke test should have failed!'
+              echo "[ERROR] Smoke test of $* should have failed!" >&2
               return 1
             else
-              echo 'Smoke test expected to fail. OK!'
+              echo "[INFO] Smoke test of $* expected to fail. OK!"
             fi
           }
-          smoke_test :80
-          smoke_test :81
-          smoke_test :82
-          smoke_test -a test_user:r4ndom_bUt_memorable :81/status
-          smoke_test -a test_user:r4ndom_bUt_memorable :82/status
-          smoke_test_xfail -a test_user:incorrect_password :81/status
-          smoke_test_xfail -a test_user:incorrect_password :82/status
-          smoke_test_xfail :81/status
-          smoke_test_xfail :82/status
+
+          test_gunicorn_in_docker() {
+            local container_name=$1 docker_logs
+            docker_logs=$(docker logs "$container_name")
+            echo "[INFO] Docker container logs from $container_name:
+          $docker_logs
+            "
+            if [[ $container == *asgi ]]; then
+              expected_message="Using worker: asgi"
+            else
+              expected_message="Using worker:"
+            fi
+            grep "$expected_message" <(echo "$docker_logs")
+          }
+
+          test_virtualenv_location_in_docker() {
+            local container_name=$1 docker_virtualenv docker_python expected_virtualenv expected_python
+            expected_virtualenv="/app/$HATCH_ENV_TYPE_VIRTUAL_PATH"
+            expected_python="$expected_virtualenv/bin/python"
+            echo "[INFO] The Hatch virtualenv should be at $expected_virtualenv."
+            echo "[INFO] The Python executable should be at $expected_python."
+            docker_virtualenv=$(docker exec "$container_name" hatch env find)
+            docker_python=$(docker exec "$container_name" which python)
+            case "$docker_virtualenv" in
+            "$expected_virtualenv") echo "[INFO] Correct Hatch virtualenv $docker_virtualenv for $container_name." ;;
+            *) echo "[ERROR] Incorrect Hatch virtualenv $docker_virtualenv for $container_name." >&2 && return 1 ;;
+            esac
+            case "$docker_python" in
+            "$expected_python") echo "[INFO] Correct Python $docker_python for $container_name." ;;
+            *) echo "[ERROR] Incorrect Python $docker_python for $container_name." >&2 && return 1 ;;
+            esac
+          }
+
+          inboard_containers=(
+            inboard-base
+            inboard-starlette
+            inboard-fastapi
+            inboard-base-gunicorn-asgi
+            inboard-starlette-gunicorn-asgi
+            inboard-fastapi-gunicorn-asgi
+          )
+
+          for container in "${inboard_containers[@]}"; do
+            echo "[INFO] Testing $container.
+            "
+            container_tag=$(echo "$container" | cut -d - -f 2)
+            host_port=10101
+            [[ $container == *asgi ]] && worker_class=asgi
+            docker run -d -p $host_port:80 --name "$container" \
+              -e "BASIC_AUTH_USERNAME=test_user" \
+              -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
+              ${worker_class:+-e "WORKER_CLASS=asgi"} \
+              ghcr.io/br3ndonland/inboard:"$container_tag$LINUX_TAG"
+            test_virtualenv_location_in_docker "$container"
+            test_gunicorn_in_docker "$container"
+            smoke_test :$host_port
+            smoke_test -a test_user:r4ndom_bUt_memorable :$host_port/status
+            smoke_test_xfail -a test_user:incorrect_password :$host_port/status
+            smoke_test_xfail :$host_port/status
+            docker stop "$container"
+          done
       - name: Log in to Docker registry
         if: >
           github.ref_type == 'tag' ||
