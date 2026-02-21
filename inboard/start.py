@@ -116,8 +116,12 @@ def start_server(
     logger = logger or logging.getLogger()
     try:
         if process_manager == "gunicorn":
-            logger.debug("Running Uvicorn with Gunicorn.")
             gunicorn_options: list[str] = set_gunicorn_options(app_module)
+            logger.debug(
+                "Running Uvicorn with Gunicorn."
+                if any("uvicorn" in option.casefold() for option in gunicorn_options)
+                else "Running Gunicorn."
+            )
             _ = subprocess.run(gunicorn_options)
         elif process_manager == "uvicorn":
             logger.debug("Running Uvicorn without Gunicorn.")
