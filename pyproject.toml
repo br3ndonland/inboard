@@ -43,7 +43,7 @@ docs = [
   "mkdocs-material>=9,<10",
 ]
 fastapi = [
-  "fastapi==0.129.2",
+  "fastapi==0.131.0",
 ]
 starlette = [
   "starlette>=0.40.0,<0.53.0",
