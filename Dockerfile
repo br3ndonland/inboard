@@ -8,7 +8,7 @@ LABEL org.opencontainers.image.source="https://github.com/br3ndonland/inboard"
 LABEL org.opencontainers.image.title="inboard"
 LABEL org.opencontainers.image.url="https://github.com/br3ndonland/inboard/pkgs/container/inboard"
 ARG \
-  HATCH_VERSION=1.15.1 \
+  HATCH_VERSION \
   LINUX_VERSION \
   PIPX_VERSION=1.8.0
 ENV \
@@ -35,7 +35,7 @@ elif [ "${LINUX_VERSION%%-*}" = "slim" ]; then
     gcc libc-dev make wget
 fi
 python -m pip install --no-cache-dir --upgrade pip "pipx==$PIPX_VERSION"
-pipx install "hatch==$HATCH_VERSION"
+pipx install "hatch$HATCH_VERSION"
 HEREDOC
 COPY --link inboard /app/inboard
 ENTRYPOINT ["python"]

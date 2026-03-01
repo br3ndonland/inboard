@@ -1,5 +1,5 @@
 {
-  "installCommand": "export HATCH_VERSION=\"==1.15.1\" && uv tool install \"hatch$HATCH_VERSION\"",
+  "installCommand": "export HATCH_VERSION=\">=1.16.5,<1.17\" && uv tool install \"hatch$HATCH_VERSION\"",
   "buildCommand": "export PATH=\"$HOME/.local/bin:$PATH\" && hatch run docs:mkdocs build --site-dir public",
   "cleanUrls": true,
   "trailingSlash": false

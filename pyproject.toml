@@ -94,6 +94,7 @@ dev-mode = false
 features = []
 
 [tool.hatch.envs.ci]
+builder = true
 dev-mode = false
 features = [
   "checks",
