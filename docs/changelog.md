@@ -2,6 +2,52 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/HEAD/CHANGELOG.md)
 
+## 0.87.1 - 2026-02-28
+
+### Changes
+
+**Update to Hatch 1.16.5** (cf534e733eb09411ffce869e20bd61b674de19d8)
+
+Due to an upstream change to `virtualenv`, Hatch script commands have
+started erroring
+([pypa/hatch#2193](https://github.com/pypa/hatch/issues/2193)):
+
+```
+module 'virtualenv.discovery.builtin' has no attribute 'propose_interpreters'
+```
+
+This release will update from Hatch 1.15.1 to
+[Hatch 1.16.5](https://github.com/pypa/hatch/releases). As part of this
+update, the Hatch version constraint will be relaxed to allow patch
+updates so that fixes like the one in Hatch 1.16.5 can be installed more
+readily, and the Hatch version checks in the GitHub Actions workflow
+will be removed because they are no longer necessary.
+
+When building packages with `hatch build`, there is now an undocumented
+requirement for `builder = true` in the Hatch environment used to build.
+Without `builder = true`, Hatch will error because the environment "is
+not a builder environment"
+([pypa/hatch#2113](https://github.com/pypa/hatch/issues/2113)).
+
+### Commits
+
+- Bump version from 0.87.0 to 0.87.1 (c3e2dcb)
+- Update to Hatch 1.16.5 (cf534e7)
+- Update changelog for version 0.87.0 (#139) (367da1f)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2026-02-28 22:11:53 -0500
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQO8ba4dbR1DNfamJOvHF/x2o6//kfCWGTHTQFRZ5Zkm6aHdg7Rx3zFQQr/YXg7UDdO
+sKoT3i6J8VpKXlRXsvxQ4=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.87.0 - 2026-02-21
 
 ### Changes
