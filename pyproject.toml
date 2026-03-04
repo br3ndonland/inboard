@@ -35,26 +35,11 @@ Homepage = "https://github.com/br3ndonland/inboard"
 Repository = "https://github.com/br3ndonland/inboard"
 
 [project.optional-dependencies]
-checks = [
-  "basedpyright>=1.37,<1.38",
-  "ruff>=0.14,<0.15",
-]
-docs = [
-  "mkdocs-material>=9,<10",
-]
 fastapi = [
   "fastapi==0.129.2",
 ]
 starlette = [
   "starlette>=0.40.0,<0.53.0",
-]
-tests = [
-  "coverage[toml]>=7.10,<8",
-  "httpx>=0.23,<1",
-  "pytest>=8.1.1,<9",
-  "pytest-mock>=3,<4",
-  "pytest-timeout>=2,<3",
-  "trustme>=1.2,<2",
 ]
 uvicorn-fast = [
   "httptools>=0.6.3",
@@ -63,6 +48,23 @@ uvicorn-fast = [
 ]
 uvicorn-standard = [
   "uvicorn[standard]==0.28.1",
+]
+
+[dependency-groups]
+checks = [
+  "basedpyright>=1.37,<1.38",
+  "ruff>=0.14,<0.15",
+]
+docs = [
+  "mkdocs-material>=9,<10",
+]
+tests = [
+  "coverage[toml]>=7.10,<8",
+  "httpx>=0.23,<1",
+  "pytest>=8.1.1,<9",
+  "pytest-mock>=3,<4",
+  "pytest-timeout>=2,<3",
+  "trustme>=1.2,<2",
 ]
 
 [build-system]
@@ -96,20 +98,24 @@ features = []
 [tool.hatch.envs.ci]
 builder = true
 dev-mode = false
-features = [
+dependency-groups = [
   "checks",
-  "fastapi",
   "tests",
+]
+features = [
+  "fastapi",
   "uvicorn-fast",
 ]
 
 [tool.hatch.envs.default]
 dev-mode = true
-features = [
+dependency-groups = [
   "checks",
   "docs",
-  "fastapi",
   "tests",
+]
+features = [
+  "fastapi",
   "uvicorn-fast",
 ]
 
@@ -129,7 +135,7 @@ format = [
 
 [tool.hatch.envs.docs]
 dev-mode = false
-features = [
+dependency-groups = [
   "docs",
 ]
 
