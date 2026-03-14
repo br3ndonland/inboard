@@ -27,7 +27,7 @@ jobs:
       environment-url: ${{ steps.set-env.outputs.environment-url }}
       repo-name: ${{ steps.set-env.outputs.repo-name }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Set GitHub Actions deployment environment
         id: set-env
         run: |
@@ -60,7 +60,7 @@ jobs:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
@@ -145,7 +145,7 @@ jobs:
         linux-version: ["alpine", "trixie", "slim-trixie"]
         python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
@@ -381,7 +381,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: develop
