@@ -460,7 +460,7 @@ jobs:
       - name: Format changelog with Prettier
         run: npx -s -y prettier@'^3' --write CHANGELOG.md docs/changelog.md
       - name: Create pull request with updated changelog
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           add-paths: |
             CHANGELOG.md
