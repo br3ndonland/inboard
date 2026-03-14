@@ -131,7 +131,7 @@ jobs:
           github.ref_type == 'tag' &&
           matrix.python-version == '3.13' &&
           needs.setup.outputs.environment-name == 'PyPI'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           if-no-files-found: error
           name: ${{ needs.setup.outputs.repo-name }}-${{ github.ref_name }}
