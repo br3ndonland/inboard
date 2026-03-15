@@ -1,5 +1,68 @@
 # Changelog
 
+## 0.87.2 - 2026-03-15
+
+### Changes
+
+**Migrate to PEP 735 dependency groups**
+(eccd80b99eda42d853e27f37ad90209f0cc450f4)
+
+[Hatch 1.16](https://github.com/pypa/hatch/releases) introduced
+[support](https://hatch.pypa.io/latest/config/environment/overview/#dependency-groups)
+for
+[PEP 735 dependency groups](https://packaging.python.org/en/latest/specifications/dependency-groups/)
+in `pyproject.toml`. This release will migrate project metadata to
+dependency groups.
+
+Dependency groups allow development dependencies to be moved out of the
+`[project.optional-dependencies]` table and into a separate
+`[dependency-groups]` table. This is helpful because optional
+dependencies are included with package metadata, so previously, groups
+of dependencies in the `[project.optional-dependencies]` table (also
+called "features" or "extras") were all included in the built package
+and visible in `PKG-INFO` text files in sdists (source distributions),
+even if they were only used for development of the project itself. The
+`[dependency-groups]` table is not included in built packages, so the
+package has cleaner metadata when built and distributed to registries
+like PyPI.
+
+When building packages with `hatch build`, there is now an undocumented
+requirement for `builder = true` in the Hatch environment used to build.
+Without `builder = true`, Hatch will error because the environment "is
+not a builder environment"
+([pypa/hatch#2113](https://github.com/pypa/hatch/issues/2113)). Hatch
+1.16.3 or later is required to use dependency groups in builder
+environments
+([pypa/hatch#2152](https://github.com/pypa/hatch/issues/2152)).
+
+### Commits
+
+- Bump version from 0.87.1 to 0.87.2 (4bb4738)
+- Contain workflow permissions (a7060b7)
+- Add `[skip ci]` to changelog PRs (cf03a2b)
+- Add `workflow_dispatch` to changelog job (2b1ba3a)
+- Update to `peter-evans/create-pull-request@v8` (f39c070)
+- Update to `actions/download-artifact@v8` (60afda6)
+- Update to `actions/upload-artifact@v7` (cce2f75)
+- Update to `actions/cache@v5` (893d04e)
+- Update to `actions/setup-python@v6` (7cd8826)
+- Update to `actions/checkout@v6` (e5ca757)
+- Migrate to PEP 735 dependency groups (eccd80b)
+- Update changelog for version 0.87.1 (#140) (222dd31)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2026-03-15 16:33:09 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQJ/lsxLRvySskru7ag+NtGrKrQaONx5b4VTvNNqs5J6O/fsC6ThMzlxQ0vFZn9DNWQ
+FjQpm4oEBHb+Z8U4lPyAk=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.87.1 - 2026-02-28
 
 ### Changes
