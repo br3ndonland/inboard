@@ -16,6 +16,9 @@ on:
         type: boolean
         default: false
 
+permissions:
+  contents: read
+
 env:
   DOCKER_BUILDKIT: "1"
   HATCH_ENV_TYPE_VIRTUAL_PATH: ".venv"
@@ -143,6 +146,8 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     needs: [setup, python]
+    permissions:
+      packages: write
     strategy:
       fail-fast: false
       matrix:
