@@ -484,7 +484,14 @@ jobs:
           add-paths: |
             CHANGELOG.md
             docs/changelog.md
+          body: |
+            Automated changes by [create-pull-request](https://github.com/peter-evans/create-pull-request) GitHub action
+
+            [skip ci]
           branch: create-pull-request/${{ github.ref_name }}
-          commit-message: ${{ steps.set-title.outputs.title }}
+          commit-message: |
+            ${{ steps.set-title.outputs.title }}
+
+            [skip ci]
           sign-commits: true
           title: ${{ steps.set-title.outputs.title }}
