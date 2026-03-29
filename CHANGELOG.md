@@ -1,5 +1,60 @@
 # Changelog
 
+## 0.88.0 - 2026-03-28
+
+### Changes
+
+Update to FastAPI 0.132
+
+This release will update/upgrade to
+[FastAPI 0.132](https://fastapi.tiangolo.com/release-notes/).
+
+FastAPI 0.130-0.132 are grouped together because they introduce breaking
+changes to handling of JSON. FastAPI 0.130 and 0.131 update JSON
+response serialization to use Pydantic instead of
+`starlette.responses.JSONResponse` and deprecate the `ORJSONResponse`
+and `UJSONResponse` that were previously used for improved performance.
+The
+[FastAPI docs](https://fastapi.tiangolo.com/advanced/custom-response/#json-performance)
+now make the following suggestion:
+
+> In short, if you want the maximum performance, use a
+> [Response Model](https://fastapi.tiangolo.com/tutorial/response-model/)
+> and don't declare a `response_class` in the _path operation
+> decorator_.
+
+This is a **BREAKING CHANGE** for users of `ORJSONResponse` and
+`UJSONResponse`.
+
+FastAPI 0.132 introduces `Content-Type` header checks on JSON requests.
+Requests now must have a valid `Content-Type` header or they will be
+rejected. It is possible to disable this behavior on the FastAPI app
+with `strict_content_type=False`. This is a **BREAKING CHANGE**. See the
+[FastAPI docs](https://fastapi.tiangolo.com/advanced/strict-content-type/)
+for more details.
+
+### Commits
+
+- Bump version from 0.87.2 to 0.88.0 (ceed673)
+- Update to FastAPI 0.132 (78d137c)
+- Use GitHub Actions environment without deployment (977ecf5)
+- Update to pipx 1.11 (26b28ba)
+- Fix changelog environment name (646ac6a)
+- Update changelog for version 0.87.2 (#141) (991a5b5)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2026-03-28 23:42:58 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQAOJ4uO/M20UCVQYkhOhWi6LVX10ncopz1P88ZvGkCIBuMVQLSQjMQ3qO40aXFHa/G
+KvxfYipzA2QwgsFqk3iwQ=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.87.2 - 2026-03-15
 
 ### Changes
