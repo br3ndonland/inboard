@@ -10,7 +10,7 @@ LABEL org.opencontainers.image.url="https://github.com/br3ndonland/inboard/pkgs/
 ARG \
   HATCH_VERSION \
   LINUX_VERSION \
-  PIPX_VERSION=1.8.0
+  PIPX_VERSION
 ENV \
   HATCH_ENV_TYPE_VIRTUAL_PATH=.venv \
   HATCH_VERSION=$HATCH_VERSION \
@@ -34,7 +34,7 @@ elif [ "${LINUX_VERSION%%-*}" = "slim" ]; then
   apt-get install -qy --no-install-recommends \
     gcc libc-dev make wget
 fi
-python -m pip install --no-cache-dir --upgrade pip "pipx==$PIPX_VERSION"
+python -m pip install --no-cache-dir --upgrade pip "pipx$PIPX_VERSION"
 pipx install "hatch$HATCH_VERSION"
 HEREDOC
 COPY --link inboard /app/inboard

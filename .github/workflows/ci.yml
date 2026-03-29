@@ -24,7 +24,7 @@ env:
   HATCH_ENV_TYPE_VIRTUAL_PATH: ".venv"
   HATCH_ENV: "ci"
   HATCH_VERSION: ">=1.16.5,<1.17"
-  PIPX_VERSION: "1.8.0"
+  PIPX_VERSION: ">=1.11,<1.12"
 
 jobs:
   setup:
@@ -79,7 +79,7 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
           restore-keys: ${{ runner.os }}-pip-
       - name: Install pipx for Python ${{ matrix.python-version }}
-        run: python -m pip install "pipx==$PIPX_VERSION"
+        run: python -m pip install "pipx$PIPX_VERSION"
       - name: Install Hatch
         run: pipx install "hatch$HATCH_VERSION"
       - name: Install dependencies
