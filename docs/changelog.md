@@ -6,7 +6,7 @@
 
 ### Changes
 
-Update to FastAPI 0.132
+**Update to FastAPI 0.132** (78d137c30911901aaa6faf50d522a11a3b3988d7)
 
 This release will update/upgrade to
 [FastAPI 0.132](https://fastapi.tiangolo.com/release-notes/).

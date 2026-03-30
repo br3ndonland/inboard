@@ -436,6 +436,7 @@ jobs:
               "$changelog"
             sed -Ei -z "s|\n\n\n||g" "$changelog"
             sed -Ei "s|because that the|because the|g" "$changelog"
+            sed -Ei "s|Update to FastAPI 0.132$|**Update to FastAPI 0.132** (78d137c30911901aaa6faf50d522a11a3b3988d7)|g" "$changelog"
           done
       - name: Format changelog with Prettier
         run: npx -s -y prettier@'^3' --write CHANGELOG.md docs/changelog.md
