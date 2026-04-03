@@ -103,6 +103,7 @@
     "vendorizes",
     "venv",
     "virtualenv",
-    "virtualenvs"
+    "virtualenvs",
+    "zensical"
   ]
 }

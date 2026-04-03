@@ -1,0 +1,79 @@
+[project]
+edit_uri = ""
+nav = [
+  "index.md",
+  "docker.md",
+  "environment.md",
+  "logging.md",
+  "authentication.md",
+  "changelog.md",
+  "contributing.md",
+]
+repo_name = "br3ndonland/inboard"
+repo_url = "https://github.com/br3ndonland/inboard"
+site_description = "Documentation for the inboard Python package and Docker images"
+site_dir = "public"
+site_name = "inboard docs"
+site_url = ""
+use_directory_urls = false
+
+[project.markdown_extensions.admonition]
+
+[project.markdown_extensions.pymdownx.details]
+
+[project.markdown_extensions.pymdownx.inlinehilite]
+
+[project.markdown_extensions.pymdownx.magiclink]
+normalize_issue_symbols = true
+user = "br3ndonland"
+repo = "inboard"
+repo_url_shortener = true
+repo_url_shorthand = true
+
+[project.markdown_extensions.pymdownx.snippets]
+
+[project.markdown_extensions.pymdownx.superfences]
+
+[project.markdown_extensions.pymdownx.tasklist]
+clickable_checkbox = false
+custom_checkbox = true
+
+[project.markdown_extensions.toc]
+permalink = true
+toc_depth = 3
+
+[project.theme]
+favicon = "images/favicon.png"
+features = [
+  "announce.dismiss",
+  "content.action.view",
+  "content.code.annotate",
+  "content.code.copy",
+  "header.autohide",
+  "navigation.instant",
+  "navigation.instant.prefetch",
+  "navigation.top",
+]
+font = false
+language = "en"
+variant = "modern"
+
+[project.theme.icon]
+logo = "fontawesome/brands/docker"
+repo = "octicons/mark-github-24"
+
+[[project.theme.palette]]
+accent = "blue"
+media = "(prefers-color-scheme: dark)"
+primary = "blue"
+scheme = "slate"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to light mode"
+
+[[project.theme.palette]]
+accent = "blue"
+media = "(prefers-color-scheme: light)"
+primary = "blue"
+scheme = "default"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
