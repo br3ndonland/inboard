@@ -2,6 +2,39 @@
 
 [View on GitHub](https://github.com/br3ndonland/inboard/blob/HEAD/CHANGELOG.md)
 
+## 0.90.0 - 2026-04-03
+
+### Changes
+
+**Update to FastAPI 0.135** (4d7d91877c05ce66fb6257157f15402065536726)
+
+This release will update/upgrade to
+[FastAPI 0.135](https://fastapi.tiangolo.com/release-notes/). This is a
+minor release to align with FastAPI versioning.
+
+FastAPI 0.135 introduces support for
+[server-sent events](https://fastapi.tiangolo.com/tutorial/server-sent-events/)
+(SSE) and [vibe coding](https://fastapi.tiangolo.com/advanced/vibe/).
+
+### Commits
+
+- Bump version from 0.89.0 to 0.90.0 (edeaf0e)
+- Update to FastAPI 0.135 (4d7d918)
+- Update changelog for version 0.89.0 (#143) (72b925c)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2026-04-03 00:25:31 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQJ9gnC5TTS9f/c3n35z61sgHzaL1ntiienbvseXBUiHbRnKkjm67NyinsoWyMuniLg
+cFwdI1haOYBf5cKmaKVA8=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.89.0 - 2026-04-02
 
 ### Changes
