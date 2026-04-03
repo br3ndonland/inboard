@@ -191,7 +191,7 @@ docker run -d -p 80:80 --platform linux/amd64 \
   localhost/br3ndonland/inboard:starlette
 
 # Test HTTP Basic auth when running the FastAPI or Starlette images:
-http :80/status -a test_user:r4ndom_bUt_memorable
+curl -s -u test_user:r4ndom_bUt_memorable http://localhost:8000/health | jq
 ```
 
 Change the port numbers to run multiple containers simultaneously (`-p 81:80`).

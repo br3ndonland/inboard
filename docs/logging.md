@@ -64,10 +64,10 @@ INFO       Application startup complete.
 INFO       Uvicorn running on http://0.0.0.0:80 (Press CTRL+C to quit)
 ```
 
-Make a request to an endpoint that should be logged, using an HTTP client like [HTTPie](https://httpie.io/):
+Make a request to an endpoint that should be logged, using an HTTP client like `curl` with `jq` to parse the JSON responses:
 
 ```sh
-❯ http :8000 -b
+❯ curl -s http://localhost:8000 | jq
 {
     "Hello": "World"
 }
@@ -83,7 +83,7 @@ INFO       172.17.0.1:65026 - "GET / HTTP/1.1" 200
 Next, make a request to an endpoint that should be filtered out of the logs. The username and password you see here are just test values.
 
 ```sh
-❯ http :8000/health -a test_user:r4ndom_bUt_memorable -b
+❯ curl -s -u test_user:r4ndom_bUt_memorable http://localhost:8000/health | jq
 {
     "application": "inboard",
     "message": null,

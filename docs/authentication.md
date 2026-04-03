@@ -63,13 +63,13 @@ docker run -d -p 80:80 --platform linux/amd64 \
   ghcr.io/br3ndonland/inboard
 ```
 
-Client (using [HTTPie](https://httpie.io/)):
+Client:
 
 ```sh
-http :80/health -a "test_user":"r4ndom_bUt_memorable"
+curl -s -a test_user:r4ndom_bUt_memorable http://localhost:80/health | jq
 ```
 
-HTTP clients, such as [Hoppscotch](https://hoppscotch.io/) (formerly known as Postwoman), [HTTPie](https://httpie.io/docs#authentication), [Insomnia](https://support.insomnia.rest/article/174-authentication), and [Postman](https://learning.postman.com/docs/sending-requests/authorization/) provide support for HTTP Basic auth.
+HTTP clients, such as [Hoppscotch](https://hoppscotch.io/) (formerly known as Postwoman), [Insomnia](https://support.insomnia.rest/article/174-authentication), and [Postman](https://learning.postman.com/docs/sending-requests/authorization/) provide support for HTTP Basic auth.
 
 HTTP Basic auth can also be useful for load balancer health checks in deployed applications. In AWS, [load balancer health checks](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html) don't have HTTP Basic auth capabilities, so it is common to configure authentication bypasses for these checks. However, health checks can also be configured to expect a response of `401` instead of `200` for endpoints requiring authentication. Successful health checks therefore provide two pieces of information: the endpoint is up, and authentication is working. Conversely, if the health check endpoint returns `200`, this is an indication that basic auth is no longer working, and the service will be taken down immediately.
 
