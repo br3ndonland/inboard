@@ -1,5 +1,59 @@
 # Changelog
 
+## 0.89.0 - 2026-04-02
+
+### Changes
+
+**Update to FastAPI 0.134 and Starlette 1.0.0**
+(0b1a43cff8bbcc6fdc2bfe2a184b7c5b917e2968)
+
+This release will update/upgrade to
+[FastAPI 0.134](https://fastapi.tiangolo.com/release-notes/) and
+[Starlette 1.0.0](https://www.starlette.dev/release-notes/). This is a
+minor release to align with FastAPI versioning.
+
+Changes to FastAPI between 0.132.1 and 0.134.0 include support for
+[streaming JSON](https://fastapi.tiangolo.com/tutorial/stream-json-lines/)
+and [binary data](https://fastapi.tiangolo.com/advanced/stream-data/),
+addition of a
+[FastAPI agent skill](https://tiangolo.com/ideas/library-agent-skills/),
+and an upgrade to Starlette 1.0+ (`starlette>=0.46.0`).
+
+Changes to Starlette between 0.52.1 and 1.0.0 include a new `Session`
+class (`starlette.middleware.sessions.Session`) with some associated
+changes to how sessions are tracked and modified in
+[`SessionMiddleware`](https://starlette.dev/middleware/#sessionmiddleware),
+and removal of several decorators (`@app.exception_handler()`,
+`@app.middleware()`, `@app.route()`, `@app.websocket_route()`) with
+suggestions for using parameters to the `Starlette` app instead.
+
+Now that Starlette is at version 1.0, the version in `pyproject.toml`
+will be updated to match the FastAPI Starlette version. The FastAPI
+Starlette version has no upper bound (`starlette>=0.46.0`), so there is
+the possibility of unexpected changes. Now that FastAPI is not updating
+the minor version of Starlette in patch releases, the FastAPI version
+will be unpinned and limited to the current minor version.
+
+### Commits
+
+- Bump version from 0.88.0 to 0.89.0 (be3dd53)
+- Update to FastAPI 0.134 and Starlette 1.0.0 (0b1a43c)
+- Fix changelog entry formatting for version 0.88.0 (cd32053)
+- Update changelog for version 0.88.0 (#142) (a86ffe8)
+
+Tagger: Brendon Smith <bws@bws.bio>
+
+Date: 2026-04-02 23:18:57 -0400
+
+```text
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgwLDNmire1DHY/g9GC1rGGr+mrE
+kJ3FC96XsyoFKzm6IAAAADZ2l0AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1lZDI1NTE5
+AAAAQJvCRnCMyB9L+loGdHWRwgnLG2RQo52ZVwHwpTGEuOiQHbP72pc/g+2ZJ8JFOFhzD9
+h+wZ1Knz8DBjH7XJ9csQE=
+-----END SSH SIGNATURE-----
+```
+
 ## 0.88.0 - 2026-03-28
 
 ### Changes
