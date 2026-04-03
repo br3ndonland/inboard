@@ -36,7 +36,7 @@ Repository = "https://github.com/br3ndonland/inboard"
 
 [project.optional-dependencies]
 fastapi = [
-  "fastapi>=0.134,<0.135",
+  "fastapi>=0.135,<0.136",
 ]
 starlette = [
   "starlette>=0.46.0",
