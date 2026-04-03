@@ -10,7 +10,7 @@ import tempfile
 import time
 from typing import TYPE_CHECKING
 
-import httpx
+import httpxyz
 import pytest
 import trustme
 
@@ -36,11 +36,11 @@ gunicorn_workers = pytest.importorskip(
 
 
 class Process(subprocess.Popen[str]):
-    client: httpx.Client
+    client: httpxyz.Client
     output: IO[bytes]
 
     def __init__(
-        self, args: list[str], *, client: httpx.Client, output: IO[bytes]
+        self, args: list[str], *, client: httpxyz.Client, output: IO[bytes]
     ) -> None:
         super().__init__(args, stdout=output, stderr=output)
         self.client = client
@@ -171,7 +171,7 @@ def gunicorn_process(
 ) -> Generator[Process, None, None]:
     """Yield a subprocess running a Gunicorn arbiter with a Uvicorn worker.
 
-    An instance of `httpx.Client` is available on the `client` attribute.
+    An instance of `httpxyz.Client` is available on the `client` attribute.
     Output is saved to a temporary file and accessed with `read_output()`.
     """
     app_module = f"{__name__}:{app.__name__}"
@@ -207,7 +207,7 @@ def gunicorn_process(
         verify = False
     args.append(app_module)
     with (
-        httpx.Client(base_url=base_url, verify=verify) as client,
+        httpxyz.Client(base_url=base_url, verify=verify) as client,
         tempfile.TemporaryFile() as output,
     ):
         with Process(args, client=client, output=output) as process:
@@ -224,7 +224,7 @@ def gunicorn_process_with_sigterm(
 ) -> Generator[Process, None, None]:
     """Yield a subprocess running a Gunicorn arbiter with a Uvicorn worker.
 
-    An instance of `httpx.Client` is available on the `client` attribute.
+    An instance of `httpxyz.Client` is available on the `client` attribute.
     Output is saved to a temporary file and accessed with `read_output()`.
 
     This pytest fixture provides a simplified worker configuration that exits
@@ -259,7 +259,7 @@ def gunicorn_process_with_sigterm(
     base_url = f"http://{bind}"
     verify = False
     with (
-        httpx.Client(base_url=base_url, verify=verify) as client,
+        httpxyz.Client(base_url=base_url, verify=verify) as client,
         tempfile.TemporaryFile() as output,
     ):
         with Process(args, client=client, output=output) as process:
@@ -297,7 +297,7 @@ def gunicorn_process_with_lifespan_startup_failure(
     base_url = f"http://{bind}"
     verify = False
     with (
-        httpx.Client(base_url=base_url, verify=verify) as client,
+        httpxyz.Client(base_url=base_url, verify=verify) as client,
         tempfile.TemporaryFile() as output,
     ):
         with Process(args, client=client, output=output) as process:

@@ -85,7 +85,7 @@ The _pyproject.toml_ could look like this:
     ]
     tests = [
       "coverage[toml]",
-      "httpx",
+      "httpxyz",
       "pytest",
       "pytest-mock",
       "pytest-timeout",

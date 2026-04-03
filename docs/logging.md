@@ -64,7 +64,7 @@ INFO       Application startup complete.
 INFO       Uvicorn running on http://0.0.0.0:80 (Press CTRL+C to quit)
 ```
 
-Make a request to an endpoint that should be logged, using an HTTP client like [HTTPie](https://httpie.io/) or the [HTTPX CLI](https://www.python-httpx.org/):
+Make a request to an endpoint that should be logged, using an HTTP client like [HTTPie](https://httpie.io/):
 
 ```sh
 ❯ http :8000 -b
