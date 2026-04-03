@@ -56,7 +56,7 @@ checks = [
   "ruff>=0.14,<0.15",
 ]
 docs = [
-  "mkdocs-material>=9,<10",
+  "zensical==0.0.31",
 ]
 tests = [
   "coverage[toml]>=7.10,<8",

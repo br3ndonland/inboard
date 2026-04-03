@@ -81,7 +81,7 @@ The _pyproject.toml_ could look like this:
       "ruff",
     ]
     docs = [
-      "mkdocs-material",
+      "zensical",
     ]
     tests = [
       "coverage[toml]",

@@ -1,6 +1,6 @@
 # 🚢 inboard 🐳
 
-<img src="https://raw.githubusercontent.com/br3ndonland/inboard/develop/docs/assets/images/inboard-logo.svg" alt="inboard logo" width="90%" />
+<img src="https://raw.githubusercontent.com/br3ndonland/inboard/HEAD/docs/images/inboard-logo.svg" alt="inboard logo" width="90%" />
 
 _Docker images and utilities to power your Python APIs and help you ship faster._
 
@@ -37,7 +37,7 @@ http :80  # HTTPie: https://httpie.io/
 
 ## Documentation
 
-Documentation is built with [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/), deployed to [Vercel](https://vercel.com/) using the [Vercel project configuration](https://vercel.com/docs/project-configuration) in `vercel.json`, and available at [inboard.bws.bio](https://inboard.bws.bio) and [inboard.vercel.app](https://inboard.vercel.app).
+Documentation is built with [Zensical](https://zensical.org/), deployed to [Vercel](https://vercel.com/) using the [Vercel project configuration](https://vercel.com/docs/project-configuration) in `vercel.json`, and available at [inboard.bws.bio](https://inboard.bws.bio) and [inboard.vercel.app](https://inboard.vercel.app).
 
 ## Background
 
