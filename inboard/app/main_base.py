@@ -30,7 +30,6 @@ async def app(scope: Scope, _: ASGIReceiveCallable, send: ASGISendCallable) -> N
 
     https://asgi.readthedocs.io/en/stable/introduction.html
     https://asgi.readthedocs.io/en/stable/specs/main.html#applications
-    https://www.uvicorn.org/
     """
     assert scope["type"] == "http"
     message = _compose_message()

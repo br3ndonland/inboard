@@ -14,7 +14,7 @@ _Docker images and utilities to power your Python APIs and help you ship faster.
 
 ## Description
 
-This project provides [Docker images](https://github.com/br3ndonland/inboard/pkgs/container/inboard) and a [PyPI package](https://pypi.org/project/inboard/) with useful utilities for Python web servers. It runs [Uvicorn with Gunicorn](https://www.uvicorn.org/), and can be used to build applications with [Starlette](https://www.starlette.io/) and [FastAPI](https://fastapi.tiangolo.com/).
+This project provides [Docker images](https://github.com/br3ndonland/inboard/pkgs/container/inboard) and a [PyPI package](https://pypi.org/project/inboard/) with useful utilities for Python web servers. It runs [Gunicorn](https://gunicorn.org/) with (or [without](https://gunicorn.org/asgi/)) [Uvicorn](https://uvicorn.dev/), and can be used to build applications with [Starlette](https://starlette.dev/) and [FastAPI](https://fastapi.tiangolo.com/).
 
 ## Justification
 

@@ -12,7 +12,7 @@ class TestCors:
     """Test CORS middleware integration.
     ---
     See the [FastAPI CORS tutorial](https://fastapi.tiangolo.com/tutorial/cors/) and
-    [Starlette CORS docs](https://www.starlette.io/middleware/#corsmiddleware).
+    [Starlette CORS docs](https://starlette.dev/middleware/#corsmiddleware).
     """
 
     origins: dict[str, list[str]] = {
@@ -103,7 +103,7 @@ class TestEndpoints:
     """Test API endpoints.
     ---
     See the [FastAPI testing docs](https://fastapi.tiangolo.com/tutorial/testing/),
-    [Starlette TestClient docs](https://www.starlette.io/testclient/), and the
+    [Starlette TestClient docs](https://starlette.dev/testclient/), and the
     [pytest docs](https://docs.pytest.org/en/latest/how-to/parametrize.html).
     """
 

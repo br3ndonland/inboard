@@ -195,18 +195,18 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
     These settings are mostly used for local development.
 
-    [Uvicorn supports environment variables named with the `UVICORN_` prefix](https://www.uvicorn.org/settings/) (via the [Click `auto_envvar_prefix` feature](https://click.palletsprojects.com/en/7.x/options/#dynamic-defaults-for-prompts)), but these environment variables are only read when running from the CLI. inboard runs Uvicorn programmatically with `uvicorn.run()` instead of running with the CLI, so most of these variables will not apply.
+    [Uvicorn supports environment variables named with the `UVICORN_` prefix](https://uvicorn.dev/settings/) (via the [Click `auto_envvar_prefix` feature](https://click.palletsprojects.com/en/7.x/options/#dynamic-defaults-for-prompts)), but these environment variables are only read when running from the CLI. inboard runs Uvicorn programmatically with `uvicorn.run()` instead of running with the CLI, so most of these variables will not apply.
 
 `WITH_RELOAD`
 
 <!-- prettier-ignore -->
-- Configure the [Uvicorn auto-reload setting](https://www.uvicorn.org/settings/).
+- Configure the [Uvicorn auto-reload setting](https://uvicorn.dev/settings/).
 - Default: `"false"` (don't auto-reload when files change)
 - Custom: `"true"` (watch files and auto-reload when files change).
 
     !!! note
 
-        [Auto-reloading is useful for local development](https://www.uvicorn.org/settings/#development).
+        [Auto-reloading is useful for local development](https://uvicorn.dev/settings/#development).
 
 `RELOAD_DIRS` _(new in inboard 0.7)_
 
@@ -221,7 +221,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
     !!! note
 
-        On the command-line, this [Uvicorn setting](https://www.uvicorn.org/settings/) is configured by passing `--reload-dir`, and can be passed multiple times, with one directory each.
+        On the command-line, this [Uvicorn setting](https://uvicorn.dev/settings/) is configured by passing `--reload-dir`, and can be passed multiple times, with one directory each.
 
         However, when running Uvicorn programmatically, `uvicorn.run` accepts a list of strings (`uvicorn.run(reload_dirs=["dir1", "dir2"])`), so inboard will parse the environment variable, send the list to Uvicorn, and Uvicorn will watch each directory or file specified.
 
@@ -360,7 +360,7 @@ The idea here is to allow a catch-all Uvicorn config variable in the spirit of `
 
 `LOG_LEVEL`
 
-- Log level for [Gunicorn](https://gunicorn.org/reference/settings/#logging) or [Uvicorn](https://www.uvicorn.org/settings/#logging).
+- Log level for [Gunicorn](https://gunicorn.org/reference/settings/#logging) or [Uvicorn](https://uvicorn.dev/settings/#logging).
 - Default: `"info"`
 - Custom (organized from greatest to least amount of logging):
     - `LOG_LEVEL="debug"`

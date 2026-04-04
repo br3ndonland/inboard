@@ -8,7 +8,7 @@ The [HTTP authentication standard](https://developer.mozilla.org/en-US/docs/Web/
 
 inboard provides utilities for configuring HTTP Basic auth.
 
-For Starlette applications, inboard provides [middleware](https://www.starlette.io/middleware/) for HTTP Basic auth. Starlette middleware are applied to every request.
+For Starlette applications, inboard provides [middleware](https://starlette.dev/middleware/) for HTTP Basic auth. Starlette middleware are applied to every request.
 
 !!! example "Example of HTTP Basic auth with Starlette middleware"
 
