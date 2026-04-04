@@ -1,7 +1,5 @@
 # Changelog
 
-[View on GitHub](https://github.com/br3ndonland/inboard/blob/HEAD/CHANGELOG.md)
-
 ## 0.90.0 - 2026-04-03
 
 ### Changes

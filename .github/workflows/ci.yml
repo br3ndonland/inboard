@@ -367,22 +367,13 @@ jobs:
           ref: develop
       - name: Generate changelog from Git tags
         run: |
-          # Generate changelog from Git tags
-
           echo '# Changelog
-          ' >CHANGELOG.md
-
-          # shellcheck disable=SC2016
-          echo '# Changelog
-
-          [View on GitHub](https://github.com/${{github.repository}}/blob/HEAD/CHANGELOG.md)
           ' >docs/changelog.md
 
           GIT_LOG_FORMAT='## %(subject) - %(taggerdate:short)
 
           %(contents:body)'
 
-          git tag -l --sort=-taggerdate:iso --format="$GIT_LOG_FORMAT" >>CHANGELOG.md
           git tag -l --sort=-taggerdate:iso --format="$GIT_LOG_FORMAT" >>docs/changelog.md
       - name: Fix changelog
         run: |
@@ -419,20 +410,18 @@ jobs:
 
           ESCAPE_DUNDERS='s:(\s|\/)(__)(all|init|token)(__)(\s|\.py|\(\)){0,1}:\1\\_\\_\3\\_\\_\5:g'
           REPLACEMENT='There are several breaking changes noted in the\n[Gunicorn changelog](https://docs.gunicorn.org/en/latest/news.html).'
-          for changelog in "CHANGELOG.md" "docs/changelog.md"; do
-            sed -Ei "$ESCAPE_DUNDERS" "$changelog"
-            sed -Ei \
-              -e "s|\[Changes\]\(https://docs.gunicorn.org/en/latest/news.html\) include|$REPLACEMENT|g" \
-              -e "s|a fix for a high-severity security vulnerability \(CVE-2024-1135,||g" \
-              -e "s|\[GHSA-w3h3-4rj7-4ph4\]\(https://github.com/advisories/GHSA-w3h3-4rj7-4ph4\)\)\.||g" \
-              -e "s|There are several breaking changes noted in the Gunicorn changelog\.||g" \
-              "$changelog"
-            sed -Ei -z "s|\n\n\n||g" "$changelog"
-            sed -Ei "s|because that the|because the|g" "$changelog"
-            sed -Ei "s|Update to FastAPI 0.132$|**Update to FastAPI 0.132** (78d137c30911901aaa6faf50d522a11a3b3988d7)|g" "$changelog"
-          done
+          sed -Ei "$ESCAPE_DUNDERS" "docs/changelog.md"
+          sed -Ei \
+            -e "s|\[Changes\]\(https://docs.gunicorn.org/en/latest/news.html\) include|$REPLACEMENT|g" \
+            -e "s|a fix for a high-severity security vulnerability \(CVE-2024-1135,||g" \
+            -e "s|\[GHSA-w3h3-4rj7-4ph4\]\(https://github.com/advisories/GHSA-w3h3-4rj7-4ph4\)\)\.||g" \
+            -e "s|There are several breaking changes noted in the Gunicorn changelog\.||g" \
+            "docs/changelog.md"
+          sed -Ei -z "s|\n\n\n||g" "docs/changelog.md"
+          sed -Ei "s|because that the|because the|g" "docs/changelog.md"
+          sed -Ei "s|Update to FastAPI 0.132$|**Update to FastAPI 0.132** (78d137c30911901aaa6faf50d522a11a3b3988d7)|g" "docs/changelog.md"
       - name: Format changelog with Prettier
-        run: npx -s -y prettier@'^3' --write CHANGELOG.md docs/changelog.md
+        run: npx -s -y prettier@'^3' --write docs/changelog.md
       - name: Set PR and commit title
         id: set-title
         run: |
@@ -447,7 +436,6 @@ jobs:
         uses: peter-evans/create-pull-request@v8
         with:
           add-paths: |
-            CHANGELOG.md
             docs/changelog.md
           body: |
             Automated changes by [create-pull-request](https://github.com/peter-evans/create-pull-request) GitHub action
