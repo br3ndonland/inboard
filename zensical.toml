@@ -46,7 +46,6 @@ toc_depth = 3
 favicon = "images/favicon.png"
 features = [
   "announce.dismiss",
-  "content.action.view",
   "content.code.annotate",
   "content.code.copy",
   "header.autohide",
