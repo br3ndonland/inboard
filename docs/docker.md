@@ -10,34 +10,54 @@ Please see [inboard Git tags](https://github.com/br3ndonland/inboard/tags), [inb
 
 !!! example "Example Docker tags"
 
-    ```{ .sh .no-copy }
-    # Pull latest FastAPI image (Docker automatically appends the `latest` tag)
-    docker pull ghcr.io/br3ndonland/inboard
+    Pull latest FastAPI image (Docker automatically appends the `latest` tag):
 
-    # Pull latest version of each image
+    ```sh
+    docker pull ghcr.io/br3ndonland/inboard
+    ```
+
+    Pull latest version of each image:
+
+    ```sh
     docker pull ghcr.io/br3ndonland/inboard:base
     docker pull ghcr.io/br3ndonland/inboard:fastapi
     docker pull ghcr.io/br3ndonland/inboard:starlette
+    ```
 
-    # Pull image from specific release
-    docker pull ghcr.io/br3ndonland/inboard:0.67.0-fastapi
+    Append `-slim` for Debian slim _(new in inboard 0.11.0):_
 
-    # Pull image from latest minor version release (new in inboard 0.22.0)
-    docker pull ghcr.io/br3ndonland/inboard:0.67-fastapi
-
-    # Pull image with specific Python version
-    docker pull ghcr.io/br3ndonland/inboard:fastapi-python3.12
-
-    # Pull image from latest minor release and with specific Python version
-    docker pull ghcr.io/br3ndonland/inboard:0.67-fastapi-python3.12
-
-    # Append `-alpine` to image tags for Alpine Linux (new in inboard 0.11.0)
-    docker pull ghcr.io/br3ndonland/inboard:latest-alpine
-    docker pull ghcr.io/br3ndonland/inboard:0.67-fastapi-alpine
-
-    # Append `-slim` to any of the above for Debian slim (new in inboard 0.11.0)
+    ```sh
     docker pull ghcr.io/br3ndonland/inboard:latest-slim
-    docker pull ghcr.io/br3ndonland/inboard:0.67-fastapi-slim
+    ```
+
+    Append `-alpine` for Alpine Linux _(new in inboard 0.11.0):_
+
+    ```sh
+    docker pull ghcr.io/br3ndonland/inboard:latest-alpine
+    ```
+
+    Prepend version number to pull image from specific release:
+
+    ```{ .sh .no-copy }
+    docker pull ghcr.io/br3ndonland/inboard:MAJOR.MINOR.PATCH-fastapi
+    ```
+
+    Prepend major and minor version numbers for latest minor version release _(new in inboard 0.22.0):_
+
+    ```{ .sh .no-copy }
+    docker pull ghcr.io/br3ndonland/inboard:MAJOR.MINOR-fastapi
+    ```
+
+    Pull image with specific Python version:
+
+    ```{ .sh .no-copy }
+    docker pull ghcr.io/br3ndonland/inboard:fastapi-pythonMAJOR.MINOR
+    ```
+
+    Pull image from latest minor release and with specific Python version:
+
+    ```{ .sh .no-copy }
+    docker pull ghcr.io/br3ndonland/inboard:MAJOR.MINOR-fastapi-pythonMAJOR.MINOR
     ```
 
 ## Use images in a _Dockerfile_
