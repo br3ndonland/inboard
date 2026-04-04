@@ -380,14 +380,7 @@ jobs:
 
           GIT_LOG_FORMAT='## %(subject) - %(taggerdate:short)
 
-          %(contents:body)
-          Tagger: %(taggername) %(taggeremail)
-
-          Date: %(taggerdate:iso)
-
-          ```text
-          %(contents:signature)```
-          '
+          %(contents:body)'
 
           git tag -l --sort=-taggerdate:iso --format="$GIT_LOG_FORMAT" >>CHANGELOG.md
           git tag -l --sort=-taggerdate:iso --format="$GIT_LOG_FORMAT" >>docs/changelog.md
