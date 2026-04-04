@@ -101,6 +101,7 @@
     "typeshed",
     "unittests",
     "uvicorn",
+    "uvloop",
     "vendorizes",
     "venv",
     "virtualenv",

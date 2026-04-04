@@ -207,6 +207,7 @@ class TestSetGunicornOptions:
         app_module = "inboard.app.main_starlette:app"
         monkeypatch.setenv("APP_MODULE", app_module)
         monkeypatch.setenv("GUNICORN_CONF", str(gunicorn_conf_tmp_file_path))
+        monkeypatch.setenv("WORKER_CLASS", "asgi")
         result = start.set_gunicorn_options(app_module)
         assert "/gunicorn_conf.py" in str(gunicorn_conf_tmp_file_path)
         assert "logging" not in str(gunicorn_conf_tmp_file_path)
@@ -214,7 +215,7 @@ class TestSetGunicornOptions:
         assert result == [
             "gunicorn",
             "-k",
-            "inboard.gunicorn_workers.UvicornWorker",
+            "asgi",
             "-c",
             str(gunicorn_conf_tmp_file_path),
             app_module,
@@ -414,8 +415,11 @@ class TestStartServer:
             "inboard.app.main_starlette:app",
         ),
     )
+    @pytest.mark.parametrize(
+        "worker_class", ("asgi", "inboard.gunicorn_workers.UvicornWorker")
+    )
     @pytest.mark.timeout(2)
-    def test_start_server_uvicorn_gunicorn(
+    def test_start_server_gunicorn(
         self,
         app_module: str,
         gunicorn_conf_path: str,
@@ -423,6 +427,7 @@ class TestStartServer:
         mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
         tmp_path: Path,
+        worker_class: str,
     ) -> None:
         """Test `start.start_server` with Uvicorn managed by Gunicorn."""
         logger = mocker.patch.object(logging, "root", autospec=True)
@@ -433,18 +438,22 @@ class TestStartServer:
         )
         monkeypatch.setenv("GUNICORN_CONF", gunicorn_conf_path)
         monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
+        monkeypatch.setenv("WORKER_CLASS", worker_class)
         start.start_server(
             str(os.getenv("PROCESS_MANAGER")),
             app_module=app_module,
             logger=logger,
             logging_conf_dict=logging_conf_dict,
         )
-        logger.debug.assert_called_once_with("Running Uvicorn with Gunicorn.")
+        if worker_class == "asgi":
+            logger.debug.assert_called_once_with("Running Gunicorn.")
+        else:
+            logger.debug.assert_called_once_with("Running Uvicorn with Gunicorn.")
         run.assert_called_once_with(
             [
                 "gunicorn",
                 "-k",
-                "inboard.gunicorn_workers.UvicornWorker",
+                worker_class,
                 "-c",
                 gunicorn_conf_path,
                 app_module,
@@ -459,14 +468,18 @@ class TestStartServer:
             "inboard.app.main_starlette:app",
         ),
     )
+    @pytest.mark.parametrize(
+        "worker_class", ("asgi", "inboard.gunicorn_workers.UvicornWorker")
+    )
     @pytest.mark.timeout(2)
-    def test_start_server_uvicorn_gunicorn_custom_config(
+    def test_start_server_gunicorn_custom_config(
         self,
         app_module: str,
         gunicorn_conf_tmp_file_path: Path,
         logging_conf_dict: DictConfig,
         mocker: MockerFixture,
         monkeypatch: pytest.MonkeyPatch,
+        worker_class: str,
     ) -> None:
         """Test customized `start.start_server` with Uvicorn managed by Gunicorn."""
         logger = mocker.patch.object(logging, "root", autospec=True)
@@ -478,6 +491,7 @@ class TestStartServer:
         monkeypatch.setenv("LOG_FORMAT", "gunicorn")
         monkeypatch.setenv("LOG_LEVEL", "debug")
         monkeypatch.setenv("PROCESS_MANAGER", "gunicorn")
+        monkeypatch.setenv("WORKER_CLASS", worker_class)
         run = mocker.patch("subprocess.run", autospec=True)
         start.start_server(
             str(os.getenv("PROCESS_MANAGER")),
@@ -486,12 +500,15 @@ class TestStartServer:
             logging_conf_dict=logging_conf_dict,
         )
         assert gunicorn_conf_tmp_file_path.is_file()
-        logger.debug.assert_called_with("Running Uvicorn with Gunicorn.")
+        if worker_class == "asgi":
+            logger.debug.assert_called_once_with("Running Gunicorn.")
+        else:
+            logger.debug.assert_called_once_with("Running Uvicorn with Gunicorn.")
         run.assert_called_with(
             [
                 "gunicorn",
                 "-k",
-                "inboard.gunicorn_workers.UvicornWorker",
+                worker_class,
                 "-c",
                 str(gunicorn_conf_tmp_file_path),
                 app_module,

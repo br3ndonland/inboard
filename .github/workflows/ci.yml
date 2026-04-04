@@ -93,7 +93,7 @@ jobs:
             echo "[ERROR] Unexpected .coverage files detected."
             exit 1
           fi
-        timeout-minutes: 5
+        timeout-minutes: 8
       - name: Enforce test coverage
         run: |
           hatch run ${{ env.HATCH_ENV }}:coverage combine -q
@@ -122,7 +122,6 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-      - run: python3 -m pip install 'httpie>=3,<4' 'urllib3>=1,<2'
       - name: Set up versions and Docker tags for Python and Alpine Linux
         id: setup
         run: |
@@ -160,80 +159,122 @@ jobs:
             --build-arg PIPX_VERSION="$PIPX_VERSION" \
             --build-arg PYTHON_VERSION="$PYTHON_VERSION" \
             -t ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG"
-      - name: Run Docker containers for testing
-        run: |
-          docker run -d -p 80:80 --name inboard-base \
-            -e "BASIC_AUTH_USERNAME=test_user" \
-            -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
-            ghcr.io/br3ndonland/inboard:base"$LINUX_TAG"
-          docker run -d -p 81:80 --name inboard-starlette \
-            -e "BASIC_AUTH_USERNAME=test_user" \
-            -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
-            ghcr.io/br3ndonland/inboard:starlette"$LINUX_TAG"
-          docker run -d -p 82:80 --name inboard-fastapi \
-            -e "BASIC_AUTH_USERNAME=test_user" \
-            -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
-            ghcr.io/br3ndonland/inboard:fastapi"$LINUX_TAG"
-      - name: Test virtualenv location in Docker containers
-        run: |
-          test_virtualenv_location_in_docker() {
-            local docker_virtualenv docker_python expected_virtualenv expected_python
-            expected_virtualenv="/app/$HATCH_ENV_TYPE_VIRTUAL_PATH"
-            expected_python="$expected_virtualenv/bin/python"
-            echo "The Hatch virtualenv should be at $expected_virtualenv."
-            echo "The Python executable should be at $expected_python."
-            for container_name in "$@"; do
-              docker_virtualenv=$(docker exec "$container_name" hatch env find)
-              docker_python=$(docker exec "$container_name" which python)
-              case "$docker_virtualenv" in
-              "$expected_virtualenv") echo "Correct Hatch virtualenv $docker_virtualenv for $container_name." ;;
-              *) echo "Incorrect Hatch virtualenv $docker_virtualenv for $container_name." && return 1 ;;
-              esac
-              case "$docker_python" in
-              "$expected_python") echo "Correct Python $docker_python for $container_name." ;;
-              *) echo "Incorrect Python $docker_python for $container_name." && return 1 ;;
-              esac
-            done
-          }
-          test_virtualenv_location_in_docker inboard-base inboard-starlette inboard-fastapi
       - name: Smoke test Docker containers
         run: |
           handle_error_code() {
             case "$1" in
-            2) : 'Request timed out!' ;;
-            3) : 'Unexpected HTTP 3xx Redirection!' ;;
-            4) : 'HTTP 4xx Client Error!' ;;
-            5) : 'HTTP 5xx Server Error!' ;;
-            6) : 'Exceeded --max-redirects=<n> redirects!' ;;
-            *) : 'Other Error!' ;;
+            2) : "Request timed out" ;;
+            3) : "Unexpected HTTP 3xx redirection" ;;
+            4) : "HTTP 4xx client error" ;;
+            5) : "HTTP 5xx server error" ;;
+            6) : "Exceeded max number of redirects" ;;
+            *) : "Other error code $1" ;;
             esac
-            echo "$_"
+            echo "[ERROR] error code: $_" >&2
             return "$1"
           }
+
           smoke_test() {
-            if http --check-status --ignore-stdin -q --timeout=5 "$@"; then
-              echo 'Smoke test passed. OK!'
+            echo "[INFO] Running smoke test of $*."
+            if curl --fail --max-time 5 --no-keepalive --no-progress-meter "$@"; then
+              echo
+              echo "[INFO] Smoke test of $* passed."
             else
-              handle_error_code "$?"
+              local error_code="$?"
+              echo
+              echo "[ERROR] Smoke test of $* failed." >&2
+              handle_error_code "$error_code"
             fi
           }
+
           smoke_test_xfail() {
-            if http --check-status --ignore-stdin -q --timeout=5 "$@" &>/dev/null; then
-              echo 'Smoke test should have failed!'
-              return 1
+            echo "[INFO] Running smoke test of $* that is expected to fail."
+            if ! curl --fail --max-time 5 --no-keepalive --no-progress-meter "$@"; then
+              echo
+              echo "[INFO] Smoke test of $* expected to fail."
             else
-              echo 'Smoke test expected to fail. OK!'
+              echo
+              echo "[ERROR] Smoke test of $* should have failed!" >&2
+              return 1
             fi
           }
-          smoke_test :80
-          smoke_test :81
-          smoke_test :82
-          smoke_test -a test_user:r4ndom_bUt_memorable :81/status
-          smoke_test -a test_user:r4ndom_bUt_memorable :82/status
-          smoke_test_xfail -a test_user:incorrect_password :81/status
-          smoke_test_xfail -a test_user:incorrect_password :82/status
-          smoke_test_xfail :81/status
-          smoke_test_xfail :82/status
+
+          test_gunicorn_in_docker() {
+            local container_name=$1 expected_message
+            local -i worker_count
+            echo "[INFO] Docker container logs from $container_name:"
+            docker logs "$container_name"
+            if [[ $container_name == *asgi ]]; then
+              expected_message="Using worker: asgi"
+            else
+              expected_message="Using worker:"
+            fi
+            grep -q "$expected_message" <(docker logs "$container_name")
+            echo "[INFO] Gunicorn control interface (gunicornc) stats from $container_name:"
+            docker exec "$container_name" gunicornc -c "show stats"
+            worker_count=$(docker exec "$container_name" gunicornc -c "show stats" -j | jq -r '.workers_current')
+            if [ $worker_count -lt 1 ]; then
+              echo "[ERROR] Gunicorn control interface (gunicornc) reports $worker_count workers spawned." >&2
+              return 1
+            fi
+          }
+
+          test_virtualenv_location_in_docker() {
+            local container_name=$1 docker_virtualenv docker_python expected_virtualenv expected_python
+            expected_virtualenv="/app/$HATCH_ENV_TYPE_VIRTUAL_PATH"
+            expected_python="$expected_virtualenv/bin/python"
+            echo "[INFO] The Hatch virtualenv should be at $expected_virtualenv."
+            echo "[INFO] The Python executable should be at $expected_python."
+            docker_virtualenv=$(docker exec "$container_name" hatch env find)
+            docker_python=$(docker exec "$container_name" which python)
+            case "$docker_virtualenv" in
+            "$expected_virtualenv") echo "[INFO] Correct Hatch virtualenv $docker_virtualenv for $container_name." ;;
+            *) echo "[ERROR] Incorrect Hatch virtualenv $docker_virtualenv for $container_name." >&2 && return 1 ;;
+            esac
+            case "$docker_python" in
+            "$expected_python") echo "[INFO] Correct Python $docker_python for $container_name." ;;
+            *) echo "[ERROR] Incorrect Python $docker_python for $container_name." >&2 && return 1 ;;
+            esac
+          }
+
+          main() {
+            local container_name=$1 container_tag worker_class
+            local -i host_port=10101
+            echo "[INFO] Testing $container_name."
+            echo
+            container_tag=$(echo "$container_name" | cut -d - -f 2)
+            [[ $container_name == *asgi ]] && worker_class=asgi
+            docker run -d -p $host_port:80 --name "$container_name" \
+              -e "BASIC_AUTH_USERNAME=test_user" \
+              -e "BASIC_AUTH_PASSWORD=r4ndom_bUt_memorable" \
+              -e "LOG_FORMAT=gunicorn" \
+              -e "LOG_LEVEL=debug" \
+              ${worker_class:+-e "WORKER_CLASS=asgi"} \
+              ghcr.io/br3ndonland/inboard:"$container_tag$LINUX_TAG"
+            sleep 5
+            test_virtualenv_location_in_docker "$container_name"
+            test_gunicorn_in_docker "$container_name"
+            smoke_test http://localhost:$host_port
+            if [[ $container_name == *fastapi* || $container_name == *starlette* ]]; then
+              smoke_test --user test_user:r4ndom_bUt_memorable http://localhost:$host_port/status
+              smoke_test_xfail --user test_user:incorrect_password http://localhost:$host_port/status
+              smoke_test_xfail http://localhost:$host_port/status
+            fi
+            docker stop "$container_name"
+          }
+
+          container_names=(
+            inboard-base
+            inboard-starlette
+            inboard-fastapi
+            inboard-base-gunicorn-asgi
+            inboard-starlette-gunicorn-asgi
+            inboard-fastapi-gunicorn-asgi
+          )
+
+          for container_name in "${container_names[@]}"; do
+            main "$container_name"
+          done
       - name: Log in to Docker registry
         if: >
           github.ref_type == 'tag' ||
@@ -409,7 +450,7 @@ jobs:
           # https://github.com/br3ndonland/inboard/pull/117
 
           ESCAPE_DUNDERS='s:(\s|\/)(__)(all|init|token)(__)(\s|\.py|\(\)){0,1}:\1\\_\\_\3\\_\\_\5:g'
-          REPLACEMENT='There are several breaking changes noted in the\n[Gunicorn changelog](https://docs.gunicorn.org/en/latest/news.html).'
+          REPLACEMENT='There are several breaking changes noted in the\n[Gunicorn changelog](https://gunicorn.org/news/).'
           sed -Ei "$ESCAPE_DUNDERS" "docs/changelog.md"
           sed -Ei \
             -e "s|\[Changes\]\(https://docs.gunicorn.org/en/latest/news.html\) include|$REPLACEMENT|g" \
