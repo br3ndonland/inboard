@@ -369,6 +369,19 @@ jobs:
             docker push ghcr.io/br3ndonland/inboard:"$GIT_TAG-starlette$PYTHON_TAG$LINUX_TAG"
             docker push ghcr.io/br3ndonland/inboard:"$GIT_TAG-fastapi$PYTHON_TAG$LINUX_TAG"
           done
+  docker-cleanup:
+    environment:
+      name: Production
+      deployment: false
+    if: github.ref_type == 'tag' || github.ref == 'refs/heads/main'
+    needs: [python, docker]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dataaxiom/ghcr-cleanup-action@v1
+        with:
+          delete-untagged: true
+          dry-run: true
+          token: ${{ secrets.GH_PAT }}
   pypi:
     environment:
       name: PyPI
