@@ -1,3 +1,7 @@
+---
+icon: lucide/user-round-key
+---
+
 # Authentication
 
 ## HTTP Basic auth

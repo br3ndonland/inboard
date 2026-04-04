@@ -408,7 +408,11 @@ jobs:
           ref: develop
       - name: Generate changelog from Git tags
         run: |
-          echo '# Changelog
+          echo '---
+          icon: lucide/clipboard-clock
+          ---
+
+          # Changelog
           ' >docs/changelog.md
 
           GIT_LOG_FORMAT='## %(subject) - %(taggerdate:short)

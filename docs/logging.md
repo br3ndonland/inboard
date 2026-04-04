@@ -1,3 +1,7 @@
+---
+icon: lucide/logs
+---
+
 # Logging
 
 ## Configuration variables
