@@ -1,5 +1,65 @@
 # Changelog
 
+## 0.91.0 - 2026-04-03
+
+### Changes
+
+**Migrate from Material for MkDocs to Zensical** (#145,
+acf22c1974c75175e80b42bffce7dd12b4918ab4,
+9074d75911a910e2a2d7f795ac0d03adbdf572c5)
+
+The documentation for this project was previously built with Material
+for MkDocs, which depends on MkDocs.
+[MkDocs has suffered from problematic project governance for years](https://fpgmaas.com/blog/collapse-of-mkdocs/).
+The original author of MkDocs, also the original author of the similarly
+problematic HTTPX (https://github.com/br3ndonland/fastenv/pull/39), is
+taking the project in a controversial new direction.
+[Material for MkDocs is in maintenance mode](https://squidfunk.github.io/mkdocs-material/blog/2025/11/05/zensical/)
+and there is a newer alternative called
+[Zensical](https://zensical.org/docs/get-started/).
+
+This release includes a migration of the documentation from Material for
+MkDocs to Zensical. Zensical offers
+[compatibility](https://zensical.org/compatibility/) with MkDocs, and
+the same `mkdocs.yml` configuration file can be used if necessary, but
+the `mkdocs.yml` will be removed in favor of the new `zensical.toml`.
+
+**Update to Gunicorn 25** (#146,
+c1bdd79e177b6b01778c8b97b7f65b7fcec57274)
+
+This release will update from Gunicorn 23.0.0 to
+[Gunicorn 25.3.0](https://gunicorn.org/news/).
+
+Gunicorn now provides a new [ASGI worker](https://gunicorn.org/asgi/)
+that supports `uvloop` and can run FastAPI, Starlette, Quart, and other
+ASGI apps without the need for Uvicorn. Users can select the new
+Gunicorn ASGI worker with inboard by setting the environment variable
+`WORKER_CLASS=asgi`. The inboard test suite will be updated to include
+test cases that run the Gunicorn ASGI worker without Uvicorn.
+
+Gunicorn 25 offers compatibility with additional dependencies for
+improved performance, including `uvloop` and the HTTP parser
+[`gunicorn_h1c`](https://github.com/benoitc/gunicorn_h1c). A new
+`inboard[gunicorn-fast]` extra will be added for installation of
+`gunicorn_h1c` and `uvloop` with Gunicorn, and will be installed by
+default now that both Gunicorn and Uvicorn support a common version of
+`uvloop`. The `uvloop` version will align with the version used for
+testing by Gunicorn.
+
+### Commits
+
+- Bump version from 0.90.0 to 0.91.0 (e91a3d9)
+- Update docs for new Starlette and Uvicorn domains (bc691e6)
+- Update to Gunicorn 25 (#146) (c1bdd79)
+- Remove duplicate changelog (c509cf3)
+- Simplify changelog format (e9f501b)
+- Remove `content.action.view` from `zensical.toml` (9074d75)
+- Remove example `pyproject.toml` from docs (5881d9b)
+- Remove HTTPie suggestions from docs (eebc844)
+- Migrate tests from HTTPX to HTTPXYZ (b30007e)
+- Migrate from Material for MkDocs to Zensical (#145) (acf22c1)
+- Update changelog for version 0.90.0 (#144) (b58cfea)
+
 ## 0.90.0 - 2026-04-03
 
 ### Changes
@@ -882,7 +942,7 @@ more clearly, Uvicorn will remain on version 0.28.1.
 
 This release will update/upgrade Gunicorn from 22.0.0 to 23.0.0.
 There are several breaking changes noted in the
-[Gunicorn changelog](https://docs.gunicorn.org/en/latest/news.html).
+[Gunicorn changelog](https://gunicorn.org/news/).
 Users are encouraged to review these changes and update usage as needed.
 
 ### Commits
