@@ -380,7 +380,6 @@ jobs:
       - uses: dataaxiom/ghcr-cleanup-action@v1
         with:
           delete-untagged: true
-          dry-run: true
           token: ${{ secrets.GH_PAT }}
   pypi:
     environment:
