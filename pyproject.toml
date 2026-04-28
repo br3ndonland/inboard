@@ -36,7 +36,7 @@ Repository = "https://github.com/br3ndonland/inboard"
 
 [project.optional-dependencies]
 fastapi = [
-  "fastapi>=0.135,<0.136",
+  "fastapi>=0.136,<0.137",
 ]
 gunicorn-fast = [
   "gunicorn_h1c>=0.6.3",
