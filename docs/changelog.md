@@ -4,6 +4,31 @@ icon: lucide/clipboard-clock
 
 # Changelog
 
+## 0.92.0 - 2026-04-28
+
+### Changes
+
+**Update to FastAPI 0.136** (c9a82aaf86a8ee507d239b81a2aea10dd6eca862)
+
+This release will update/upgrade to
+[FastAPI 0.136](https://fastapi.tiangolo.com/release-notes/). This is a
+minor release to align with FastAPI versioning.
+
+FastAPI 0.136 introduces support for free-threaded Python 3.14t.
+
+### Commits
+
+- Bump version from 0.91.0 to 0.92.0 (e601339)
+- Update to FastAPI 0.136 (c9a82aa)
+- Update to Zensical 0.0.37 (0b04fc5)
+- Update to `pypa/gh-action-pypi-publish@v1.14.0` (5fbdc55)
+- Remove dry run from GHCR cleanup job (ea39f55)
+- Add GHCR cleanup job to GitHub Actions workflow (eed2632)
+- Update favicon (e75856a)
+- Add frontmatter icons to docs (6757a14)
+- Remove specific version numbers from Docker docs (891c038)
+- Update changelog for version 0.91.0 (#147) (9b17f4e)
+
 ## 0.91.0 - 2026-04-03
 
 ### Changes
