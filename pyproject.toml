@@ -65,7 +65,7 @@ docs = [
 tests = [
   "coverage[toml]>=7.10,<8",
   "httpxyz>=0.30,<1",
-  "pytest>=8.1.1,<9",
+  "pytest>=9,<10",
   "pytest-mock>=3,<4",
   "pytest-timeout>=2,<3",
   "trustme>=1.2,<2",
@@ -164,12 +164,12 @@ features = [
 [tool.hatch.version]
 path = "inboard/__init__.py"
 
-[tool.pytest.ini_options]
-addopts = "-q"
+[tool.pytest]
+addopts = ["-q"]
 markers = [
   "subprocess: test requires a subprocess (deselect with '-m \"not subprocess\"')",
 ]
-minversion = "6.0"
+minversion = "9.0"
 testpaths = ["tests"]
 
 [tool.ruff]
