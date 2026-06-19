@@ -23,7 +23,7 @@ env:
   DOCKER_BUILDKIT: "1"
   HATCH_ENV_TYPE_VIRTUAL_PATH: ".venv"
   HATCH_ENV: "ci"
-  HATCH_VERSION: ">=1.16.5,<1.17"
+  HATCH_VERSION: ">=1.17,<1.18"
   PIPX_VERSION: ">=1.14,<1.15"
   REPO_NAME: inboard
 
