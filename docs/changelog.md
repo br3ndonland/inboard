@@ -4,6 +4,45 @@ icon: lucide/clipboard-clock
 
 # Changelog
 
+## 0.93.0 - 2026-06-19
+
+### Changes
+
+**Update to FastAPI 0.137** (04a2e9e64b7fedb22ac0f03e887d000637f9c840)
+
+This commit will update/upgrade to
+[FastAPI 0.137](https://fastapi.tiangolo.com/release-notes/).
+
+FastAPI 0.137 introduces **BREAKING CHANGES** to `APIRouter` instances,
+particularly related to the behavior of `router.include_router()` when
+one router instance includes another. Users should review the
+[release notes](https://fastapi.tiangolo.com/release-notes/) to evaluate
+how these breaking changes affect their applications.
+
+**Update to Gunicorn 26** (449dd9375ba2cbe00d10744f7210f5cade4eb0ab)
+
+This commit will update from Gunicorn 25.3.0 to
+[Gunicorn 26](https://gunicorn.org/news/).
+
+Gunicorn 26 removes the `eventlet` worker, expands the project's ASGI
+test suite, improves HTTP header security, and increases the required
+version of `gunicorn_h1c` to `gunicorn_h1c >= 0.6.5`. Now that Gunicorn
+is releasing more regularly and predictably, the version will be
+unpinned and a major version constraint will be used instead.
+
+### Commits
+
+- Bump version from 0.92.0 to 0.93.0 (aa7a429)
+- Update to FastAPI 0.137 (04a2e9e)
+- Update to Hatch 1.17 (19f42bf)
+- Update to Gunicorn 26 (449dd93)
+- Update to pytest 9 (c6a2918)
+- Update to Zensical 0.0.45 (0e942a9)
+- Update to Ruff 0.15 (d83001f)
+- Update to BasedPyright 1.39 (2f403b9)
+- Update to pipx 1.14 (1668d95)
+- Update changelog for version 0.92.0 (#148) (cda6074)
+
 ## 0.92.0 - 2026-04-28
 
 ### Changes
