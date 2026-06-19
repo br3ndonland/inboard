@@ -1,0 +1,80 @@
+lock-version = "1.0"
+created-by = "pip"
+requires-python = ">=3.10,<4"
+
+[[packages]]
+name = "click"
+version = "8.4.1"
+
+[[packages.wheels]]
+name = "click-8.4.1-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/c7/0d/67e5b4109ea4a837e80daa87c2c696711955e40449a97e8926672534def2/click-8.4.1-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "482be17c6991b8c19c5429a1e995d9b0efdbb63172824c41f99965dc0ade8ec2"
+
+[[packages]]
+name = "gunicorn"
+version = "25.3.0"
+
+[[packages.wheels]]
+name = "gunicorn-25.3.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/43/c8/8aaf447698c4d59aa853fd318eed300b5c9e44459f242ab8ead6c9c09792/gunicorn-25.3.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "cacea387dab08cd6776501621c295a904fe8e3b7aae9a1a3cbb26f4e7ed54660"
+
+[[packages]]
+name = "gunicorn-h1c"
+version = "0.6.5"
+
+[packages.sdist]
+name = "gunicorn_h1c-0.6.5.tar.gz"
+url = "https://files.pythonhosted.org/packages/44/bd/448d9d94d028de687fe7b55be1c002f388d2f987211430e27e67a1fe510b/gunicorn_h1c-0.6.5.tar.gz"
+
+[packages.sdist.hashes]
+sha256 = "80f348f7f528f157af5bf357ed8d39fd6907efee573bf5be857d5808617e7c39"
+
+[[packages]]
+name = "h11"
+version = "0.16.0"
+
+[[packages.wheels]]
+name = "h11-0.16.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/04/4b/29cac41a4d98d144bf5f6d33995617b185d14b22401f75ca86f384e87ff1/h11-0.16.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86"
+
+[[packages]]
+name = "packaging"
+version = "26.2"
+
+[[packages.wheels]]
+name = "packaging-26.2-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/df/b2/87e62e8c3e2f4b32e5fe99e0b86d576da1312593b39f47d8ceef365e95ed/packaging-26.2-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "5fc45236b9446107ff2415ce77c807cee2862cb6fac22b8a73826d0693b0980e"
+
+[[packages]]
+name = "uvicorn"
+version = "0.28.1"
+
+[[packages.wheels]]
+name = "uvicorn-0.28.1-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/6e/12/57c09286f0293e73343e95427072ec7b700324f858637887c5b7e9c687b7/uvicorn-0.28.1-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "5162f6d652f545be91b1feeaee8180774af143965ca9dc8a47ff1dc6bafa4ad5"
+
+[[packages]]
+name = "uvloop"
+version = "0.22.1"
+
+[[packages.wheels]]
+name = "uvloop-0.22.1-cp313-cp313-macosx_10_13_universal2.whl"
+url = "https://files.pythonhosted.org/packages/89/8c/182a2a593195bfd39842ea68ebc084e20c850806117213f5a299dfc513d9/uvloop-0.22.1-cp313-cp313-macosx_10_13_universal2.whl"
+
+[packages.wheels.hashes]
+sha256 = "561577354eb94200d75aca23fbde86ee11be36b00e52a4eaf8f50fb0c86b7705"

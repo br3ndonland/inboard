@@ -89,6 +89,9 @@ command_line = "-m pytest"
 patch = ["subprocess"]
 source = ["inboard", "tests"]
 
+[tool.hatch]
+locker = "pip"
+
 [tool.hatch.build.targets.sdist]
 include = ["/inboard"]
 
@@ -97,6 +100,8 @@ packages = ["inboard"]
 
 [tool.hatch.envs.base]
 dev-mode = false
+dependency-groups = []
+locked = true
 features = [
   "gunicorn-fast",
 ]
@@ -104,6 +109,7 @@ features = [
 [tool.hatch.envs.ci]
 builder = true
 dev-mode = false
+locked = true
 dependency-groups = [
   "checks",
   "tests",
@@ -116,6 +122,7 @@ features = [
 
 [tool.hatch.envs.default]
 dev-mode = true
+locked = true
 dependency-groups = [
   "checks",
   "docs",
@@ -143,12 +150,15 @@ format = [
 
 [tool.hatch.envs.docs]
 dev-mode = false
+locked = true
 dependency-groups = [
   "docs",
 ]
 
 [tool.hatch.envs.fastapi]
 dev-mode = false
+dependency-groups = []
+locked = true
 features = [
   "fastapi",
   "gunicorn-fast",
@@ -156,6 +166,8 @@ features = [
 
 [tool.hatch.envs.starlette]
 dev-mode = false
+dependency-groups = []
+locked = true
 features = [
   "gunicorn-fast",
   "starlette",

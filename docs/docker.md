@@ -102,7 +102,7 @@ The _Dockerfile_ could look like this:
 
 !!! tip "Syncing dependencies with Hatch"
 
-    Hatch does not have a direct command for syncing dependencies, and `hatch env create` won't always sync dependencies if they're being installed into the same virtual environment directory (as they would be in a Docker image). Running `hatch env prune && hatch env create <env_name>` should do the trick.
+    [Hatch 1.17](https://hatch.pypa.io/latest/blog/2026/05/30/hatch-v1170/) introduced [PEP 751 `pylock.toml` lockfile support](https://hatch.pypa.io/latest/how-to/environment/lockfiles/) with pip and uv locker plugins, and new commands including `hatch dep sync` for syncing dependencies from a lockfile. As explained in the [locker docs](https://hatch.pypa.io/latest/config/environment/overview/#locker), the pip locker can generate lockfiles with `pip lock`, but it cannot apply/sync them, so lockfile application is currently uv-dependent. Use uv for locked environments and keep the fallback `hatch env prune && hatch env create <env_name>` workflow for unlocked environments.
 
     For further info, see [pypa/hatch#650](https://github.com/pypa/hatch/issues/650) and [pypa/hatch#1094](https://github.com/pypa/hatch/pull/1094).
 
