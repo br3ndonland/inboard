@@ -7,8 +7,12 @@
 __MACOSX/
 .AppleDouble
 .LSOverride
-Icon[
-]
+# Finder custom icons
+# https://github.com/github/gitignore/commit/720975f849ce5424393b6bbb92b038da78d50c57
+# https://github.com/github/gitignore/commit/da36175ff6de9673ad54959fc5d66835755093e8
+# https://github.com/github/gitignore/commit/7b35656e7517d529f183f78c5ec33e3e741bd049
+# https://github.com/github/gitignore/pull/4753
+Icon[^!-~]
 
 # Thumbnails
 ._*
