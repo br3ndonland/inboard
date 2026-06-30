@@ -4,6 +4,26 @@ icon: lucide/clipboard-clock
 
 # Changelog
 
+## 0.94.0 - 2026-06-30
+
+### Changes
+
+**Update to FastAPI 0.138** (604503978a1d8110a021459765cf8f726387b8f2)
+
+This release will update/upgrade to
+[FastAPI 0.138](https://fastapi.tiangolo.com/release-notes/). This is a
+minor release to align with FastAPI versioning.
+
+FastAPI 0.138 introduces the ability to serve static front-end apps. See
+the [docs](https://fastapi.tiangolo.com/tutorial/frontend/).
+
+### Commits
+
+- Bump version from 0.93.0 to 0.94.0 (a8eccec)
+- Update to FastAPI 0.138 (6045039)
+- Update to pipx 1.15 (107f3b6)
+- Update changelog for version 0.93.0 (#149) (f1c6a2b)
+
 ## 0.93.0 - 2026-06-19
 
 ### Changes
