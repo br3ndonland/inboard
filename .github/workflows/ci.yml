@@ -24,7 +24,7 @@ env:
   HATCH_ENV_TYPE_VIRTUAL_PATH: ".venv"
   HATCH_ENV: "ci"
   HATCH_VERSION: ">=1.17,<1.18"
-  PIPX_VERSION: ">=1.15,<1.16"
+  PIPX_VERSION: ">=1.16,<1.17"
   REPO_NAME: inboard
 
 jobs:
