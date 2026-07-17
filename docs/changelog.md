@@ -4,6 +4,28 @@ icon: lucide/clipboard-clock
 
 # Changelog
 
+## 0.95.0 - 2026-07-16
+
+### Changes
+
+**Update to FastAPI 0.139** (21418501deb3f58495e8add3357a18ce8861acb5)
+
+This release will update/upgrade to
+[FastAPI 0.139](https://fastapi.tiangolo.com/release-notes/). This is a
+minor release to align with FastAPI versioning.
+
+FastAPI 0.139 builds on the static front-end app functionality added in
+0.138 by allowing front-end apps to install dependencies. See the
+[docs](https://fastapi.tiangolo.com/tutorial/frontend/).
+
+### Commits
+
+- Bump version from 0.94.0 to 0.95.0 (70defec)
+- Update to FastAPI 0.139 (2141850)
+- Update to pipx 1.16 (0242256)
+- Fix Finder custom icons in `.gitignore` (5217c70)
+- Update changelog for version 0.94.0 (#150) (23a81c8)
+
 ## 0.94.0 - 2026-06-30
 
 ### Changes
