@@ -1,4 +1,5 @@
 {
+  "proseWrap": "never",
   "overrides": [
     {
       "files": ["COMMIT_EDITMSG", "TAG_EDITMSG"],
@@ -13,6 +14,12 @@
       "options": {
         "parser": "markdown",
         "tabWidth": 4
+      }
+    },
+    {
+      "files": ["*.y*ml", "changelog.md"],
+      "options": {
+        "proseWrap": "preserve"
       }
     }
   ]
