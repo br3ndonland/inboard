@@ -4,6 +4,78 @@ icon: lucide/clipboard-clock
 
 # Changelog
 
+## 0.96.0 - 2026-07-28
+
+### Changes
+
+**Drop Python 3.10 support** (#153,
+8428ab64809fa0fc1e032aba057380133f520215)
+
+Python 3.10 is in security-only maintenance and reaches
+[end-of-life](https://devguide.python.org/versions/) in October 2026.
+
+This release will:
+
+- Remove Python 3.10 from the GitHub Actions matrices and package
+  classifiers.
+- Require Python 3.11 or newer.
+- Import `typing.Required` directly now that Python 3.11 is required.
+
+**Add Python 3.14 support** (#151,
+df1e51067cbeba207d82f307dc201218d7cf5679)
+
+This release will add
+[Python 3.14](https://docs.python.org/3/whatsnew/3.14.html) support to
+inboard.
+
+- inboard will now run tests with Python 3.14, in addition to 3.11-3.13
+- inboard will now build and publish its PyPI package using Python 3.14
+- inboard will now include a Python 3.14 classifier in its PyPI package
+- inboard will now ship Docker images running Python 3.14, in addition
+  to 3.11-3.13, and Docker images tagged with `latest` will now use 3.14
+
+Related projects that have released support for Python 3.14 include:
+
+- AnyIO
+  ([4.10.0 - 2025-08-04](https://github.com/agronholm/anyio/releases/tag/4.10.0))
+- FastAPI
+  ([0.118.3 - 2025-10-10](https://github.com/fastapi/fastapi/releases/tag/0.118.3))
+- gunicorn_h1c
+  ([0.6.1 - 2026-03-26](https://github.com/benoitc/gunicorn_h1c/releases/tag/v0.6.1))
+- Hatch
+  ([1.15.0 - 2025-10-15](https://github.com/pypa/hatch/releases/tag/hatch-v1.15.0))
+- httptools
+  ([0.7.0 - 2025-10-10](https://github.com/MagicStack/httptools/releases/tag/v0.7.0))
+- pipx
+  ([1.9.0 - 2026-03-17](https://github.com/pypa/pipx/releases/tag/1.9.0))
+- Pydantic
+  ([2.12.0 - 2025-10-07](https://github.com/pydantic/pydantic/releases/tag/v2.12.0))
+- Starlette
+  ([0.48.0 - 2025-09-13](https://github.com/Kludex/starlette/releases/tag/0.48.0))
+- Uvicorn
+  ([0.38.0 - 2025-10-18](https://github.com/Kludex/uvicorn/releases/tag/0.38.0))
+- uvloop
+  ([0.22.0 - 2025-10-16](https://github.com/MagicStack/uvloop/releases/tag/v0.22.0))
+- websockets
+  ([16.0 - 2026-01-10](https://github.com/python-websockets/websockets/releases/tag/16.0))
+
+Related projects that have not released support for Python 3.14 include:
+
+- [Gunicorn](https://github.com/benoitc/gunicorn)
+  ([25.3.0](https://github.com/benoitc/gunicorn/releases/tag/25.3.0)
+  updated its Docker images to Python 3.14, but its package classifiers
+  and test matrix only cover through Python 3.13)
+
+### Commits
+
+- Bump version from 0.95.0 to 0.96.0 (c3d5c02)
+- Update to `pypa/gh-action-pypi-publish@v1.14.1` (8680b9a)
+- Update to Zensical 0.0.51 (c315eb9)
+- Drop Python 3.10 support (#153) (8428ab6)
+- Add Python 3.14 support (#151) (df1e510)
+- Set Prettier `proseWrap` to `never` (9e6738e)
+- Update changelog for version 0.95.0 (#152) (933386f)
+
 ## 0.95.0 - 2026-07-16
 
 ### Changes
