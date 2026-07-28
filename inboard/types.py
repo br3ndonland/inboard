@@ -3,15 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
 if TYPE_CHECKING:
-    import sys
     from asyncio import Protocol
     from collections.abc import Sequence
     from os import PathLike
-
-    if sys.version_info < (3, 11):
-        from typing_extensions import Required
-    else:
-        from typing import Required  # pyright: ignore[reportUnreachable]
+    from typing import Required
 
     from uvicorn._types import ASGIApplication
     from uvicorn.config import (
