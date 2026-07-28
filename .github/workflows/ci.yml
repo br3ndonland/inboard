@@ -400,7 +400,7 @@ jobs:
           name: ${{ env.REPO_NAME }}-${{ github.ref_name }}
           path: dist
       - name: Publish Python package to PyPI
-        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
+        uses: pypa/gh-action-pypi-publish@ba38be9e461d3875417946c167d0b5f3d385a247 # v1.14.1
   changelog:
     environment:
       name: Production
