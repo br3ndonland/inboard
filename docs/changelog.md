@@ -4,6 +4,26 @@ icon: lucide/clipboard-clock
 
 # Changelog
 
+## 0.97.0 - 2026-07-29
+
+### Changes
+
+**Update to FastAPI 0.140** (fc5d8dfb165bbb624f3064da19ee3db8156c17ec)
+
+This release will update/upgrade to
+[FastAPI 0.140](https://fastapi.tiangolo.com/release-notes/). This is a
+minor release to align with FastAPI versioning.
+
+FastAPI 0.140 reduces memory usage of dependencies and makes several
+other small changes.
+
+### Commits
+
+- Bump version from 0.96.0 to 0.97.0 (292cabb)
+- Update to FastAPI 0.140 (fc5d8df)
+- Update to `pypa/gh-action-pypi-publish@v1.14.2` (5d714d7)
+- Update changelog for version 0.96.0 (#154) (704be4e)
+
 ## 0.96.0 - 2026-07-28
 
 ### Changes
