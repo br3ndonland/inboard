@@ -375,12 +375,13 @@ jobs:
       deployment: false
     if: github.ref_type == 'tag' || github.ref == 'refs/heads/main'
     needs: [python, docker]
+    permissions:
+      packages: write
     runs-on: ubuntu-latest
     steps:
       - uses: dataaxiom/ghcr-cleanup-action@v1
         with:
           delete-untagged: true
-          token: ${{ secrets.GH_PAT }}
   pypi:
     environment:
       name: PyPI
