@@ -86,6 +86,15 @@ async def app_with_lifespan_startup_failure(
             await send(lifespan_startup_failed_event)
 
 
+async def app_with_unhandled_exception(
+    scope: Scope, _: ASGIReceiveCallable, send: ASGISendCallable
+) -> None:
+    """An ASGI app for testing unhandled request exceptions."""
+    del send
+    assert scope["type"] == "http"
+    raise RuntimeError("Unhandled ASGI exception")
+
+
 @pytest.fixture
 def tls_certificate_authority() -> trustme.CA:
     return trustme.CA()
@@ -165,6 +174,26 @@ def worker_class(request: pytest.FixtureRequest) -> str:
 
 @pytest.fixture(
     params=(
+        pytest.param(gunicorn_workers_inboard.UvicornWorker, marks=pytestmarks),
+        pytest.param(gunicorn_workers_inboard.UvicornH11Worker, marks=pytestmarks),
+    )
+)
+def worker_class_uvicorn(request: pytest.FixtureRequest) -> str:
+    """Gunicorn Uvicorn worker class names to test.
+
+    This is a parametrized fixture. When the fixture is used in a test, the test
+    will be automatically parametrized, running once for each fixture parameter. All
+    tests using the fixture will be automatically marked with `pytest.mark.subprocess`.
+
+    https://docs.pytest.org/en/latest/how-to/fixtures.html
+    https://docs.pytest.org/en/latest/proposals/parametrize_with_fixtures.html
+    """
+    worker_class = request.param
+    return f"{worker_class.__module__}.{worker_class.__name__}"
+
+
+@pytest.fixture(
+    params=(
         pytest.param(False, id="TLS off"),
         pytest.param(True, id="TLS on"),
     )
@@ -196,6 +225,79 @@ def gunicorn_process(
         "debug",
         "--worker-class",
         worker_class,
+        "--workers",
+        "1",
+    ]
+    if use_tls is True:
+        args_for_tls = [
+            "--ca-certs",
+            tls_ca_certificate_pem_path,
+            "--certfile",
+            tls_certificate_server_cert_path,
+            "--keyfile",
+            tls_certificate_private_key_path,
+        ]
+        args.extend(args_for_tls)
+        base_url = f"https://{bind}"
+        verify: SSLContext | bool = tls_ca_ssl_context
+    else:
+        base_url = f"http://{bind}"
+        verify = False
+    args.append(app_module)
+    transport = httpxyz.HTTPTransport(retries=5, verify=verify)
+    with (
+        httpxyz.Client(base_url=base_url, transport=transport) as client,
+        tempfile.TemporaryFile() as output,
+    ):
+        with Process(args, client=client, output=output) as process:
+            time.sleep(2)
+            assert process.poll() is None
+            yield process
+            process.terminate()
+            _ = process.wait(timeout=5)
+            assert process.poll() is not None
+
+
+@pytest.fixture(
+    params=(
+        pytest.param(False, id="TLS off"),
+        pytest.param(True, id="TLS on"),
+    )
+)
+def gunicorn_uvicorn_process_with_unhandled_exception(
+    monkeypatch: pytest.MonkeyPatch,
+    request: pytest.FixtureRequest,
+    tls_ca_certificate_pem_path: str,
+    tls_ca_ssl_context: SSLContext,
+    tls_certificate_private_key_path: str,
+    tls_certificate_server_cert_path: str,
+    unused_tcp_port: int,
+    worker_class_uvicorn: str,
+) -> Generator[Process, None, None]:
+    """Yield a subprocess running a Gunicorn arbiter with a Uvicorn worker.
+
+    An instance of `httpxyz.Client` is available on the `client` attribute.
+    Output is saved to a temporary file and accessed with `read_output()`.
+    """
+    monkeypatch.delenv("LOGGING_CONF", raising=False)
+    monkeypatch.setenv("LOG_FORMAT", "verbose")
+    app_module = f"{__name__}:{app_with_unhandled_exception.__name__}"
+    bind = f"127.0.0.1:{unused_tcp_port}"
+    use_tls: bool = request.param
+    args = [
+        "gunicorn",
+        "--bind",
+        bind,
+        "--config",
+        "python:inboard.gunicorn_conf",
+        "--graceful-timeout",
+        "1",
+        "--log-level",
+        "debug",
+        "--worker-tmp-dir",
+        tempfile.gettempdir(),
+        "--worker-class",
+        worker_class_uvicorn,
         "--workers",
         "1",
     ]
@@ -306,11 +408,11 @@ def test_uvicorn_worker_boot_error(
 ) -> None:
     """Test Gunicorn arbiter shutdown behavior after Uvicorn worker boot errors.
 
-    Previously, if Uvicorn workers raised exceptions during startup,
-    Gunicorn continued trying to boot workers ([#1066]). To avoid this,
-    the Uvicorn worker was updated to exit with `Arbiter.WORKER_BOOT_ERROR`,
-    but no tests were included at that time ([#1077]). This test verifies
-    that Gunicorn shuts down appropriately after a Uvicorn worker boot error.
+    Previously, if Uvicorn workers raised exceptions during startup, Gunicorn continued
+    trying to boot workers ([encode/uvicorn#1066]). To avoid this, the Uvicorn worker
+    was updated to exit with `Arbiter.WORKER_BOOT_ERROR`, but no tests were included at
+    that time ([encode/uvicorn#1077]). This test verifies that Gunicorn shuts down
+    appropriately after a Uvicorn worker boot error.
 
     When a worker exits with `Arbiter.WORKER_BOOT_ERROR`, the Gunicorn arbiter will
     also terminate, so there is no need to send a separate signal to the arbiter.
@@ -322,6 +424,40 @@ def test_uvicorn_worker_boot_error(
     _ = gunicorn_process_with_lifespan_startup_failure.wait(timeout=5)
     assert gunicorn_process_with_lifespan_startup_failure.poll() is not None
     assert "Worker failed to boot" in output_text
+
+
+def test_uvicorn_worker_logging_config(
+    gunicorn_uvicorn_process_with_unhandled_exception: Process,
+) -> None:
+    """Test that Uvicorn worker logs propagate to the root logging configuration
+    instead of using Gunicorn handlers.
+
+    The Uvicorn worker class originally disabled propagation because it resulted in
+    duplicate logs if enabled ([encode/uvicorn#614], [encode/uvicorn#623]). As the
+    [docs](https://docs.python.org/3/library/logging.html#logging.Logger.propagate) on
+    `logging.Logger.propagate` explain, "If you attach a handler to a logger _and_ one
+    or more of its ancestors, it may emit the same record multiple times."
+
+    Instead of disabling propagation and keeping Gunicorn handlers set on the logger,
+    another solution is to remove the Gunicorn handlers and enable propagation so the
+    root logger can manage all logs ([br3ndonland/inboard#131]).
+
+    [br3ndonland/inboard#131]: https://github.com/br3ndonland/inboard/discussions/131
+    [encode/uvicorn#614]: https://github.com/encode/uvicorn/issues/614
+    [encode/uvicorn#623]: https://github.com/encode/uvicorn/pull/623
+    """
+    response = gunicorn_uvicorn_process_with_unhandled_exception.client.get("/")
+    output_text = gunicorn_uvicorn_process_with_unhandled_exception.read_output()
+    exception_lines = [
+        line
+        for line in output_text.splitlines()
+        if "Exception in ASGI application" in line
+    ]
+    assert response.status_code == 500
+    assert len(exception_lines) == 1
+    assert "uvicorn.error" in exception_lines[0]
+    assert output_text.count('"GET / HTTP/1.1" 500') == 1
+    assert output_text.count("RuntimeError: Unhandled ASGI exception") == 1
 
 
 def test_worker_get_request(gunicorn_process: Process) -> None:
