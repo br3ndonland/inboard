@@ -13,6 +13,9 @@ See [environment variable reference](environment.md).
 - inboard's logging configuration logic is located in [`logging_conf.py`](https://github.com/br3ndonland/inboard/blob/HEAD/inboard/logging_conf.py). By default, inboard will load the `LOGGING_CONFIG` dictionary in this module. The dictionary was named for consistency with [Uvicorn's logging configuration dictionary](https://github.com/encode/uvicorn/blob/HEAD/uvicorn/config.py).
 - When running Uvicorn alone, logging is configured programmatically from within the [`start.py` start script](https://github.com/br3ndonland/inboard/blob/HEAD/inboard/start.py), by passing the `LOGGING_CONFIG` dictionary to `uvicorn.run()`.
 - When running Gunicorn with the Uvicorn worker, the logging configuration dictionary is specified within the [`gunicorn_conf.py`](https://github.com/br3ndonland/inboard/blob/HEAD/inboard/gunicorn_conf.py) configuration file.
+- The Gunicorn Uvicorn worker has been updated to remove handlers from `uvicorn.error` and `uvicorn.access` and instead propagate those log records to the root logger. This avoids duplicate records and ensures the root handler applies the configured formatter and filters.
+    - The Uvicorn worker class originally disabled propagation because it resulted in duplicate logs if enabled ([encode/uvicorn#614](https://github.com/encode/uvicorn/issues/614), [encode/uvicorn#623](https://github.com/encode/uvicorn/pull/623)). As the [docs](https://docs.python.org/3/library/logging.html#logging.Logger.propagate) on `logging.Logger.propagate` explain, "If you attach a handler to a logger _and_ one or more of its ancestors, it may emit the same record multiple times."
+    - Instead of disabling propagation and keeping Gunicorn handlers set on the logger, another solution is to remove the Gunicorn handlers and enable propagation so the root logger can manage all logs ([br3ndonland/inboard#131](https://github.com/br3ndonland/inboard/discussions/131)).
 
 ## Filtering log messages
 
@@ -128,7 +131,8 @@ If the inboard Python package is installed from PyPI, the logging configuration 
         "()": "package.custom_logging.MyFormatterClass",
     }
 
-    # only show access logs when running Uvicorn with LOG_LEVEL=debug
+    # only show access logs when running Uvicorn alone with LOG_LEVEL=debug
+    # Gunicorn-managed Uvicorn workers always propagate access logs to root
     LOGGING_CONFIG["loggers"]["gunicorn.access"] = {"propagate": False}
     LOGGING_CONFIG["loggers"]["uvicorn.access"] = {
         "propagate": str(os.getenv("LOG_LEVEL")) == "debug"
@@ -143,7 +147,7 @@ If the inboard Python package is installed from PyPI, the logging configuration 
 
 ## Overriding the logging config
 
-Want to override inboard's entire logging config? No problem. Set up a separate `LOGGING_CONFIG` dictionary, and pass inboard the path to the module containing the dictionary. Try something like this:
+Want to override inboard's entire logging config? No problem. Set up a separate `LOGGING_CONFIG` dictionary, and pass inboard the path to the module containing the dictionary. Gunicorn-managed Uvicorn workers route `uvicorn.error` and `uvicorn.access` through the root logger, so configure the root handler with the formatter and output stream those records should use. Logger-specific Uvicorn handlers only apply when running Uvicorn without Gunicorn. Try something like this:
 
 !!! example "Example of a complete custom logging config"
 
@@ -161,11 +165,7 @@ Want to override inboard's entire logging config? No problem. Set up a separate 
                 "format": "%(asctime)s [%(process)d] [%(levelname)s] %(message)s",
                 "datefmt": "[%Y-%m-%d %H:%M:%S %z]",
             },
-            # Format Uvicorn loggers with Uvicorn's config directly
-            "uvicorn.access": {
-                "()": UVICORN_LOGGING_CONFIG["formatters"]["access"]["()"],
-                "format": UVICORN_LOGGING_CONFIG["formatters"]["access"]["fmt"],
-            },
+            # Format propagated logs with Uvicorn's default formatter
             "uvicorn.default": {
                 "()": UVICORN_LOGGING_CONFIG["formatters"]["default"]["()"],
                 "format": UVICORN_LOGGING_CONFIG["formatters"]["default"]["fmt"],
@@ -190,12 +190,6 @@ Want to override inboard's entire logging config? No problem. Set up a separate 
                 "formatter": "gunicorn.access",
                 "stream": "ext://sys.stdout",
             },
-            # Add a separate handler just for uvicorn.access
-            "uvicorn.access": {
-                "class": "logging.StreamHandler",
-                "formatter": "uvicorn.access",
-                "stream": "ext://sys.stdout",
-            },
         },
         "loggers": {
             "fastapi": {"propagate": True},
@@ -207,20 +201,17 @@ Want to override inboard's entire logging config? No problem. Set up a separate 
                 "level": "INFO",
                 "propagate": False,
             },
-            # Use the uvicorn.access handler, and don't propagate to root
+            # Propagate Uvicorn logs to the configured root handler
             "uvicorn.access": {
-                "handlers": ["uvicorn.access"],
                 "level": "INFO",
-                "propagate": False,
+                "propagate": True,
             },
-            # Use the error handler to output to stderr, and don't propagate to root
             "uvicorn.error": {
-                "handlers": ["error"],
                 "level": "INFO",
-                "propagate": False,
+                "propagate": True,
             },
         },
-        # Use the uvicorn.default formatter for root
+        # Format all propagated logs with uvicorn.default
         "root": {"handlers": ["default"], "level": "INFO"},
     }
 

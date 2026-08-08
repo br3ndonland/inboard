@@ -40,7 +40,7 @@ from uvicorn.config import Config
 from uvicorn.server import Server
 
 
-class UvicornWorker(Worker):  # type: ignore[misc]
+class UvicornWorker(Worker):
     """
     A worker class for Gunicorn that interfaces with an ASGI consumer callable,
     rather than a WSGI callable.
@@ -52,14 +52,14 @@ class UvicornWorker(Worker):  # type: ignore[misc]
         super().__init__(*args, **kwargs)
 
         logger = logging.getLogger("uvicorn.error")
-        logger.handlers = self.log.error_log.handlers
+        logger.handlers = []
         logger.setLevel(self.log.error_log.level)
-        logger.propagate = False
+        logger.propagate = True
 
         logger = logging.getLogger("uvicorn.access")
-        logger.handlers = self.log.access_log.handlers
+        logger.handlers = []
         logger.setLevel(self.log.access_log.level)
-        logger.propagate = False
+        logger.propagate = True
 
         config_kwargs: dict[str, Any] = {
             "app": None,
