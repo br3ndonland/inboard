@@ -15,6 +15,7 @@ site_description = "Documentation for the inboard Python package and Docker imag
 site_dir = "public"
 site_name = "inboard docs"
 site_url = ""
+strict = true
 use_directory_urls = false
 
 [project.markdown_extensions.admonition]
