@@ -457,7 +457,8 @@ class TestStartServer:
                 "-c",
                 gunicorn_conf_path,
                 app_module,
-            ]
+            ],
+            check=False,
         )
 
     @pytest.mark.parametrize(
@@ -512,7 +513,8 @@ class TestStartServer:
                 "-c",
                 str(gunicorn_conf_tmp_file_path),
                 app_module,
-            ]
+            ],
+            check=False,
         )
 
     @pytest.mark.parametrize(

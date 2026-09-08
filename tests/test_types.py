@@ -56,9 +56,9 @@ def test_uvicorn_options_type_matches_uvicorn_args() -> None:
     """
     options_for_config_only = ("callback_notify", "timeout_notify")
     options_for_run_only = ("app_dir",)
-    inboard_keys = list(sorted(inboard.types.UvicornOptions.__annotations__.keys()))
-    uvicorn_config_keys = list(sorted(uvicorn.Config.__init__.__annotations__.keys()))
-    uvicorn_run_keys = list(sorted(uvicorn.run.__annotations__.keys()))
+    inboard_keys = sorted(inboard.types.UvicornOptions.__annotations__.keys())
+    uvicorn_config_keys = sorted(uvicorn.Config.__init__.__annotations__.keys())
+    uvicorn_run_keys = sorted(uvicorn.run.__annotations__.keys())
     if "return" in uvicorn_run_keys:
         uvicorn_run_keys.remove("return")
     for option in options_for_config_only:

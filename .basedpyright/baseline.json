@@ -46,14 +46,6 @@
         ],
         "./inboard/gunicorn_workers.py": [
             {
-                "code": "reportExplicitAny",
-                "range": {
-                    "startColumn": 29,
-                    "endColumn": 32,
-                    "lineCount": 1
-                }
-            },
-            {
                 "code": "reportAny",
                 "range": {
                     "startColumn": 24,
@@ -1230,6 +1222,14 @@
             {
                 "code": "reportAny",
                 "range": {
+                    "startColumn": 10,
+                    "endColumn": 23,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportAny",
+                "range": {
                     "startColumn": 22,
                     "endColumn": 25,
                     "lineCount": 1
@@ -1240,6 +1240,14 @@
                 "range": {
                     "startColumn": 4,
                     "endColumn": 17,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportAny",
+                "range": {
+                    "startColumn": 20,
+                    "endColumn": 33,
                     "lineCount": 1
                 }
             },
@@ -1272,6 +1280,14 @@
                 "range": {
                     "startColumn": 15,
                     "endColumn": 27,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportAny",
+                "range": {
+                    "startColumn": 30,
+                    "endColumn": 43,
                     "lineCount": 1
                 }
             },

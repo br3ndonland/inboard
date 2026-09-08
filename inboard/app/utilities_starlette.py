@@ -22,19 +22,16 @@ class BasicAuth(AuthenticationBackend):
         """Authenticate a Starlette request with HTTP Basic auth."""
         if "Authorization" not in conn.headers:
             return None
-        try:
-            auth = conn.headers["Authorization"]
-            basic_auth_username = os.getenv("BASIC_AUTH_USERNAME")
-            basic_auth_password = os.getenv("BASIC_AUTH_PASSWORD")
-            if not (basic_auth_username and basic_auth_password):
-                raise AuthenticationError("Server HTTP Basic auth credentials not set")
-            _, credentials = auth.split()
-            decoded = base64.b64decode(credentials).decode("ascii")
-            username, _, password = decoded.partition(":")
-            correct_username = secrets.compare_digest(username, basic_auth_username)
-            correct_password = secrets.compare_digest(password, basic_auth_password)
-            if not (correct_username and correct_password):
-                raise AuthenticationError("HTTP Basic auth credentials not correct")
-            return AuthCredentials(["authenticated"]), SimpleUser(username)
-        except Exception:
-            raise
+        auth = conn.headers["Authorization"]
+        basic_auth_username = os.getenv("BASIC_AUTH_USERNAME")
+        basic_auth_password = os.getenv("BASIC_AUTH_PASSWORD")
+        if not (basic_auth_username and basic_auth_password):
+            raise AuthenticationError("Server HTTP Basic auth credentials not set")
+        _, credentials = auth.split()
+        decoded = base64.b64decode(credentials).decode("ascii")
+        username, _, password = decoded.partition(":")
+        correct_username = secrets.compare_digest(username, basic_auth_username)
+        correct_password = secrets.compare_digest(password, basic_auth_password)
+        if not (correct_username and correct_password):
+            raise AuthenticationError("HTTP Basic auth credentials not correct")
+        return AuthCredentials(["authenticated"]), SimpleUser(username)

@@ -39,6 +39,7 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
         api = FastAPI()
 
+
         @api.get("/")
         def read_root():
             return {"message": "Hello World!"}
@@ -282,7 +283,10 @@ The idea here is to allow a catch-all Uvicorn config variable in the spirit of `
     ```py
     import json
     import os
-    uvicorn_config_dict = dict(host="0.0.0.0", port=80, log_config=None, log_level="info", reload=False)
+
+    uvicorn_config_dict = dict(
+        host="0.0.0.0", port=80, log_config=None, log_level="info", reload=False
+    )
     json.dumps(uvicorn_config_dict)
     # '{"host": "0.0.0.0", "port": 80, "log_config": null, "log_level": "info", "reload": false}'
     os.environ["UVICORN_CONFIG_OPTIONS"] = json.dumps(uvicorn_config_dict)
@@ -299,7 +303,10 @@ The idea here is to allow a catch-all Uvicorn config variable in the spirit of `
     ```py
     import json
     import os
-    os.environ["UVICORN_CONFIG_OPTIONS_INCORRECT"] = '{"access_log": "false", "reload": true}'
+
+    os.environ["UVICORN_CONFIG_OPTIONS_INCORRECT"] = (
+        '{"access_log": "false", "reload": true}'
+    )
     json.loads(os.environ["UVICORN_CONFIG_OPTIONS_INCORRECT"])
     # {'access_log': "false", 'reload': True}
     ```

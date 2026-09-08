@@ -23,11 +23,11 @@ def find_and_load_logging_conf(logging_conf: str) -> DictConfig:
     if not spec:
         raise ImportError(f"Unable to import {logging_conf_path}")
     logging_conf_module = importlib.util.module_from_spec(spec)
-    exec_module = getattr(spec.loader, "exec_module")  # pyright: ignore[reportAny]
+    exec_module = spec.loader.exec_module  # pyright: ignore[reportOptionalMemberAccess]
     exec_module(logging_conf_module)
     if not hasattr(logging_conf_module, "LOGGING_CONFIG"):
         raise AttributeError(f"No LOGGING_CONFIG in {logging_conf_module.__name__}")
-    logging_conf_dict = getattr(logging_conf_module, "LOGGING_CONFIG")  # pyright: ignore[reportAny]
+    logging_conf_dict = logging_conf_module.LOGGING_CONFIG  # pyright: ignore[reportAny]
     if not isinstance(logging_conf_dict, dict):
         raise TypeError("LOGGING_CONFIG is not a dictionary instance")
     return logging_conf_dict  # pyright: ignore[reportReturnType, reportUnknownVariableType]
@@ -69,7 +69,7 @@ class LogFilter(logging.Filter):
     method can produce the set of filters from the environment variable value.
     """
 
-    __slots__: tuple[str, str, str] = "name", "nlen", "filters"
+    __slots__: tuple[str, str, str] = "filters", "name", "nlen"
 
     def __init__(
         self,

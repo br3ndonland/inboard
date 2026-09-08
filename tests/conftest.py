@@ -68,7 +68,7 @@ def client(request: pytest.FixtureRequest) -> TestClient:
     will be automatically parametrized, running once for each fixture parameter.
     https://docs.pytest.org/en/latest/how-to/fixtures.html
     """
-    app = getattr(request, "param")
+    app = request.param
     return TestClient(app)
 
 
@@ -83,7 +83,7 @@ def gunicorn_conf_path(request: pytest.FixtureRequest) -> str:
     will be automatically parametrized, running once for each fixture parameter.
     https://docs.pytest.org/en/latest/how-to/fixtures.html
     """
-    request_param = getattr(request, "param")
+    request_param = request.param
     path = str(request_param)
     if "python:" not in path:
         assert Path(path).is_file()
@@ -198,7 +198,7 @@ def pre_start_script_error(request: pytest.FixtureRequest, tmp_path: Path) -> Pa
     will be automatically parametrized, running once for each fixture parameter.
     https://docs.pytest.org/en/latest/how-to/fixtures.html
     """
-    file_name, file_content = getattr(request, "param")
+    file_name, file_content = request.param
     tmp_file = tmp_path / file_name
     with open(Path(tmp_file), "x") as f:
         _ = f.write(file_content)

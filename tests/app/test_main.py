@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 import sys
+from typing import TYPE_CHECKING
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from starlette.applications import Starlette
+
+if TYPE_CHECKING:
+    from typing import ClassVar
 
 
 class TestCors:
@@ -15,7 +19,7 @@ class TestCors:
     [Starlette CORS docs](https://starlette.dev/middleware/#corsmiddleware).
     """
 
-    origins: dict[str, list[str]] = {
+    origins: ClassVar[dict[str, list[str]]] = {
         "allowed": [
             "http://br3ndon.land",
             "https://br3ndon.land",
@@ -182,7 +186,7 @@ class TestEndpoints:
                 "error": "Incorrect username or password",
             }
         else:  # pragma: no cover
-            raise AssertionError("TestClient should have a FastAPI or Starlette app.")
+            raise TypeError("TestClient should have a FastAPI or Starlette app.")
         assert error_response_json == expected_json
 
     @pytest.mark.parametrize(
@@ -215,7 +219,7 @@ class TestEndpoints:
                 "error": "Incorrect username or password",
             }
         else:  # pragma: no cover
-            raise AssertionError("TestClient should have a FastAPI or Starlette app.")
+            raise TypeError("TestClient should have a FastAPI or Starlette app.")
         assert error_response_json == expected_json
 
     def test_get_status_message(
@@ -238,7 +242,7 @@ class TestEndpoints:
         elif isinstance(client.app, Starlette):
             assert "Starlette" in response_json["message"]
         else:  # pragma: no cover
-            raise AssertionError("TestClient should have a FastAPI or Starlette app.")
+            raise TypeError("TestClient should have a FastAPI or Starlette app.")
 
     def test_get_user(
         self,

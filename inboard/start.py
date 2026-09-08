@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from __future__ import annotations
 
 import importlib.util
@@ -122,7 +121,7 @@ def start_server(
                 if any("uvicorn" in option.casefold() for option in gunicorn_options)
                 else "Running Gunicorn."
             )
-            _ = subprocess.run(gunicorn_options)
+            _ = subprocess.run(gunicorn_options, check=False)
         elif process_manager == "uvicorn":
             logger.debug("Running Uvicorn without Gunicorn.")
             uvicorn_options: UvicornOptions = set_uvicorn_options(

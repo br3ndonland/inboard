@@ -33,6 +33,7 @@ The `LOG_FILTERS` environment variable can be used to specify filters as a comma
 ```py
 import os
 import inboard
+
 os.environ["LOG_FILTERS"] = "/health, /heartbeat"
 inboard.LogFilter.set_filters()
 # {'/heartbeat', '/health'}
@@ -142,7 +143,6 @@ If the inboard Python package is installed from PyPI, the logging configuration 
     LOGGING_CONFIG["loggers"]["boto3"] = {"propagate": False}
     LOGGING_CONFIG["loggers"]["botocore"] = {"propagate": False}
     LOGGING_CONFIG["loggers"]["s3transfer"] = {"propagate": False}
-
     ```
 
 ## Overriding the logging config
@@ -214,7 +214,6 @@ Want to override inboard's entire logging config? No problem. Set up a separate 
         # Format all propagated logs with uvicorn.default
         "root": {"handlers": ["default"], "level": "INFO"},
     }
-
     ```
 
 ## Design decisions

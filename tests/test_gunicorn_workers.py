@@ -248,14 +248,14 @@ def gunicorn_process(
     with (
         httpxyz.Client(base_url=base_url, transport=transport) as client,
         tempfile.TemporaryFile() as output,
+        Process(args, client=client, output=output) as process,
     ):
-        with Process(args, client=client, output=output) as process:
-            time.sleep(2)
-            assert process.poll() is None
-            yield process
-            process.terminate()
-            _ = process.wait(timeout=5)
-            assert process.poll() is not None
+        time.sleep(2)
+        assert process.poll() is None
+        yield process
+        process.terminate()
+        _ = process.wait(timeout=5)
+        assert process.poll() is not None
 
 
 @pytest.fixture(
@@ -321,14 +321,14 @@ def gunicorn_uvicorn_process_with_unhandled_exception(
     with (
         httpxyz.Client(base_url=base_url, transport=transport) as client,
         tempfile.TemporaryFile() as output,
+        Process(args, client=client, output=output) as process,
     ):
-        with Process(args, client=client, output=output) as process:
-            time.sleep(2)
-            assert process.poll() is None
-            yield process
-            process.terminate()
-            _ = process.wait(timeout=5)
-            assert process.poll() is not None
+        time.sleep(2)
+        assert process.poll() is None
+        yield process
+        process.terminate()
+        _ = process.wait(timeout=5)
+        assert process.poll() is not None
 
 
 @pytest.fixture
@@ -361,12 +361,12 @@ def gunicorn_process_with_lifespan_startup_failure(
     with (
         httpxyz.Client(base_url=base_url, verify=verify) as client,
         tempfile.TemporaryFile() as output,
+        Process(args, client=client, output=output) as process,
     ):
-        with Process(args, client=client, output=output) as process:
-            time.sleep(2)
-            yield process
-            process.terminate()
-            _ = process.wait(timeout=5)
+        time.sleep(2)
+        yield process
+        process.terminate()
+        _ = process.wait(timeout=5)
 
 
 @pytest.mark.parametrize("signal_to_send", gunicorn_arbiter.Arbiter.SIGNALS)

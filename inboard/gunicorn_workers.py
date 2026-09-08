@@ -32,7 +32,7 @@ import asyncio
 import logging
 import signal
 import sys
-from typing import Any
+from typing import Any, ClassVar
 
 from gunicorn.arbiter import Arbiter
 from gunicorn.workers.base import Worker
@@ -46,7 +46,7 @@ class UvicornWorker(Worker):
     rather than a WSGI callable.
     """
 
-    CONFIG_KWARGS: dict[str, Any] = {"loop": "auto", "http": "auto"}
+    CONFIG_KWARGS: ClassVar[dict[str, str]] = {"loop": "auto", "http": "auto"}
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -131,4 +131,4 @@ class UvicornWorker(Worker):
 
 
 class UvicornH11Worker(UvicornWorker):
-    CONFIG_KWARGS: dict[str, str] = {"loop": "asyncio", "http": "h11"}
+    CONFIG_KWARGS: ClassVar[dict[str, str]] = {"loop": "asyncio", "http": "h11"}
