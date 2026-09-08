@@ -4,6 +4,48 @@ icon: lucide/clipboard-clock
 
 # Changelog
 
+## 0.98.0 - 2026-09-07
+
+### Changes
+
+**Propagate Gunicorn Uvicorn worker logs** (#156,
+02d775a009cf7116241fa1cd854ad7b2b2b3719f)
+
+The Uvicorn worker class originally disabled propagation because it
+resulted in duplicate logs if enabled (encode/uvicorn#614,
+encode/uvicorn#623). As the
+[docs](https://docs.python.org/3/library/logging.html#logging.Logger.propagate)
+on `logging.Logger.propagate` explain, "If you attach a handler to a
+logger _and_ one or more of its ancestors, it may emit the same record
+multiple times."
+
+Instead of disabling propagation and keeping Gunicorn handlers set on
+the logger, another solution is to remove the Gunicorn handlers and
+enable propagation so the root logger can manage all logs. This would be
+closer to the intent expressed in the current
+[logging docs](https://inboard.bws.bio/logging#design-decisions):
+"Uvicorn, Gunicorn, and FastAPI log streams are propagated to the root
+logger, and handled by the custom root logging config."
+
+This release will update the Gunicorn Uvicorn worker to remove handlers
+from `uvicorn.error` and `uvicorn.access` and instead propagate those
+log records to the root logger. This will avoid duplicate records and
+ensure the root handler applies the configured formatter and filters.
+
+Thanks to @bodograumann for pointing this out in the related discussion
+([br3ndonland/inboard#131](https://github.com/br3ndonland/inboard/discussions/131)).
+
+### Commits
+
+- Bump version from 0.97.0 to 0.98.0 (ea0978c)
+- Enable Zensical strict mode (8cd6923)
+- Update to Zensical 0.0.59 (4677c41)
+- Update to BasedPyright 1.40 (715db63)
+- Update to Ruff 0.16 (8c5a67a)
+- Propagate Gunicorn Uvicorn worker logs (#156) (02d775a)
+- Remove GitHub PAT from Docker cleanup job (68ceb47)
+- Update changelog for version 0.97.0 (#155) (3e87278)
+
 ## 0.97.0 - 2026-07-29
 
 ### Changes
