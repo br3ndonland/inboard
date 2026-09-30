@@ -13,7 +13,7 @@ if TYPE_CHECKING:
         HTTPProtocolType,
         InterfaceType,
         LifespanType,
-        LoopSetupType,
+        LoopFactoryType,
         WSProtocolType,
     )
 
@@ -121,8 +121,9 @@ class UvicornOptions(TypedDict, total=False):
     port: int
     uds: str | None
     fd: int | None
-    loop: LoopSetupType
+    loop: LoopFactoryType
     http: type[Protocol] | HTTPProtocolType
+    http2: bool
     ws: type[Protocol] | WSProtocolType
     ws_max_queue: int
     ws_max_size: int
@@ -149,8 +150,10 @@ class UvicornOptions(TypedDict, total=False):
     limit_concurrency: int | None
     backlog: int
     limit_max_requests: int | None
+    limit_max_requests_jitter: int
     timeout_keep_alive: int
     timeout_graceful_shutdown: int | None
+    timeout_worker_healthcheck: int
     ssl_keyfile: str | None
     ssl_certfile: str | PathLike[str] | None
     ssl_keyfile_password: str | None
@@ -158,8 +161,10 @@ class UvicornOptions(TypedDict, total=False):
     ssl_cert_reqs: int
     ssl_ca_certs: str | None
     ssl_ciphers: str
+    ssl_context_factory: Any
     headers: list[tuple[str, str]] | None
     use_colors: bool | None
     app_dir: str | None
     factory: bool
     h11_max_incomplete_event_size: int
+    reset_contextvars: bool

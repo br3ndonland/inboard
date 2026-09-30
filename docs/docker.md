@@ -193,6 +193,11 @@ Details on the `docker run` command:
     - `LOG_LEVEL`
     - `RELOAD_DIRS`
     - `WITH_RELOAD`
+
+When Uvicorn runs without Gunicorn, Uvicorn re-raises SIGTERM after graceful
+shutdown. A container stopped with SIGTERM therefore exits with status 143,
+which indicates that the process received signal 15 after completing its
+shutdown.
 - `-v $(pwd)/package:/app/package`: the specified directory (`/path/to/repo/package` in this example) will be [mounted as a volume](https://docs.docker.com/engine/reference/run/#volume-shared-filesystems) inside of the container at `/app/package`. When files in the working directory change, Docker and Uvicorn will sync the files to the running Docker container.
 
 ## Docker and Hatch

@@ -31,10 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import asyncio
 import logging
 import signal
-import sys
 from typing import Any, ClassVar
 
-from gunicorn.arbiter import Arbiter
 from gunicorn.workers.base import Worker
 from uvicorn.config import Config
 from uvicorn.server import Server
@@ -91,16 +89,20 @@ class UvicornWorker(Worker):
         self.config: Config = Config(**config_kwargs)
 
     def init_process(self) -> None:
-        self.config.setup_event_loop()
         super().init_process()
 
     def init_signals(self) -> None:
         # Reset signals so Gunicorn doesn't swallow subprocess return codes
-        # other signals are set up by Server.install_signal_handlers()
+        # Uvicorn's Server.capture_signals() sets up SIGTERM and SIGINT.
         # See: https://github.com/encode/uvicorn/issues/894
         for s in self.SIGNALS:
             _ = signal.signal(s, signal.SIG_DFL)
 
+        # Uvicorn restores and re-raises captured signals after graceful
+        # shutdown. Use Gunicorn's non-terminating worker handlers so the
+        # worker can return through the arbiter and run atexit handlers.
+        _ = signal.signal(signal.SIGTERM, self.handle_exit)
+        _ = signal.signal(signal.SIGINT, self.handle_quit)
         _ = signal.signal(signal.SIGUSR1, self.handle_usr1)
         # Don't let SIGUSR1 disturb active requests by interrupting system calls
         signal.siginterrupt(signal.SIGUSR1, False)
@@ -120,11 +122,10 @@ class UvicornWorker(Worker):
         server = Server(config=self.config)
         self._install_sigquit_handler()
         await server.serve(sockets=self.sockets)
-        if not server.started:
-            sys.exit(Arbiter.WORKER_BOOT_ERROR)
 
     def run(self) -> None:
-        return asyncio.run(self._serve())
+        with asyncio.Runner(loop_factory=self.config.get_loop_factory()) as runner:
+            return runner.run(self._serve())
 
     async def callback_notify(self) -> None:
         self.notify()
