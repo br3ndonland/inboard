@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import asyncio
+import atexit
 import contextlib
+import os
+import re
 import signal
 import socket
 import ssl
@@ -46,17 +50,41 @@ class Process(subprocess.Popen[str]):
     def __init__(
         self, args: list[str], *, client: httpxyz.Client, output: IO[bytes]
     ) -> None:
-        super().__init__(args, stdout=output, stderr=output)
+        super().__init__(args, stdout=output, stderr=output, start_new_session=True)
         self.client = client
         self.output = output
+
+    def terminate(self) -> None:
+        """Stop the Gunicorn master and its descendants with SIGTERM.
+
+        Each Process instance starts in its own process group. Gunicorn's SIGUSR2
+        upgrade starts a new master and its workers alongside the original master.
+        Signal the whole group so those new processes cannot outlive test teardown.
+        The group may already be gone if the test shut down the server itself.
+        """
+        with contextlib.suppress(ProcessLookupError):
+            os.killpg(self.pid, signal.SIGTERM)
 
     def read_output(self) -> str:
         _ = self.output.seek(0)
         return self.output.read().decode()
 
 
-async def app(scope: Scope, _: ASGIReceiveCallable, send: ASGISendCallable) -> None:
-    """An ASGI app for testing requests to Gunicorn workers."""
+async def app(
+    scope: Scope, receive: ASGIReceiveCallable, send: ASGISendCallable
+) -> None:
+    """An ASGI app for testing requests and worker shutdown."""
+    if scope["type"] == "lifespan":
+        assert (await receive())["type"] == "lifespan.startup"
+        pid = os.getpid()
+        _ = atexit.register(print, f"Interpreter exit: {pid}", flush=True)
+        print(f"Event loop: {type(asyncio.get_running_loop()).__module__}", flush=True)
+        await send({"type": "lifespan.startup.complete"})
+        assert (await receive())["type"] == "lifespan.shutdown"
+        print(f"Lifespan shutdown: {pid}", flush=True)
+        await send({"type": "lifespan.shutdown.complete"})
+        return
+
     assert scope["type"] == "http"
     start_event: HTTPResponseStartEvent = {
         "type": "http.response.start",
@@ -334,6 +362,7 @@ def gunicorn_uvicorn_process_with_unhandled_exception(
 @pytest.fixture
 def gunicorn_process_with_lifespan_startup_failure(
     unused_tcp_port: int,
+    worker_class_uvicorn: str,
 ) -> Generator[Process, None, None]:
     """Yield a subprocess running a Gunicorn arbiter with a Uvicorn worker.
 
@@ -351,7 +380,7 @@ def gunicorn_process_with_lifespan_startup_failure(
         "--log-level",
         "debug",
         "--worker-class",
-        "inboard.gunicorn_workers.UvicornWorker",
+        worker_class_uvicorn,
         "--workers",
         "1",
         app_module,
@@ -416,13 +445,14 @@ def test_uvicorn_worker_boot_error(
 
     When a worker exits with `Arbiter.WORKER_BOOT_ERROR`, the Gunicorn arbiter will
     also terminate, so there is no need to send a separate signal to the arbiter.
+    Uvicorn now exits directly with this same status (3) on startup failure.
 
     [#1066]: https://github.com/encode/uvicorn/issues/1066
     [#1077]: https://github.com/encode/uvicorn/pull/1077
     """
     output_text = gunicorn_process_with_lifespan_startup_failure.read_output()
-    _ = gunicorn_process_with_lifespan_startup_failure.wait(timeout=5)
-    assert gunicorn_process_with_lifespan_startup_failure.poll() is not None
+    assert gunicorn_process_with_lifespan_startup_failure.wait(timeout=5) == 3
+    assert output_text.count("Booting worker with pid:") == 1
     assert "Worker failed to boot" in output_text
 
 
@@ -467,3 +497,98 @@ def test_worker_get_request(gunicorn_process: Process) -> None:
     assert response.status_code == 204
     assert "gunicorn" in output_text
     assert "Listening" in output_text
+
+
+@pytest.mark.subprocess
+@pytest.mark.timeout(60)
+@pytest.mark.parametrize(
+    "worker_class",
+    [
+        "inboard.gunicorn_workers.UvicornWorker",
+        "inboard.gunicorn_workers.UvicornH11Worker",
+    ],
+)
+@pytest.mark.parametrize(
+    "signal_to_send", [signal.SIGTERM, signal.SIGINT, signal.SIGQUIT]
+)
+def test_uvicorn_worker_signal_shutdown(
+    gunicorn_process: Process, worker_class: str, signal_to_send: signal.Signals
+) -> None:
+    """Test worker shutdown, cleanup, and replacement after operating system signals.
+
+    SIGTERM and SIGINT must finish ASGI lifespan shutdown before Python exit hooks
+    run. SIGQUIT requests a quick exit, but must still run Gunicorn cleanup and
+    Python exit hooks. The master must replace the worker and keep serving requests.
+
+    Close each HTTP connection before signaling the worker. Otherwise, a pooled TLS
+    connection can wait for the client to complete the TLS close_notify handshake
+    beyond the fixture's shutdown timeout. Closing completed connections keeps this
+    test focused on signal handling rather than waiting for client connections.
+    """
+    headers = {"Connection": "close"}
+    assert gunicorn_process.client.get("/", headers=headers).status_code == 204
+    output = gunicorn_process.read_output()
+    expected_loop = "asyncio" if worker_class.endswith("H11Worker") else "uvloop"
+    assert f"Event loop: {expected_loop}" in output
+    worker_pids: list[str] = re.findall(r"Booting worker with pid: (\d+)", output)
+    assert len(worker_pids) == 1
+    worker_pid = int(worker_pids[0])
+    os.kill(worker_pid, signal_to_send)
+
+    # Gunicorn reaps the exiting worker before booting its replacement.
+    deadline = time.monotonic() + 5
+    while output.count("Booting worker with pid:") < 2 and time.monotonic() < deadline:
+        time.sleep(0.05)
+        output = gunicorn_process.read_output()
+    assert output.count("Booting worker with pid:") == 2, output
+    with pytest.raises(ProcessLookupError):
+        os.kill(worker_pid, 0)
+    assert f"Worker exiting (pid: {worker_pid})" in output
+    assert f"Interpreter exit: {worker_pid}" in output
+    assert "was sent SIG" not in output
+    if signal_to_send != signal.SIGQUIT:
+        assert output.index(f"Lifespan shutdown: {worker_pid}") < output.index(
+            f"Interpreter exit: {worker_pid}"
+        )
+
+    # The master still serves requests after replacing the signaled worker.
+    assert gunicorn_process.client.get("/", headers=headers).status_code == 204
+    worker_pids = re.findall(r"Booting worker with pid: (\d+)", output)
+    replacement_pid = int(worker_pids[1])
+    gunicorn_process.send_signal(signal.SIGTERM)
+    assert gunicorn_process.wait(timeout=5) == 0
+    output = gunicorn_process.read_output()
+    assert f"Lifespan shutdown: {replacement_pid}" in output
+    assert f"Interpreter exit: {replacement_pid}" in output
+    with pytest.raises(ProcessLookupError):
+        os.kill(replacement_pid, 0)
+
+
+def test_gunicorn_process_terminate_reexec(gunicorn_process: Process) -> None:
+    """Test that teardown stops both masters after a Gunicorn SIGUSR2 upgrade.
+
+    Gunicorn uses SIGUSR2 to upgrade a running server without interrupting service.
+    It starts a new master process, which starts its own workers, while the original
+    master and workers remain running. This new master is the replacement master.
+    Stopping only the original master leaves the replacement and its workers alive.
+
+    Start a replacement, then verify that Process.terminate() stops both masters.
+    This guards against test processes surviving teardown and writing coverage
+    files after the test suite has finished.
+    """
+    gunicorn_process.send_signal(signal.SIGUSR2)
+    deadline = time.monotonic() + 5
+    output = gunicorn_process.read_output()
+    while output.count("Booting worker with pid:") < 2 and time.monotonic() < deadline:
+        time.sleep(0.05)
+        output = gunicorn_process.read_output()
+    assert output.count("Booting worker with pid:") == 2, output
+
+    gunicorn_process.terminate()
+    assert gunicorn_process.wait(timeout=5) == 0
+    deadline = time.monotonic() + 5
+    output = gunicorn_process.read_output()
+    while output.count("Shutting down: Master") < 2 and time.monotonic() < deadline:
+        time.sleep(0.05)
+        output = gunicorn_process.read_output()
+    assert output.count("Shutting down: Master") == 2, output

@@ -24,7 +24,7 @@ classifiers = [
 ]
 dependencies = [
   "gunicorn>=26,<27",
-  "uvicorn==0.28.1",
+  "uvicorn==0.54.0",
 ]
 dynamic = ["version"]
 
@@ -51,7 +51,7 @@ uvicorn-fast = [
   "websockets>=10.4",
 ]
 uvicorn-standard = [
-  "uvicorn[standard]==0.28.1",
+  "uvicorn[standard]==0.54.0",
 ]
 
 [dependency-groups]

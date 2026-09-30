@@ -4,16 +4,18 @@ from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
 if TYPE_CHECKING:
     from asyncio import Protocol
-    from collections.abc import Sequence
+    from collections.abc import Callable, Sequence
     from os import PathLike
+    from ssl import SSLContext
     from typing import Required
 
     from uvicorn._types import ASGIApplication
     from uvicorn.config import (
+        Config,
         HTTPProtocolType,
         InterfaceType,
         LifespanType,
-        LoopSetupType,
+        LoopFactoryType,
         WSProtocolType,
     )
 
@@ -121,9 +123,10 @@ class UvicornOptions(TypedDict, total=False):
     port: int
     uds: str | None
     fd: int | None
-    loop: LoopSetupType
-    http: type[Protocol] | HTTPProtocolType
-    ws: type[Protocol] | WSProtocolType
+    loop: LoopFactoryType | str
+    http: type[Protocol] | HTTPProtocolType | str
+    http2: bool
+    ws: type[Protocol] | WSProtocolType | str
     ws_max_queue: int
     ws_max_size: int
     ws_ping_interval: float | None
@@ -149,17 +152,21 @@ class UvicornOptions(TypedDict, total=False):
     limit_concurrency: int | None
     backlog: int
     limit_max_requests: int | None
+    limit_max_requests_jitter: int
     timeout_keep_alive: int
     timeout_graceful_shutdown: int | None
-    ssl_keyfile: str | None
+    timeout_worker_healthcheck: int
+    ssl_keyfile: str | PathLike[str] | None
     ssl_certfile: str | PathLike[str] | None
     ssl_keyfile_password: str | None
     ssl_version: int
     ssl_cert_reqs: int
-    ssl_ca_certs: str | None
-    ssl_ciphers: str
+    ssl_ca_certs: str | PathLike[str] | None
+    ssl_ciphers: str | None
+    ssl_context_factory: Callable[[Config, Callable[[], SSLContext]], SSLContext] | None
     headers: list[tuple[str, str]] | None
     use_colors: bool | None
     app_dir: str | None
     factory: bool
-    h11_max_incomplete_event_size: int
+    h11_max_incomplete_event_size: int | None
+    reset_contextvars: bool
