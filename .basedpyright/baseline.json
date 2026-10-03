@@ -558,10 +558,42 @@
                 }
             },
             {
-                "code": "reportImplicitOverride",
+                "code": "reportAny",
                 "range": {
-                    "startColumn": 8,
-                    "endColumn": 20,
+                    "startColumn": 39,
+                    "endColumn": 52,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportAny",
+                "range": {
+                    "startColumn": 39,
+                    "endColumn": 52,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportAny",
+                "range": {
+                    "startColumn": 39,
+                    "endColumn": 52,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportAny",
+                "range": {
+                    "startColumn": 39,
+                    "endColumn": 52,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportAny",
+                "range": {
+                    "startColumn": 39,
+                    "endColumn": 52,
                     "lineCount": 1
                 }
             },
@@ -1346,6 +1378,14 @@
                 "range": {
                     "startColumn": 0,
                     "endColumn": 24,
+                    "lineCount": 1
+                }
+            },
+            {
+                "code": "reportImplicitOverride",
+                "range": {
+                    "startColumn": 8,
+                    "endColumn": 17,
                     "lineCount": 1
                 }
             },

@@ -106,6 +106,38 @@ ENV APP_MODULE="package.custom.module:api" WORKERS_PER_CORE="2"
 
     Uvicorn, on the other hand, stopped supporting their ASGI worker and deprecated the workers module in version 0.30.0. It is now available here at `inboard.gunicorn_workers`.
 
+### Shutdown signals
+
+Send `SIGTERM` to the Gunicorn master for graceful shutdown. Gunicorn forwards it to workers and waits up to `GRACEFUL_TIMEOUT` before killing workers that have not exited. `SIGINT` and `SIGQUIT` sent to the master request quick shutdown instead. See [Gunicorn signal handling](https://gunicorn.org/signals/).
+
+Starting in Uvicorn 0.29, [`Server.capture_signals()`](https://github.com/Kludex/uvicorn/blob/0.54.0/uvicorn/server.py#L331-L356) temporarily handles `SIGINT` and `SIGTERM`, shuts down the ASGI server, restores the previous handlers, and raises the captured signals again in reverse order. Previously, Uvicorn consumed these signals without replaying them. This change was introduced in [encode/uvicorn#1600](https://github.com/encode/uvicorn/pull/1600).
+
+The [inboard 0.72.0 changelog](changelog.md#0720-2025-01-10) describes a problem that kept inboard on Uvicorn 0.28.1: after upgrading Uvicorn, HTTP request tests still passed, but coverage.py reported that the worker's request-handling code had not run. The code had run, but its coverage data was lost when the worker exited.
+
+The reset to default signal handlers came from [Uvicorn's Gunicorn worker](https://github.com/Kludex/uvicorn/blob/f73b8beeb1499ca5fcec3067cf89dad5326a0984/uvicorn/workers.py#L70-L79), not an inboard-specific change. Uvicorn introduced it in December 2020 in [encode/uvicorn#895](https://github.com/encode/uvicorn/pull/895) to fix [encode/uvicorn#894](https://github.com/encode/uvicorn/issues/894): Gunicorn's inherited `SIGCHLD` handler could cause application subprocesses to report incorrect return codes. Inboard [preserved this reset when copying the Uvicorn worker code](https://github.com/br3ndonland/inboard/blob/35d8d86fef91a9f27eb97932d01addb3aecc66e6/inboard/gunicorn_workers.py#L97-L106) in December 2024.
+
+Uvicorn 0.29's signal replay interacted with that existing reset. When Uvicorn restored the default handlers and replayed a shutdown signal, the operating system terminated the worker without running Gunicorn's `worker_exit` hook or Python's `atexit` hooks. Coverage.py normally uses a Python exit hook to save the data it collected, so skipping that hook left the worker's activity out of the coverage report.
+
+Inboard retains the inherited reset to avoid the original subprocess return-code problem, then installs explicit Gunicorn handlers for `SIGTERM` and `SIGINT`. These handlers allow worker cleanup and Python exit hooks to run when Uvicorn replays the signals.
+
+Coverage.py also offers a `sigterm` option that installs a handler to save data when a process receives `SIGTERM`. That option alone did not solve this problem: inboard's worker initialization reset `SIGTERM` to its default, leaving Uvicorn with no coverage.py handler to restore after ASGI shutdown.
+
+Signals sent directly to a Uvicorn worker have these effects:
+
+- `SIGTERM`: finish ASGI shutdown, then return through Gunicorn's normal worker cleanup.
+- `SIGINT`: finish ASGI shutdown, then run Gunicorn's quit handler. A repeated `SIGINT` can force Uvicorn to stop waiting for graceful shutdown.
+- `SIGQUIT`: run Gunicorn's quick-exit handler without waiting for ASGI shutdown. Merely setting Gunicorn's `alive` flag is insufficient because Uvicorn runs its own server loop.
+
+When running Uvicorn alone (`PROCESS_MANAGER="uvicorn"`), upstream signal replay behavior is unchanged. A graceful ASGI shutdown can still end with a signal-derived process exit status rather than zero.
+
+Applications remain responsible for stopping and joining their own child processes during lifespan shutdown. There is a separate signal-handling hazard when an application uses `fork` to create a child while Uvicorn is running. The child starts with a copy of the parent's memory, including Uvicorn's installed signal handlers.
+
+If that child receives `SIGTERM`, the inherited `Server.handle_exit` handler does not terminate it. Instead, it records a request to stop on the child's copy of the Uvicorn server object. In the parent process, Uvicorn's server loop checks for that request and begins shutdown. But the child is doing the application's work, not running Uvicorn's server loop. Nothing checks the stop request, so the child can keep running even after the parent server shuts down. This is why calling `terminate()` on such a child may not stop it.
+
+Use the multiprocessing `spawn` start method, which starts a fresh Python interpreter rather than copying the running parent's handlers, or reset signal handlers in the child before starting its work. The application must still stop its children and wait for them to exit. See the [fork-versus-spawn findings in encode/uvicorn#2289](https://github.com/encode/uvicorn/issues/2289#issuecomment-2058411006).
+
+[Uvicorn's subprocess fix in 0.30](https://github.com/encode/uvicorn/pull/2317) suppresses expected `KeyboardInterrupt` tracebacks in Uvicorn-managed subprocesses. It is not a confirmed fix for application-owned fork children and does not fix Gunicorn worker exit hooks.
+
 ### Worker process calculation
 
 !!! info
