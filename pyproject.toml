@@ -60,7 +60,7 @@ checks = [
   "ruff>=0.16,<0.17",
 ]
 docs = [
-  "zensical==0.0.59",
+  "zensical==0.0.68",
 ]
 tests = [
   "coverage[toml]>=7.10,<8",
