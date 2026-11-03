@@ -4,6 +4,29 @@ icon: lucide/clipboard-clock
 
 # Changelog
 
+## 0.101.0 - 2026-11-02
+
+### Changes
+
+**Update to FastAPI 0.146** (c2c669f10adf7c7399232505fd617fee7841e43f)
+
+This release will update/upgrade to
+[FastAPI 0.146](https://fastapi.tiangolo.com/release-notes/). FastAPI
+0.144-0.146 are grouped together because they update security
+dependencies and application configuration.
+
+FastAPI 0.144 adds WebSocket support to security dependencies. FastAPI
+0.145 removes the deprecated `openapi_prefix` and unused extra keyword
+arguments from `FastAPI()`. FastAPI 0.146 deprecates the `root_path`
+argument to `FastAPI()`. Configure the ASGI server's root path instead.
+
+### Commits
+
+- Bump version from 0.100.0 to 0.101.0 (7b9a8c8)
+- Update to FastAPI 0.146 (c2c669f)
+- Update to Ruff 0.17 (4ac5234)
+- Update changelog for version 0.100.0 (#161) (5a21608)
+
 ## 0.100.0 - 2026-11-02
 
 ### Changes
