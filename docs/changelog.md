@@ -4,6 +4,36 @@ icon: lucide/clipboard-clock
 
 # Changelog
 
+## 0.100.0 - 2026-11-02
+
+### Changes
+
+**Update to FastAPI 0.143** (c5bd8d8dc33f9ffe55ef0c0a625fad054b0f901e)
+
+This release will update/upgrade to
+[FastAPI 0.143](https://fastapi.tiangolo.com/release-notes/). FastAPI
+0.141-0.143 are grouped together because they introduce native
+OpenTelemetry support and provide subsequent fixes.
+
+FastAPI 0.143 makes automatic OpenTelemetry exporter configuration
+opt-in. To configure exporters from `OTEL_*` environment variables, set
+`FASTAPI_OTEL_AUTO_CONFIGURE=true` or pass
+`telemetry={"auto_configure": True}` to `FastAPI()`. Applications that
+configure their own providers and exporters do not need this setting.
+
+FastAPI 0.141 also adds `app.frontend(check_dir="auto")` for local
+development. The included patch releases fix frontend behavior,
+streaming, and other issues.
+
+### Commits
+
+- Bump version from 0.99.0 to 0.100.0 (4f32e13)
+- Update to FastAPI 0.143 (c5bd8d8)
+- Relax the contributing guidelines for releases (80be45b)
+- Update to pipx 1.18 (3aa5d0d)
+- Update to `pypa/gh-action-pypi-publish@v1.14.3` (6deeeb4)
+- Update changelog for version 0.99.0 (#160) (ceb11c9)
+
 ## 0.99.0 - 2026-10-10
 
 ### Changes
