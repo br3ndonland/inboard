@@ -57,7 +57,7 @@ uvicorn-standard = [
 [dependency-groups]
 checks = [
   "basedpyright>=1.40,<1.41",
-  "ruff>=0.16,<0.17",
+  "ruff>=0.17,<0.18",
 ]
 docs = [
   "zensical==0.0.68",
