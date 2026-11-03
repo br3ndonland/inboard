@@ -249,7 +249,7 @@ Spell check is performed with [CSpell](https://cspell.org/). The CSpell command 
 
 ### Releases
 
-- **Each minor version release of FastAPI or Uvicorn should get its own corresponding minor version release of inboard.** FastAPI depends on Starlette, so any updates to the Starlette version required by FastAPI should be included with updates to the FastAPI version.
+- **Each minor version release of FastAPI or Uvicorn typically gets its own corresponding minor version release of inboard.** FastAPI depends on Starlette, so any updates to the Starlette version required by FastAPI should be included with updates to the FastAPI version. This is a guideline and not a rule. For example, there may be several FastAPI releases in a row that all relate to the same feature, and those could all be batched together in one inboard release.
 - **To create a release:**
     - Bump the version number in `inboard.__version__` with `hatch version` and commit the changes to `develop`.
         - Follow [SemVer](https://semver.org/) guidelines when choosing a version number. Note that [PEP 440](https://peps.python.org/pep-0440/) Python version specifiers and SemVer version specifiers differ, particularly with regard to specifying prereleases. Use syntax compatible with both.
