@@ -4,11 +4,58 @@ icon: lucide/clipboard-clock
 
 # Changelog
 
+## 0.102.0 - 2026-11-05
+
+### Changes
+
+**Update to FastAPI 0.162** (5e7d404cfa6741514384bc494fb7bb032d49a0f0)
+
+This release will update/upgrade to
+[FastAPI 0.162](https://fastapi.tiangolo.com/release-notes/). FastAPI
+0.147-0.162 are grouped together because they revise request validation
+and add support for combining and using optional parameter models.
+
+These releases include **BREAKING CHANGES** to request handling:
+
+- FastAPI 0.148: Defaults for omitted query, header, cookie, and form
+  parameters are no longer treated as user input or validated by
+  default. Use `validate_default=True` if validation is needed.
+- FastAPI 0.149-0.150: Empty scalar fields in form models and unselected
+  browser file inputs are treated as missing. Required fields can
+  therefore produce validation errors. Named zero-byte files remain
+  valid.
+- FastAPI 0.151: JSON `null` is distinguished from an omitted body
+  value. Clients relying on `null` to select a default should omit the
+  value instead.
+- FastAPI 0.155: Deprecated extra keyword arguments have been removed
+  from request parameter functions such as `Query()` and `Body()`. Use
+  `json_schema_extra` for additional JSON Schema properties.
+- FastAPI 0.160: A parameter model's `extra` configuration now applies
+  to all submitted fields at the same location, including fields
+  declared by other parameters or dependencies. For example,
+  `extra="forbid"` can reject those sibling fields.
+- FastAPI 0.162: Omitted boolean form fields use their declared defaults
+  or produce missing-field errors. For an HTML checkbox that should
+  default to `False`, declare that default explicitly. FastAPI 0.162
+  restores this behavior after 0.147 temporarily inferred `False`.
+
+These releases also add support for combining query, header, cookie, and
+form models, as well as optional parameter models and unions of form
+models. See the
+[FastAPI release notes](https://fastapi.tiangolo.com/release-notes/) to
+evaluate the changes against existing applications.
+
+### Commits
+
+- Bump version from 0.101.0 to 0.102.0 (847151d)
+- Update to FastAPI 0.162 (5e7d404)
+- Update changelog for version 0.101.0 (#162) (ead0022)
+
 ## 0.101.0 - 2026-11-02
 
 ### Changes
 
-**Update to FastAPI 0.146** (c2c669f10adf7c7399232505fd617fee7841e43f)
+**Update to FastAPI 0.146** (e4ef15bf7988b213e6a159f52837a43121bd40ea)
 
 This release will update/upgrade to
 [FastAPI 0.146](https://fastapi.tiangolo.com/release-notes/). FastAPI
@@ -22,10 +69,10 @@ argument to `FastAPI()`. Configure the ASGI server's root path instead.
 
 ### Commits
 
-- Bump version from 0.100.0 to 0.101.0 (7b9a8c8)
-- Update to FastAPI 0.146 (c2c669f)
-- Update to Ruff 0.17 (4ac5234)
-- Update changelog for version 0.100.0 (#161) (5a21608)
+- Bump version from 0.100.0 to 0.101.0 (4bb44ed)
+- Update to FastAPI 0.146 (e4ef15b)
+- Update to Ruff 0.17 (d1cd9db)
+- Update changelog for version 0.100.0 (#161) (bbd09ef)
 
 ## 0.100.0 - 2026-11-02
 
@@ -50,7 +97,7 @@ streaming, and other issues.
 
 ### Commits
 
-- Bump version from 0.99.0 to 0.100.0 (4f32e13)
+- Bump version from 0.99.0 to 0.100.0 (7c0da6d)
 - Update to FastAPI 0.143 (c5bd8d8)
 - Relax the contributing guidelines for releases (80be45b)
 - Update to pipx 1.18 (3aa5d0d)
