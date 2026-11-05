@@ -465,6 +465,8 @@ jobs:
           # actually fixed in Gunicorn 22.0.0 and described in the changelog
           # for inboard 0.68.0. This step removes the duplicate info.
           # https://github.com/br3ndonland/inboard/pull/117
+          #
+          # This step also fixes a few commit IDs that were omitted or amended.
 
           ESCAPE_DUNDERS='s:(\s|\/)(__)(all|init|token)(__)(\s|\.py|\(\)){0,1}:\1\\_\\_\3\\_\\_\5:g'
           REPLACEMENT='There are several breaking changes noted in the\n[Gunicorn changelog](https://gunicorn.org/news/).'
@@ -478,6 +480,12 @@ jobs:
           sed -Ei -z "s|\n\n\n||g" "docs/changelog.md"
           sed -Ei "s|because that the|because the|g" "docs/changelog.md"
           sed -Ei "s|Update to FastAPI 0.132$|**Update to FastAPI 0.132** (78d137c30911901aaa6faf50d522a11a3b3988d7)|g" "docs/changelog.md"
+          sed -Ei "s|4f32e13|7c0da6d|g" "docs/changelog.md"
+          sed -Ei "s|5a21608|bbd09ef|g" "docs/changelog.md"
+          sed -Ei "s|4ac5234|d1cd9db|g" "docs/changelog.md"
+          sed -Ei "s|c2c669f10adf7c7399232505fd617fee7841e43f|e4ef15bf7988b213e6a159f52837a43121bd40ea|g" "docs/changelog.md"
+          sed -Ei "s|c2c669f|e4ef15b|g" "docs/changelog.md"
+          sed -Ei "s|7b9a8c8|4bb44ed|g" "docs/changelog.md"
       - name: Format changelog with Prettier
         run: npx -s -y prettier@'^3' --write docs/changelog.md
       - name: Set PR and commit title

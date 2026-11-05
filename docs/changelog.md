@@ -55,7 +55,7 @@ evaluate the changes against existing applications.
 
 ### Changes
 
-**Update to FastAPI 0.146** (c2c669f10adf7c7399232505fd617fee7841e43f)
+**Update to FastAPI 0.146** (e4ef15bf7988b213e6a159f52837a43121bd40ea)
 
 This release will update/upgrade to
 [FastAPI 0.146](https://fastapi.tiangolo.com/release-notes/). FastAPI
@@ -69,10 +69,10 @@ argument to `FastAPI()`. Configure the ASGI server's root path instead.
 
 ### Commits
 
-- Bump version from 0.100.0 to 0.101.0 (7b9a8c8)
-- Update to FastAPI 0.146 (c2c669f)
-- Update to Ruff 0.17 (4ac5234)
-- Update changelog for version 0.100.0 (#161) (5a21608)
+- Bump version from 0.100.0 to 0.101.0 (4bb44ed)
+- Update to FastAPI 0.146 (e4ef15b)
+- Update to Ruff 0.17 (d1cd9db)
+- Update changelog for version 0.100.0 (#161) (bbd09ef)
 
 ## 0.100.0 - 2026-11-02
 
@@ -97,7 +97,7 @@ streaming, and other issues.
 
 ### Commits
 
-- Bump version from 0.99.0 to 0.100.0 (4f32e13)
+- Bump version from 0.99.0 to 0.100.0 (7c0da6d)
 - Update to FastAPI 0.143 (c5bd8d8)
 - Relax the contributing guidelines for releases (80be45b)
 - Update to pipx 1.18 (3aa5d0d)
