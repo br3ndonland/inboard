@@ -4,6 +4,30 @@ icon: lucide/clipboard-clock
 
 # Changelog
 
+## 0.103.0 - 2026-11-22
+
+### Changes
+
+**Update to Gunicorn 27** (e8d148a10b8f6fbe9c863216d69a934dbd301c39)
+
+This release will update from Gunicorn 26 to
+[Gunicorn 27](https://gunicorn.org/news/).
+
+Gunicorn 27 includes **BREAKING CHANGES** to handling of
+[`Transfer-Encoding`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Transfer-Encoding)
+HTTP headers, now responding with a 400 when `Transfer-Encoding` headers
+do not end with `chunked`, and increases the required `gunicorn_h1c`
+version to `gunicorn_h1c>=0.6.14`.
+
+### Commits
+
+- Bump version from 0.102.0 to 0.103.0 (b150141)
+- Update to Gunicorn 27 (e8d148a)
+- Migrate tests from HTTPXYZ to HTTPX2 (54d7f31)
+- Use variable icon for environment variable docs (f8b7ba0)
+- Update to Zensical 0.1 (138e26b)
+- Update changelog for version 0.102.0 (#163) (3c10426)
+
 ## 0.102.0 - 2026-11-05
 
 ### Changes
