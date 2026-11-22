@@ -64,7 +64,7 @@ docs = [
 ]
 tests = [
   "coverage[toml]>=7.10,<8",
-  "httpxyz>=0.30,<1",
+  "httpx2>=2.16.2,<3",
   "pytest>=9,<10",
   "pytest-mock>=3,<4",
   "pytest-timeout>=2,<3",

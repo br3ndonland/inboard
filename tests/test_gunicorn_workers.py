@@ -14,7 +14,7 @@ import tempfile
 import time
 from typing import TYPE_CHECKING
 
-import httpxyz
+import httpx2
 import pytest
 import trustme
 
@@ -44,11 +44,11 @@ gunicorn_workers_inboard = pytest.importorskip(
 
 
 class Process(subprocess.Popen[str]):
-    client: httpxyz.Client
+    client: httpx2.Client
     output: IO[bytes]
 
     def __init__(
-        self, args: list[str], *, client: httpxyz.Client, output: IO[bytes]
+        self, args: list[str], *, client: httpx2.Client, output: IO[bytes]
     ) -> None:
         super().__init__(args, stdout=output, stderr=output, start_new_session=True)
         self.client = client
@@ -237,7 +237,7 @@ def gunicorn_process(
 ) -> Generator[Process, None, None]:
     """Yield a subprocess running a Gunicorn arbiter with a worker.
 
-    An instance of `httpxyz.Client` is available on the `client` attribute.
+    An instance of `httpx2.Client` is available on the `client` attribute.
     Output is saved to a temporary file and accessed with `read_output()`.
     """
     app_module = f"{__name__}:{app.__name__}"
@@ -272,9 +272,9 @@ def gunicorn_process(
         base_url = f"http://{bind}"
         verify = False
     args.append(app_module)
-    transport = httpxyz.HTTPTransport(retries=5, verify=verify)
+    transport = httpx2.HTTPTransport(retries=5, verify=verify)
     with (
-        httpxyz.Client(base_url=base_url, transport=transport) as client,
+        httpx2.Client(base_url=base_url, transport=transport) as client,
         tempfile.TemporaryFile() as output,
         Process(args, client=client, output=output) as process,
     ):
@@ -304,7 +304,7 @@ def gunicorn_uvicorn_process_with_unhandled_exception(
 ) -> Generator[Process, None, None]:
     """Yield a subprocess running a Gunicorn arbiter with a Uvicorn worker.
 
-    An instance of `httpxyz.Client` is available on the `client` attribute.
+    An instance of `httpx2.Client` is available on the `client` attribute.
     Output is saved to a temporary file and accessed with `read_output()`.
     """
     monkeypatch.delenv("LOGGING_CONF", raising=False)
@@ -345,9 +345,9 @@ def gunicorn_uvicorn_process_with_unhandled_exception(
         base_url = f"http://{bind}"
         verify = False
     args.append(app_module)
-    transport = httpxyz.HTTPTransport(retries=5, verify=verify)
+    transport = httpx2.HTTPTransport(retries=5, verify=verify)
     with (
-        httpxyz.Client(base_url=base_url, transport=transport) as client,
+        httpx2.Client(base_url=base_url, transport=transport) as client,
         tempfile.TemporaryFile() as output,
         Process(args, client=client, output=output) as process,
     ):
@@ -388,7 +388,7 @@ def gunicorn_process_with_lifespan_startup_failure(
     base_url = f"http://{bind}"
     verify = False
     with (
-        httpxyz.Client(base_url=base_url, verify=verify) as client,
+        httpx2.Client(base_url=base_url, verify=verify) as client,
         tempfile.TemporaryFile() as output,
         Process(args, client=client, output=output) as process,
     ):

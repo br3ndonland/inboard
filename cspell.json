@@ -53,6 +53,7 @@
     "heredocs",
     "hoppscotch",
     "httpx",
+    "httpx2",
     "httpxyz",
     "isort",
     "kwargs",
